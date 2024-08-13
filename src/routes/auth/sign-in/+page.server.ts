@@ -40,10 +40,9 @@ export const actions = {
 				setFlash({ type: 'error', message: 'The email or password is incorrect.' }, event);
 				return setError(form, 'The email or password is incorrect.');
 			}
-
-			if (existingUser.password) {
+			if (existingUser.hashedPassword) {
 				const validPassword = await new Argon2id().verify(
-					existingUser.password,
+					existingUser.hashedPassword,
 					form.data.password
 				);
 				if (!validPassword) {
@@ -51,7 +50,7 @@ export const actions = {
 					return setError(form, 'The email or password is incorrect.');
 				} else {
 					//password valid - set session
-					const session = await lucia.createSession(existingUser.id, {});
+					const session = await lucia.createSession(existingUser.id.toString(), {});
 					const sessionCookie = lucia.createSessionCookie(session.id);
 					event.cookies.set(sessionCookie.name, sessionCookie.value, {
 						path: '.',

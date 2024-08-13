@@ -1,7 +1,7 @@
 // lib/server/lucia.ts
 import { Lucia, TimeSpan } from 'lucia';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
-import { userTable, sessionTable } from '$lib/server/database/drizzle-schemas';
+import { authUserTable, authSessionTable } from '$lib/server/database/migrations/schema';
 import db from '$lib/server/database/drizzle';
 import { dev } from '$app/environment';
 import { Google } from 'arctic';
@@ -9,7 +9,7 @@ import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
 
 import { BASE_URL } from '$lib/config/constants';
 
-const adapter = new DrizzlePostgreSQLAdapter(db, sessionTable, userTable);
+const adapter = new DrizzlePostgreSQLAdapter(db, authSessionTable, authUserTable);
 
 export const lucia = new Lucia(adapter, {
 	sessionCookie: {
@@ -26,6 +26,7 @@ export const lucia = new Lucia(adapter, {
 			provider: attributes.provider,
 			providerId: attributes.providerId,
 			email: attributes.email,
+			username: attributes.firstName + ' ' + attributes.lastName,
 			firstName: attributes.firstName,
 			lastName: attributes.lastName,
 			role: attributes.role,

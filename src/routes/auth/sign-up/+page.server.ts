@@ -40,11 +40,14 @@ export const actions = {
 		try {
 			const password = await new Argon2id().hash(form.data.password);
 			const token = crypto.randomUUID();
+			const id = crypto.randomUUID();
 			const user = {
+				id: id,
 				email: form.data.email.toLowerCase(),
 				firstName: form.data.firstName,
 				lastName: form.data.lastName,
-				password: password,
+				hashedPassword: password,
+				username: form.data.firstName + '_' + form.data.lastName,
 				role: 'USER',
 				verified: false,
 				receiveEmail: true,
@@ -54,7 +57,7 @@ export const actions = {
 			};
 			const newUser = await createUser(user);
 			if (newUser) {
-				consoe.log('newUser	', newUser);
+				console.log('newUser	', newUser);
 				await sendVerificationEmail(newUser.email, token);
 				const session = await lucia.createSession(newUser.id, {});
 				const sessionCookie = lucia.createSessionCookie(session.id);

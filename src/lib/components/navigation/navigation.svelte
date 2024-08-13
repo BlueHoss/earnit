@@ -25,9 +25,10 @@
 
 	let initials: string = '';
 	$: {
-		if (user) {
-			initials = convertNameToInitials(user.firstName, user.lastName);
-		}
+		// if (user) {
+		// 	initials = convertNameToInitials(user.firstName, user.lastName);
+		// }
+		initials = 'XX';
 	}
 </script>
 

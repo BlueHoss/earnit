@@ -56,6 +56,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	const response = await resolve(event);
-	log(response.status, event);
+	//log(response.status, event);
 	return response;
 };
