@@ -19,27 +19,21 @@
 				{APP_NAME}
 			</h1>
 			<p class="max-w-[700px] text-lg text-muted-foreground">
-				This is a sveltekit auth starter. It is an <a
-					href="https://github.com/delay/sveltekit-auth-starter">open source auth starter project</a
-				>
-				utilizing
-				<a href="https://lucia-auth.com/" class="underline">Lucia</a> for authentication,
-				<a href="https://www.shadcn-svelte.com" class="underline">shadcn-svelte</a> for ui elements,
-				<a href="https://orm.drizzle.team/" class="underline">Drizzle</a>
-				for database connectivity and type safety,
-				<a href="https://lucide.dev/" class="underline">Lucide</a>
-				for icons, <a href="https://superforms.rocks/" class="underline">Superforms</a>
-				for working with forms, <a href="https://zod.dev/" class="underline">Zod</a>
-				for typescript schema validation and
-				<a href="https://kit.svelte.dev/" class="underline">Sveltekit</a> for the javascript
-				framework. It has email verification, password reset, and will send an email out if the user
-				changes their email address to re-verify it. It also has a custom logging feature which I
-				wrote in depth on
-				<a
-					href="https://jeffmcmorris.medium.com/awesome-logging-in-sveltekit-6afa29c5892c"
-					class="underline">here</a
-				>. It is released as open source under an MIT license. The source code is available on
-				<a href="https://github.com/delay/sveltekit-auth" class="underline">github</a>.
+				Earn_It is redefining the way creators monetize engagement and enhance their social proof.
+			</p>
+			<p>
+				Instead of traditional models that impose financial burdens on creators, Earn_It leverages a
+				community-driven approach where the value creators add is directly rewarded by the
+				engagement they foster.
+			</p>
+
+			<p>
+				This allows them to capitalize on their influence without upfront costs, enabling
+				sustainable growth and deeper connections with their audience.
+			</p>
+			<p>
+				Our platform turns every interaction into a potential gain, ensuring that creators can focus
+				on producing quality content and products.
 			</p>
 		</div>
 		<div class="flex gap-4">

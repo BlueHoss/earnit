@@ -43,37 +43,42 @@ export const key_type = pgEnum('key_type', [
 export const action = pgEnum('action', ['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE', 'ERROR']);
 export const equality_op = pgEnum('equality_op', ['eq', 'neq', 'lt', 'lte', 'gt', 'gte', 'in']);
 
-export const authUserTable = pgTable('auth_user', {
+export const login_table = pgTable('login', {
 	id: serial('id').primaryKey().notNull(),
 	username: text('username').notNull(),
 	email: text('email').notNull(),
-	firstName: text('first_name').notNull(),
-	lastName: text('last_name'),
+	first_name: text('first_name').notNull(),
+	last_name: text('last_name'),
 	token: text('token').unique(),
 	verified: boolean('verified').notNull().default(false),
-	receiveEmail: boolean('receive_email').notNull().default(true),
-	hashedPassword: text('hashed_password').notNull(),
-	createdAt: timestamp('created_at').defaultNow().notNull(),
-	updatedAt: timestamp('updated_at').defaultNow().notNull(),
-	providerId: text('provider_id'),
-	provider: text('provider')
+	receive_email: boolean('receive_email').notNull().default(true),
+	hashed_password: text('hashed_password').notNull(),
+	created_at: timestamp('created_at').defaultNow().notNull(),
+	updated_at: timestamp('updated_at').defaultNow().notNull(),
+	provider_id: text('provider_id'),
+	provider: text('provider'),
+	profile_pic: text('profile_pic'),
+	social_media_profile: text('social_media_profile'),
+	role: text('role').notNull().default('USER'),
+	is_follower: boolean('is_follower').notNull().default(false),
+	is_creator: boolean('is_creator').notNull().default(false)
 });
 
-export const authSessionTable = pgTable('auth_session', {
+export const auth_session_table = pgTable('auth_session', {
 	id: text('id').primaryKey(), // Auto-incrementing primary key
-	userId: text('user_id').notNull(), // User ID associated with the session
-	expiresAt: timestamp('expires_at').notNull(), // Expiration time of the session
+	user_id: text('user_id').notNull(), // User ID associated with the session
+	expires_at: timestamp('expires_at').notNull(), // Expiration time of the session
 	token: text('token').notNull() // Session token
 });
 
-export const auth_key = pgTable(
+export const auth_key_table = pgTable(
 	'auth_key',
 	{
 		id: serial('id').primaryKey().notNull(),
 		hashed_password: text('hashed_password'),
 		user_id: integer('user_id')
 			.notNull()
-			.references(() => authUserTable.id, { onDelete: 'cascade' })
+			.references(() => login_table.id, { onDelete: 'cascade' })
 	},
 	(table) => {
 		return {
@@ -82,106 +87,93 @@ export const auth_key = pgTable(
 	}
 );
 
-export const reward_ledger = pgTable('reward_ledger', {
+export const reward_ledger_table = pgTable('reward_ledger', {
 	id: serial('id').primaryKey().notNull(),
 	date_earned: timestamp('date_earned', { mode: 'string' }),
 	amount: numeric('amount'),
-	creator_id: integer('creator_id').references(() => login.id)
+	creator_id: integer('creator_id').references(() => login_table.id)
 });
 
-export const login = pgTable('login', {
-	id: serial('id').primaryKey().notNull(),
-	username: text('username'),
-	email: text('email'),
-	first_name: text('first_name'),
-	last_name: text('last_name'),
-	profile_pic: text('profile_pic'),
-	social_media_profile: text('social_media_profile'),
-	role_id: integer('role_id'),
-	is_follower: boolean('is_follower'),
-	is_creator: boolean('is_creator')
-});
-
-export const product = pgTable('product', {
+export const product_table = pgTable('product', {
 	id: serial('id').primaryKey().notNull(),
 	name: text('name'),
 	description: text('description'),
-	store_id: integer('store_id').references(() => store.id),
+	store_id: integer('store_id').references(() => store_table.id),
 	cover_image: text('cover_image'),
 	cost: numeric('cost')
 });
 
-export const invoice = pgTable('invoice', {
+export const invoice_table = pgTable('invoice', {
 	id: serial('id').primaryKey().notNull(),
-	product_id: integer('product_id').references(() => product.id),
+	product_id: integer('product_id').references(() => product_table.id),
 	cost: numeric('cost'),
 	date_purchased: timestamp('date_purchased', { mode: 'string' }),
-	login_id: integer('login_id').references(() => login.id)
+	login_id: integer('login_id').references(() => login_table.id)
 });
 
-export const plan = pgTable('plan', {
+export const plan_table = pgTable('plan', {
 	id: serial('id').primaryKey().notNull(),
 	name: text('name'),
 	plan_percent: numeric('plan_percent')
 });
 
-export const store = pgTable('store', {
+export const store_table = pgTable('store', {
 	id: serial('id').primaryKey().notNull(),
 	name: text('name'),
 	creator_user_id: integer('creator_user_id')
 });
 
-export const mission = pgTable('mission', {
+export const mission_table = pgTable('mission', {
 	id: serial('id').primaryKey().notNull(),
 	name: text('name'),
 	platform: text('platform')
 });
 
-export const plan_subscription = pgTable('plan_subscription', {
+export const plan_subscription_table = pgTable('plan_subscription', {
 	id: serial('id').primaryKey().notNull(),
-	creator_user_id: integer('creator_user_id').references(() => login.id),
-	follower_user_id: integer('follower_user_id').references(() => login.id),
+	creator_user_id: integer('creator_user_id').references(() => login_table.id),
+	follower_user_id: integer('follower_user_id').references(() => login_table.id),
 	date_started: timestamp('date_started', { mode: 'string' }),
-	plan_id: integer('plan_id').references(() => plan.id),
+	plan_id: integer('plan_id').references(() => plan_table.id),
 	date_canceled: timestamp('date_canceled', { mode: 'string' }),
 	active: boolean('active')
 });
 
-export const product_item = pgTable('product_item', {
+export const product_item_table = pgTable('product_item', {
 	id: serial('id').primaryKey().notNull(),
 	name: text('name'),
 	download_url: text('download_url'),
-	product_id: integer('product_id').references(() => product.id),
+	product_id: integer('product_id').references(() => product_table.id),
 	buyitnow_link: text('buyitnow_link')
 });
 
-export const reward_action = pgTable('reward_action', {
+export const reward_action_table = pgTable('reward_action', {
 	id: serial('id').primaryKey().notNull(),
-	mission_id: integer('mission_id').references(() => mission.id),
+	mission_id: integer('mission_id').references(() => mission_table.id),
 	name: text('name'),
 	reward_per_day: numeric('reward_per_day'),
-	creator_user_id: integer('creator_user_id').references(() => login.id)
+	creator_user_id: integer('creator_user_id').references(() => login_table.id)
 });
 
-export const reward_earned = pgTable('reward_earned', {
+export const reward_earned_table = pgTable('reward_earned', {
 	id: serial('id').primaryKey().notNull(),
-	follower_user_id: integer('follower_user_id').references(() => login.id),
+	follower_user_id: integer('follower_user_id').references(() => login_table.id),
 	date_awarded: timestamp('date_awarded', { mode: 'string' }),
-	reward_type_id: integer('reward_type_id').references(() => reward_action.id),
+	reward_type_id: integer('reward_type_id').references(() => reward_action_table.id),
 	reward_value: numeric('reward_value'),
-	creator_user_id: integer('creator_user_id').references(() => login.id),
-	action_id: integer('action_id').references(() => reward_action.id)
+	creator_user_id: integer('creator_user_id').references(() => login_table.id),
+	action_id: integer('action_id').references(() => reward_action_table.id)
 });
 
-export const follower_creator = pgTable(
+export const follower_creator_table = pgTable(
 	'follower_creator',
 	{
 		follower_user_id: integer('follower_user_id')
 			.notNull()
-			.references(() => login.id),
+			.references(() => login_table.id),
 		creator_user_id: integer('creator_user_id')
 			.notNull()
-			.references(() => login.id)
+			.references(() => login_table.id)
 	},
 	(table) => {
 		return {

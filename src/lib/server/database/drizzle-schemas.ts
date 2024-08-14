@@ -1,5 +1,5 @@
-import { authSessionTable, authUserTable } from './migrations/schema';
+import { auth_session_table, login_table } from './migrations/schema';
 
-export type User = typeof authUserTable.$inferInsert;
-export type UpdateUser = Partial<typeof authUserTable.$inferInsert>;
-export type Session = typeof authSessionTable.$inferInsert;
+export type User = typeof login_table.$inferInsert;
+export type UpdateUser = Partial<typeof login_table.$inferInsert>;
+export type Session = typeof auth_session_table.$inferInsert;

@@ -1,7 +1,7 @@
 // lib/server/lucia.ts
 import { Lucia, TimeSpan } from 'lucia';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
-import { authUserTable, authSessionTable } from '$lib/server/database/migrations/schema';
+import { login_table, auth_session_table } from '$lib/server/database/migrations/schema';
 import db from '$lib/server/database/drizzle';
 import { dev } from '$app/environment';
 import { Google } from 'arctic';
@@ -9,7 +9,7 @@ import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
 
 import { BASE_URL } from '$lib/config/constants';
 
-const adapter = new DrizzlePostgreSQLAdapter(db, authSessionTable, authUserTable);
+const adapter = new DrizzlePostgreSQLAdapter(db, auth_session_table, login_table);
 
 export const lucia = new Lucia(adapter, {
 	sessionCookie: {
@@ -19,7 +19,7 @@ export const lucia = new Lucia(adapter, {
 			secure: !dev
 		}
 	},
-	sessionExpiresIn: new TimeSpan(30, 'd'), // no more active/idle
+	sessionExpiresIn: new TimeSpan(2, 'w'), // 2 weeks
 	getUserAttributes: (attributes) => {
 		return {
 			userId: attributes.id,
@@ -46,7 +46,7 @@ declare module 'lucia' {
 }
 
 interface DatabaseUserAttributes {
-	id: string;
+	id: number;
 	provider: string;
 	providerId: string;
 	email: string;
@@ -57,10 +57,6 @@ interface DatabaseUserAttributes {
 	receiveEmail: boolean;
 	token: string;
 }
-
-/*interface DatabaseSessionAttributes {
-	sessionExpiresIn: number;
-}*/
 
 const googleRedirectUrl = dev
 	? 'http://localhost:5173/auth/oauth/google/callback'
