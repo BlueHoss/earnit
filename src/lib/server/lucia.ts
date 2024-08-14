@@ -1,7 +1,7 @@
 // lib/server/lucia.ts
 import { Lucia, TimeSpan } from 'lucia';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
-import { login_table, auth_session_table } from '$lib/server/database/migrations/schema';
+import { login_table, auth_session_table } from '$lib/server/database/schema';
 import db from '$lib/server/database/drizzle';
 import { dev } from '$app/environment';
 import { Google } from 'arctic';

@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
-import { login_table } from '$lib/server/database/migrations/schema';
+import { login_table } from '$lib/server/database/schema';
 import type { User, UpdateUser } from '$lib/server/database/drizzle-schemas';
 
 export const getUserByEmail = async (email: string) => {

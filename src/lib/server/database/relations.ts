@@ -14,7 +14,7 @@ import {
 	mission_table,
 	reward_earned_table,
 	follower_creator_table
-} from './schema';
+} from '$lib/server/database/schema';
 
 export const auth_sessionRelations = relations(auth_session_table, ({ one }) => ({
 	auth_user: one(login_table, {
