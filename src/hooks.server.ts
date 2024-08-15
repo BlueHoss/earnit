@@ -55,6 +55,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 		if (user?.role !== 'ADMIN') redirect(302, '/auth/sign-in');
 	}
 
+	//protect all screens unless signed in.
+	//if (!user) redirect(302, '/auth/sign-in');
+
 	const response = await resolve(event);
 	//log(response.status, event);
 	return response;

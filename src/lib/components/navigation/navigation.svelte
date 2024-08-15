@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Command from '$lib/components/ui/command';
@@ -138,4 +138,4 @@
 	.active {
 		@apply text-primary;
 	}
-</style>
+</style> -->

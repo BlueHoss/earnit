@@ -23,7 +23,6 @@ export const getUserByToken = async (token: string) => {
 };
 
 export const updateUser = async (id: number, user: UpdateUser) => {
-	console.log('UPDATE USER IS THIS CALLED???', user);
 	const result = await db.update(login_table).set(user).where(eq(login_table.id, id)).returning();
 	console.log('updateUser', result);
 	if (result.length === 0) {

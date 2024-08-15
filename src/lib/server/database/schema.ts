@@ -66,8 +66,8 @@ export const login_table = pgTable('login', {
 
 export const auth_session_table = pgTable('auth_session', {
 	id: text('id').primaryKey(), // Auto-incrementing primary key
-	user_id: text('user_id').notNull(), // User ID associated with the session
-	expires_at: timestamp('expires_at').notNull(), // Expiration time of the session
+	userId: text('user_id').notNull(), // User ID associated with the session
+	expiresAt: timestamp('expires_at').notNull(), // Expiration time of the session
 	token: text('token').notNull() // Session token
 });
 

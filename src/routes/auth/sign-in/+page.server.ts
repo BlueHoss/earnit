@@ -40,9 +40,9 @@ export const actions = {
 				setFlash({ type: 'error', message: 'The email or password is incorrect.' }, event);
 				return setError(form, 'The email or password is incorrect.');
 			}
-			if (existingUser.hashedPassword) {
+			if (existingUser.hashed_password) {
 				const validPassword = await new Argon2id().verify(
-					existingUser.hashedPassword,
+					existingUser.hashed_password,
 					form.data.password
 				);
 				if (!validPassword) {

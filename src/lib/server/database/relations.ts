@@ -18,7 +18,7 @@ import {
 
 export const auth_sessionRelations = relations(auth_session_table, ({ one }) => ({
 	auth_user: one(login_table, {
-		fields: [auth_session_table.user_id],
+		fields: [auth_session_table.userId],
 		references: [login_table.id]
 	})
 }));

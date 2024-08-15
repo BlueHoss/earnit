@@ -48,8 +48,8 @@ export const actions = {
 			const user = event.locals.user;
 			if (user) {
 				await updateUser(user.id, {
-					firstName: form.data.firstName,
-					lastName: form.data.lastName,
+					first_name: form.data.firstName,
+					last_name: form.data.lastName,
 					email: form.data.email
 				});
 				setFlash({ type: 'success', message: 'Profile update successful.' }, event);
