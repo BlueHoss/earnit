@@ -161,8 +161,7 @@ export const reward_earned_table = pgTable('reward_earned', {
 	date_awarded: timestamp('date_awarded', { mode: 'string' }),
 	reward_type_id: integer('reward_type_id').references(() => reward_action_table.id),
 	reward_value: numeric('reward_value'),
-	creator_user_id: integer('creator_user_id').references(() => login_table.id),
-	action_id: integer('action_id').references(() => reward_action_table.id)
+	creator_user_id: integer('creator_user_id').references(() => login_table.id)
 });
 
 export const follower_creator_table = pgTable(

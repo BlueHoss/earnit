@@ -5,11 +5,11 @@ export default defineConfig({
 	schema: './src/lib/server/database/schema.ts',
 	out: './src/lib/server/database/migrations',
 	dbCredentials: {
-		database: 'postgres',
-		host: 'aws-0-us-west-1.pooler.supabase.com',
-		password: 'krw!cfh9NHF@zxn5rtu',
-		user: 'postgres.aypbxyydasoahfpgqwez',
-		port: 6543,
+		database: process.env.DB_DATABASE,
+		host: process.env.DB_HOST,
+		password: process.env.DB_PASSWORD,
+		user: process.env.DB_USER,
+		port: process.env.DB_PORT,
 		ssl: false
 	}
 });
