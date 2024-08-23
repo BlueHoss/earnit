@@ -35,3 +35,16 @@ The Reward System will apply the reward value found in `reward_action` and apply
 When we put all the part together this is what the database diagram looks like"
 
 ![reward system diagram](/read-me/img/reward_system_diagram.png)
+
+# Earn It Colors
+
+## Base color pallet:
+
+![root color pallet](/read-me/img/root-color-pallet.png)
+
+### Dark color pallet:
+
+![dark color pallet](/read-me/img/dark-color-pallet.png)
+
+Based on Sveltekit Auth
+From: https://github.com/delay/sveltekit-auth

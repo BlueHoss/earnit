@@ -7,6 +7,8 @@ export const load: PageServerLoad = async () => {
 };
 export const actions = {
 	default: async (event) => {
+		console.log('EVENT', event);
+
 		if (!event.locals.user) redirect(302, '/auth/sign-in');
 		if (event.locals.session) {
 			await lucia.invalidateSession(event.locals.session.id);

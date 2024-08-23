@@ -1,44 +1,31 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import { APP_NAME } from '$lib/config/constants';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import * as Card from '$lib/components/ui/card/index.js';
+	import FollowerIcon from 'lucide-svelte/icons/venetian-mask';
+	import CreatorIcon from 'lucide-svelte/icons/tv-minimal-play';
 </script>
 
-<svelte:head>
-	<title>{APP_NAME}</title>
-	<meta
-		name="description"
-		content="Earn It - A platform that redefines the way creators monetize engagement and enhance their social proof."
-	/>
-</svelte:head>
-
-<div class="flex-1">
-	<section class="container grid items-center gap-6">
-		<div class="flex max-w-[980px] flex-col items-start gap-2">
-			<h1 class="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
-				{APP_NAME}
-			</h1>
-			<p class="max-w-[700px] text-lg text-muted-foreground">
-				Earn_It is redefining the way creators monetize engagement and enhance their social proof.
-			</p>
-			<p>
-				Instead of traditional models that impose financial burdens on creators, Earn_It leverages a
-				community-driven approach where the value creators add is directly rewarded by the
-				engagement they foster.
-			</p>
-
-			<p>
-				This allows them to capitalize on their influence without upfront costs, enabling
-				sustainable growth and deeper connections with their audience.
-			</p>
-			<p>
-				Our platform turns every interaction into a potential gain, ensuring that creators can focus
-				on producing quality content and products.
-			</p>
+<Card.Root class="mx-auto max-w-sm">
+	<Card.Header>
+		<Card.Title class="text-2xl">Select Your Role</Card.Title>
+		<Card.Description>
+			<p>It appears you are both a Creator and a Follower. Please select your role to continue.</p>
+		</Card.Description>
+	</Card.Header>
+	<Card.Content>
+		<div class="grid gap-4">
+			<a href="/creator">
+				<Button class="w-full"><CreatorIcon class="pr-1" /> Continue as Creator</Button>
+			</a>
+			<a href="/follower">
+				<Button variant="secondary" class="w-full"
+					><FollowerIcon class="pr-1" /> Continue as Follower</Button
+				>
+			</a>
 		</div>
-		<div class="flex gap-4">
-			<Button on:click={() => goto('/auth/sign-in')}>Sign in</Button>
-			<Button on:click={() => goto('/auth/sign-up')} variant="outline">Sign up</Button>
+		<div class="mt-4 text-center text-sm">
+			Sign in with a different account?
+			<a href="/auth/sign-up" class="underline"> Sign Out </a>
 		</div>
-	</section>
-</div>
+	</Card.Content>
+</Card.Root>

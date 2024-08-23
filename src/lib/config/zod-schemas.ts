@@ -26,7 +26,7 @@ export const userSchema = z.object({
 		.default('USER'),
 	verified: z.boolean().default(false),
 	terms: z.literal<boolean>(true, {
-		errorMap: () => ({ message: "You must accept the terms & privacy policy" }),
+		errorMap: () => ({ message: 'You must accept the terms & privacy policy' })
 	}),
 	token: z.string().optional(),
 	receiveEmail: z.boolean().default(true),
@@ -35,6 +35,14 @@ export const userSchema = z.object({
 });
 
 export type UserSchema = typeof userSchema;
+
+export const signInSchema = z.object({
+	email: z.string().email(),
+	password: z.string().min(8)
+});
+
+//export type SignInSchema = z.infer<typeof signInSchema>;
+export type SignInSchema = typeof signInSchema;
 
 export const userUpdatePasswordSchema = userSchema
 	.pick({ password: true, confirmPassword: true })
@@ -53,4 +61,4 @@ export const userUpdatePasswordSchema = userSchema
 		}
 	});
 
-	export type UserUpdatePasswordSchema = typeof userUpdatePasswordSchema;
+export type UserUpdatePasswordSchema = typeof userUpdatePasswordSchema;

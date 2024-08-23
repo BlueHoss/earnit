@@ -3,28 +3,21 @@ import { setFlash } from 'sveltekit-flash-message/server';
 import { setError, superValidate } from 'sveltekit-superforms/server';
 import { lucia } from '$lib/server/lucia';
 import { Argon2id } from 'oslo/password';
-import { userSchema } from '$lib/config/zod-schemas';
+import { signInSchema } from '$lib/config/zod-schemas';
 import { getUserByEmail } from '$lib/server/database/user-model';
+import { zod } from 'sveltekit-superforms/adapters';
+import type { PageServerLoad, Actions } from './$types';
 
-const signInSchema = userSchema.pick({
-	email: true,
-	password: true
-});
-
-export const load = async (event) => {
-	if (event.locals.user) {
-		redirect(302, '/dashboard');
-	}
-	const form = await superValidate(event, signInSchema);
+export const load: PageServerLoad = async () => {
 	return {
-		form
+		form: await superValidate(zod(signInSchema))
 	};
 };
 
-export const actions = {
-	default: async (event) => {
-		const form = await superValidate(event, signInSchema);
-		//console.log(form);
+export const actions: Actions = {
+	signin: async ({ request }) => {
+		const form = await superValidate(request, zod(signInSchema));
+		console.log('Email', form.data.email);
 
 		if (!form.valid) {
 			return fail(400, {
@@ -37,7 +30,7 @@ export const actions = {
 			const email = form.data.email.toLowerCase();
 			const existingUser = await getUserByEmail(email);
 			if (!existingUser) {
-				setFlash({ type: 'error', message: 'The email or password is incorrect.' }, event);
+				setFlash({ type: 'error', message: 'The email or password is incorrect.' }, request);
 				return setError(form, 'The email or password is incorrect.');
 			}
 			if (existingUser.hashed_password) {
