@@ -4,7 +4,6 @@
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import UsersIcon from 'lucide-svelte/icons/users';
 	import CreditCardIcon from 'lucide-svelte/icons/credit-card';
-	import * as Table from '$lib/components/ui/table/index.ts';
 	import PageHeaderFollower from '$lib/components/FollowerPageHeader.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import CurrencyIcon from 'lucide-svelte/icons/currency';

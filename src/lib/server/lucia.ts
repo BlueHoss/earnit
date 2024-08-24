@@ -26,7 +26,7 @@ export const lucia = new Lucia(adapter, {
 			provider: attributes.provider,
 			providerId: attributes.providerId,
 			email: attributes.email,
-			username: attributes.first_name + ' ' + attributes.last_name,
+			handle: attributes.first_name + ' ' + attributes.last_name,
 			first_name: attributes.first_name,
 			last_name: attributes.last_name,
 			role: attributes.role,
@@ -34,7 +34,10 @@ export const lucia = new Lucia(adapter, {
 			receiveEmail: attributes.receiveEmail,
 			token: attributes.token,
 			is_creator: attributes.is_creator,
-			is_follower: attributes.is_follower
+			is_follower: attributes.is_follower,
+			follower_count: attributes.follower_count,
+			profile_pic: attributes.profile_pic,
+			initials: makeInitials(attributes.first_name, attributes.last_name)
 		};
 	}
 });
@@ -52,6 +55,7 @@ interface DatabaseUserAttributes {
 	provider: string;
 	providerId: string;
 	email: string;
+	handle: string;
 	first_name: string;
 	last_name: string;
 	role: string;
@@ -60,6 +64,15 @@ interface DatabaseUserAttributes {
 	token: string;
 	is_creator: boolean;
 	is_follower: boolean;
+	follower_count: number;
+	profile_pic: string;
+	initials: string;
+}
+
+function makeInitials(firstName: string, lastName: string) {
+	const firstLetter = !firstName ? '' : firstName.charAt(0);
+	const lastLetter = !lastName ? '' : lastName.charAt(0);
+	return firstLetter + lastLetter;
 }
 
 const googleRedirectUrl = dev

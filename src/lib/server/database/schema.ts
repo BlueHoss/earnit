@@ -5,7 +5,6 @@ import {
 	text,
 	boolean,
 	timestamp,
-	index,
 	integer,
 	numeric,
 	primaryKey
@@ -42,7 +41,7 @@ export const equality_op = pgEnum('equality_op', ['eq', 'neq', 'lt', 'lte', 'gt'
 
 export const login_table = pgTable('login', {
 	id: serial('id').primaryKey().notNull(),
-	username: text('username').notNull(),
+	handle: text('handle').notNull(),
 	email: text('email').notNull().unique(),
 	first_name: text('first_name').notNull(),
 	last_name: text('last_name'),
@@ -58,7 +57,8 @@ export const login_table = pgTable('login', {
 	social_media_profile: text('social_media_profile'),
 	role: text('role').notNull().default('USER'),
 	is_follower: boolean('is_follower').notNull().default(false),
-	is_creator: boolean('is_creator').notNull().default(false)
+	is_creator: boolean('is_creator').notNull().default(false),
+	follower_count: integer('follower_count').notNull().default(0)
 });
 
 export const auth_session_table = pgTable('auth_session', {
@@ -67,22 +67,6 @@ export const auth_session_table = pgTable('auth_session', {
 	expiresAt: timestamp('expires_at').notNull(), // Expiration time of the session
 	token: text('token').notNull() // Session token
 });
-
-export const auth_key_table = pgTable(
-	'auth_key',
-	{
-		id: serial('id').primaryKey().notNull(),
-		hashed_password: text('hashed_password'),
-		user_id: integer('user_id')
-			.notNull()
-			.references(() => login_table.id, { onDelete: 'cascade' })
-	},
-	(table) => {
-		return {
-			idx_auth_key_user_id: index('idx_auth_key_user_id').using('btree', table.user_id)
-		};
-	}
-);
 
 export const reward_ledger_table = pgTable('reward_ledger', {
 	id: serial('id').primaryKey().notNull(),
@@ -100,12 +84,13 @@ export const product_table = pgTable('product', {
 	cost: numeric('cost')
 });
 
-export const invoice_table = pgTable('invoice', {
+export const product_invoice_table = pgTable('product_invoice', {
 	id: serial('id').primaryKey().notNull(),
 	product_id: integer('product_id').references(() => product_table.id),
 	cost: numeric('cost'),
-	date_purchased: timestamp('date_purchased', { mode: 'string' }),
-	login_id: integer('login_id').references(() => login_table.id)
+	date_purchased: timestamp('date_purchased', { mode: 'date' }),
+	creator_user_id: integer('creator_user_id').references(() => login_table.id),
+	follower_user_id: integer('follower_user_id').references(() => login_table.id)
 });
 
 export const plan_table = pgTable('plan', {
@@ -156,7 +141,7 @@ export const reward_action_table = pgTable('reward_action', {
 export const reward_earned_table = pgTable('reward_earned', {
 	id: serial('id').primaryKey().notNull(),
 	follower_user_id: integer('follower_user_id').references(() => login_table.id),
-	date_awarded: timestamp('date_awarded', { mode: 'string' }),
+	date_awarded: timestamp('date_awarded', { mode: 'date' }),
 	reward_type_id: integer('reward_type_id').references(() => reward_action_table.id),
 	reward_value: numeric('reward_value'),
 	creator_user_id: integer('creator_user_id').references(() => login_table.id)

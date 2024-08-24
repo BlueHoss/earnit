@@ -8,6 +8,8 @@
 	import EffortCreditsThisMonth from './components/EffortCreditsThisMonth.svelte';
 	import ProductsRedeemedThisMonth from './components/ProductsRedeemedThisMonth.svelte';
 	import PaidSubscribers from './components/PaidSubscribers.svelte';
+	import EarnItFollowers from './components/EarnItFollowers.svelte';
+	import Currency from '$lib/components/base/Currency.svelte';
 
 	export let data: PageData;
 	$: ({ creatorDashboard } = data);
@@ -21,8 +23,12 @@
 			paidSubscribers={creatorDashboard.subscriberCount}
 			totalMonthlyRevenue={creatorDashboard.revenue}
 		/>
-		<EffortCreditsThisMonth effortCredits={449} />
-		<ProductsRedeemedThisMonth redeemedThisMonth={6} />
+		<EffortCreditsThisMonth effortCredits={creatorDashboard.rewardsUsed} />
+		<ProductsRedeemedThisMonth
+			redeemedThisMonth={creatorDashboard.purchaseCount}
+			purchaseAmount={creatorDashboard.purchaseAmount}
+		/>
+		<EarnItFollowers followers={9} />
 	</div>
 	<div>
 		<Card.Root class="xl:col-span-2">
@@ -37,45 +43,26 @@
 					<Table.Header>
 						<Table.Row>
 							<Table.Head>Redeemer</Table.Head>
+							<Table.Head>Offering</Table.Head>
 							<Table.Head class="text-right">Amount</Table.Head>
 						</Table.Row>
 					</Table.Header>
+
 					<Table.Body>
-						<Table.Row>
-							<Table.Cell>
-								<div class="font-medium">Liam Johnson</div>
-								<div class="hidden text-sm text-muted-foreground md:inline">liam@example.com</div>
-							</Table.Cell>
-							<Table.Cell class="text-right">250</Table.Cell>
-						</Table.Row>
-						<Table.Row>
-							<Table.Cell>
-								<div class="font-medium">Olivia Smith</div>
-								<div class="hidden text-sm text-muted-foreground md:inline">olivia@example.com</div>
-							</Table.Cell>
-							<Table.Cell class="text-right">150</Table.Cell>
-						</Table.Row>
-						<Table.Row>
-							<Table.Cell>
-								<div class="font-medium">Noah Williams</div>
-								<div class="hidden text-sm text-muted-foreground md:inline">noah@example.com</div>
-							</Table.Cell>
-							<Table.Cell class="text-right">350</Table.Cell>
-						</Table.Row>
-						<Table.Row>
-							<Table.Cell>
-								<div class="font-medium">Emma Brown</div>
-								<div class="hidden text-sm text-muted-foreground md:inline">emma@example.com</div>
-							</Table.Cell>
-							<Table.Cell class="text-right">450</Table.Cell>
-						</Table.Row>
-						<Table.Row>
-							<Table.Cell>
-								<div class="font-medium">Liam Johnson</div>
-								<div class="hidden text-sm text-muted-foreground md:inline">liam@example.com</div>
-							</Table.Cell>
-							<Table.Cell class="text-right">550</Table.Cell>
-						</Table.Row>
+						{#each creatorDashboard.productPurchaseList as redemption}
+							<Table.Row>
+								<Table.Cell>
+									<div class="font-medium">{redemption.follower}</div>
+									<div class="hidden text-sm text-muted-foreground md:inline">
+										{redemption.handle}
+									</div>
+								</Table.Cell>
+								<Table.Cell>{redemption.name}</Table.Cell>
+								<Table.Cell class="text-right">
+									<Currency amount={redemption.cost} />
+								</Table.Cell>
+							</Table.Row>
+						{/each}
 					</Table.Body>
 				</Table.Root>
 			</Card.Content>

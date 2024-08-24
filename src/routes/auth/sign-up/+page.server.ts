@@ -50,7 +50,7 @@ export const actions = {
 				first_name: form.data.firstName,
 				last_name: form.data.lastName,
 				hashed_password: password,
-				username: form.data.firstName + '_' + form.data.lastName,
+				handle: form.data.firstName + '_' + form.data.lastName,
 				role: 'USER',
 				verified: false,
 				receive_email: true,
