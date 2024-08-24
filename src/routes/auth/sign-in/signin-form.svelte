@@ -37,7 +37,7 @@
 
 	<Form.Button>Update account</Form.Button>
 </form>
-
+<!-- 
 {#if browser}
 	<SuperDebug data={$formData} />
-{/if}
+{/if} -->

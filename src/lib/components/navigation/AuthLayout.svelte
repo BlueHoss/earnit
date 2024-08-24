@@ -14,6 +14,7 @@
 	import CreatorNavigationMenu from '$lib/components/navigation/CreatorNavigationMenu.svelte';
 	import FollowerNavigationMenu from '$lib/components/navigation/FollowerNavigationMenu.svelte';
 	import { getUserRole } from '$lib/utils/auth';
+	import SignoutButton from '../../../routes/auth/sign-out/signout-button.svelte';
 
 	let role: any;
 	function load() {
@@ -96,7 +97,7 @@
 					<DropdownMenu.Item>Settings</DropdownMenu.Item>
 					<DropdownMenu.Item>Support</DropdownMenu.Item>
 					<DropdownMenu.Separator />
-					<DropdownMenu.Item><a href="/auth/sign-in">Logout</a></DropdownMenu.Item>
+					<DropdownMenu.Item><SignoutButton /></DropdownMenu.Item>
 				</DropdownMenu.Content>
 				<ModeSwitch />
 			</DropdownMenu.Root>

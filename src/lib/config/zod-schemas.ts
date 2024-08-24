@@ -25,9 +25,13 @@ export const userSchema = z.object({
 		.enum(['USER', 'PREMIUM', 'ADMIN'], { required_error: 'You must have a role' })
 		.default('USER'),
 	verified: z.boolean().default(false),
-	terms: z.literal<boolean>(true, {
-		errorMap: () => ({ message: 'You must accept the terms & privacy policy' })
-	}),
+	isCreator: z.boolean().default(false),
+	isFollower: z.boolean().default(false),
+	terms: z
+		.literal<boolean>(true, {
+			errorMap: () => ({ message: 'You must accept the terms & privacy policy' })
+		})
+		.default(false as true),
 	token: z.string().optional(),
 	receiveEmail: z.boolean().default(true),
 	createdAt: z.date().optional(),

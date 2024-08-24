@@ -3,6 +3,7 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import FollowerIcon from 'lucide-svelte/icons/venetian-mask';
 	import CreatorIcon from 'lucide-svelte/icons/tv-minimal-play';
+	import SignoutButton from './auth/sign-out/signout-button.svelte';
 </script>
 
 <Card.Root class="mx-auto max-w-sm">
@@ -24,8 +25,12 @@
 			</a>
 		</div>
 		<div class="mt-4 text-center text-sm">
+			<!-- <form method="POST" action="/auth/sign-out">
+				<Button type="submit">Sign Out</Button>
+			</form> -->
+
 			Sign in with a different account?
-			<a href="/auth/sign-up" class="underline"> Sign Out </a>
+			<SignoutButton />
 		</div>
 	</Card.Content>
 </Card.Root>

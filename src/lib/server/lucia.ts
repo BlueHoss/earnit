@@ -32,7 +32,9 @@ export const lucia = new Lucia(adapter, {
 			role: attributes.role,
 			verified: attributes.verified,
 			receiveEmail: attributes.receiveEmail,
-			token: attributes.token
+			token: attributes.token,
+			is_creator: attributes.is_creator,
+			is_follower: attributes.is_follower
 		};
 	}
 });
@@ -56,6 +58,8 @@ interface DatabaseUserAttributes {
 	verified: boolean;
 	receiveEmail: boolean;
 	token: string;
+	is_creator: boolean;
+	is_follower: boolean;
 }
 
 const googleRedirectUrl = dev

@@ -46,7 +46,7 @@ export const equality_op = pgEnum('equality_op', ['eq', 'neq', 'lt', 'lte', 'gt'
 export const login_table = pgTable('login', {
 	id: serial('id').primaryKey().notNull(),
 	username: text('username').notNull(),
-	email: text('email').notNull(),
+	email: text('email').notNull().unique(),
 	first_name: text('first_name').notNull(),
 	last_name: text('last_name'),
 	token: text('token').unique(),
@@ -66,7 +66,7 @@ export const login_table = pgTable('login', {
 
 export const auth_session_table = pgTable('auth_session', {
 	id: text('id').primaryKey(), // Auto-incrementing primary key
-	userId: text('user_id').notNull(), // User ID associated with the session
+	userId: integer('user_id').notNull(), // User ID associated with the session
 	expiresAt: timestamp('expires_at').notNull(), // Expiration time of the session
 	token: text('token').notNull() // Session token
 });

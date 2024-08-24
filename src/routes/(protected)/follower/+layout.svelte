@@ -12,6 +12,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
 	import NavigationMenuFollower from '$lib/components/navigation/FollowerNavigationMenu.svelte';
+	import SignoutButton from '../../auth/sign-out/signout-button.svelte';
 </script>
 
 <ModeWatcher />
@@ -75,7 +76,7 @@
 					<DropdownMenu.Item>Settings</DropdownMenu.Item>
 					<DropdownMenu.Item>Support</DropdownMenu.Item>
 					<DropdownMenu.Separator />
-					<DropdownMenu.Item><a href="/auth/sign-in">Logout</a></DropdownMenu.Item>
+					<DropdownMenu.Item><SignoutButton /></DropdownMenu.Item>
 				</DropdownMenu.Content>
 				<ModeSwitch />
 			</DropdownMenu.Root>

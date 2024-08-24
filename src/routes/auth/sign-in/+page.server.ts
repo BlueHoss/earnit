@@ -15,9 +15,10 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions: Actions = {
-	signin: async ({ request }) => {
-		const form = await superValidate(request, zod(signInSchema));
-		console.log('Email', form.data.email);
+	// signin: async ({ request }) => {
+	signin: async (event) => {
+		const form = await superValidate(event.request, zod(signInSchema));
+		let existingUser = null;
 
 		if (!form.valid) {
 			return fail(400, {
@@ -28,9 +29,9 @@ export const actions: Actions = {
 		//add user to db
 		try {
 			const email = form.data.email.toLowerCase();
-			const existingUser = await getUserByEmail(email);
+			existingUser = await getUserByEmail(email);
 			if (!existingUser) {
-				setFlash({ type: 'error', message: 'The email or password is incorrect.' }, request);
+				setFlash({ type: 'error', message: 'The email or password is incorrect.' }, event);
 				return setError(form, 'The email or password is incorrect.');
 			}
 			if (existingUser.hashed_password) {
@@ -43,7 +44,9 @@ export const actions: Actions = {
 					return setError(form, 'The email or password is incorrect.');
 				} else {
 					//password valid - set session
-					const session = await lucia.createSession(existingUser.id.toString(), {});
+					const session = await lucia.createSession(existingUser.id.toString(), {
+						token: existingUser.token
+					});
 					const sessionCookie = lucia.createSessionCookie(session.id);
 					event.cookies.set(sessionCookie.name, sessionCookie.value, {
 						path: '.',
@@ -59,6 +62,18 @@ export const actions: Actions = {
 			//const { fieldErrors: errors } = e.flatten();
 			setFlash({ type: 'error', message: 'The email or password is incorrect.' }, event);
 			return setError(form, 'The email or password is incorrect.');
+		}
+
+		if (existingUser.is_creator && existingUser.is_follower) {
+			throw redirect(302, '/');
+		}
+
+		if (existingUser.is_creator) {
+			throw redirect(302, '/creator');
+		}
+
+		if (existingUser.is_follower) {
+			throw redirect(302, '/follower');
 		}
 
 		return { form };
