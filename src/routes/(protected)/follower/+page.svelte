@@ -1,4 +1,6 @@
 <script>
+	export let data;
+
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import UsersIcon from 'lucide-svelte/icons/users';
 	import CreditCardIcon from 'lucide-svelte/icons/credit-card';
@@ -11,7 +13,7 @@
 </script>
 
 <PageWrapper>
-	<PageHeaderFollower Title="Dashboard" />
+	<PageHeaderFollower {data} Title="Dashboard" />
 	<div class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
 		<Card.Root>
 			<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">

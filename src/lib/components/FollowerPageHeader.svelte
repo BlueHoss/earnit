@@ -1,5 +1,6 @@
 <script>
 	export let Title = 'Marketplace';
+	export let data;
 
 	import AvatarImage from '$lib/components/ui/avatar/avatar-image.svelte';
 	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
@@ -14,7 +15,7 @@
 			<AvatarFallback>SM</AvatarFallback>
 		</Avatar>
 		<div>
-			<h1 class="text-2xl font-semibold">Joe's {Title}</h1>
+			<h1 class="text-2xl font-semibold">{data.user.first_name}'s {Title}</h1>
 			<p class="text-sm text-gray-400">2.9k followers</p>
 		</div>
 	</div>

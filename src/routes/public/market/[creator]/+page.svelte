@@ -15,7 +15,6 @@
 	import { Button } from '$lib/components/ui/button/index.ts';
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import MeritOfferingCard from '$lib/components/base/MeritOfferingCard.svelte';
-	import PageHeader from '$lib/components/base/PageHeader.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import MissionItem from './components/MissionItem.svelte';
 	import Avatar from '$lib/components/ui/avatar/avatar.svelte';

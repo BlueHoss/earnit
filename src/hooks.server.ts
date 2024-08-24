@@ -55,6 +55,15 @@ export const handle: Handle = async ({ event, resolve }) => {
 		if (user?.role !== 'ADMIN') redirect(302, '/auth/sign-in');
 	}
 
+	if (event.route.id?.startsWith('/(protected)/creator')) {
+		const usertype = getUserType(user);
+		if (usertype === 'follower') redirect(302, '/follower');
+	}
+
+	if (event.route.id?.startsWith('/(protected)/follower')) {
+		const usertype = getUserType(user);
+		if (usertype === 'creator') redirect(302, '/creator');
+	}
 	//protect all screens unless signed in.
 	//if (!user) redirect(302, '/auth/sign-in');
 
@@ -62,3 +71,17 @@ export const handle: Handle = async ({ event, resolve }) => {
 	//log(response.status, event);
 	return response;
 };
+
+function getUserType(user) {
+	if (!user) return 'none';
+	if (user.is_creator && user.is_follower) {
+		return 'both';
+	}
+	if (user.is_creator) {
+		return 'creator';
+	}
+	if (user.is_follower) {
+		return 'follower';
+	}
+	return 'none';
+}

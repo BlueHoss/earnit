@@ -26,9 +26,9 @@ export const lucia = new Lucia(adapter, {
 			provider: attributes.provider,
 			providerId: attributes.providerId,
 			email: attributes.email,
-			username: attributes.firstName + ' ' + attributes.lastName,
-			firstName: attributes.firstName,
-			lastName: attributes.lastName,
+			username: attributes.first_name + ' ' + attributes.last_name,
+			first_name: attributes.first_name,
+			last_name: attributes.last_name,
 			role: attributes.role,
 			verified: attributes.verified,
 			receiveEmail: attributes.receiveEmail,
@@ -52,8 +52,8 @@ interface DatabaseUserAttributes {
 	provider: string;
 	providerId: string;
 	email: string;
-	firstName: string;
-	lastName: string;
+	first_name: string;
+	last_name: string;
 	role: string;
 	verified: boolean;
 	receiveEmail: boolean;

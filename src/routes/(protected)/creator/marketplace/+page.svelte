@@ -1,5 +1,7 @@
 <!-- Page Marketplace -->
 <script lang="ts">
+	export let data;
+
 	import Activity from 'lucide-svelte/icons/activity';
 	import CreditCard from 'lucide-svelte/icons/credit-card';
 	import CurrencyIcon from 'lucide-svelte/icons/currency';
@@ -39,7 +41,7 @@
 <PageWrapper>
 	<div class="flex items-center justify-between">
 		<!-- Left Section: Profile Picture and Title -->
-		<PageHeader Title="Marketplace" />
+		<PageHeader {data} Title="Marketplace" />
 
 		<!-- Right Section: Buttons stacked vertically -->
 		<div class="flex flex-col space-y-2">
