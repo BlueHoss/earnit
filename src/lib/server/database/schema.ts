@@ -1,18 +1,15 @@
 import {
 	pgTable,
-	unique,
 	pgEnum,
 	serial,
 	text,
 	boolean,
 	timestamp,
 	index,
-	foreignKey,
 	integer,
 	numeric,
 	primaryKey
 } from 'drizzle-orm/pg-core';
-import { sql } from 'drizzle-orm';
 
 export const aal_level = pgEnum('aal_level', ['aal1', 'aal2', 'aal3']);
 export const code_challenge_method = pgEnum('code_challenge_method', ['s256', 'plain']);
@@ -113,8 +110,9 @@ export const invoice_table = pgTable('invoice', {
 
 export const plan_table = pgTable('plan', {
 	id: serial('id').primaryKey().notNull(),
-	name: text('name'),
-	plan_percent: numeric('plan_percent')
+	name: text('name').notNull(),
+	plan_percent: numeric('plan_percent').notNull(),
+	cost: numeric('plan_cost').notNull()
 });
 
 export const store_table = pgTable('store', {

@@ -11,8 +11,8 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"studio": "drizzle-kit studio --config drizzle.config.ts",
-		"generate": "npx drizzle-kit generate --config drizzle.config.ts",
-		"migrate": "npx drizzle-kit push --config drizzle.config.ts"
+		"db:generate": "npx drizzle-kit generate --config drizzle.config.ts",
+		"db:push": "npx drizzle-kit push --config drizzle.config.ts"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.0.0",

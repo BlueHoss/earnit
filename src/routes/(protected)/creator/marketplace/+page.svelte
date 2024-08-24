@@ -4,10 +4,8 @@
 
 	import Activity from 'lucide-svelte/icons/activity';
 	import CreditCard from 'lucide-svelte/icons/credit-card';
-	import CurrencyIcon from 'lucide-svelte/icons/currency';
 	import Users from 'lucide-svelte/icons/users';
 	import HeartIcon from 'lucide-svelte/icons/heart';
-	import ShareIcon from 'lucide-svelte/icons/share';
 	import FilmIcon from 'lucide-svelte/icons/film';
 	import FollowIcon from 'lucide-svelte/icons/user-round-check';
 	import CommentIcon from 'lucide-svelte/icons/message-square-more';
@@ -58,15 +56,6 @@
 	</div>
 
 	<div class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-		<Card.Root>
-			<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-				<Card.Title class="text-sm font-medium">Available Credits</Card.Title>
-				<CurrencyIcon class="h-4 w-4 text-muted-foreground" />
-			</Card.Header>
-			<Card.Content>
-				<div class="text-2xl font-bold text-primary">+600</div>
-			</Card.Content>
-		</Card.Root>
 		<Card.Root>
 			<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
 				<Card.Title class="text-sm font-medium">Total Merit Offerings</Card.Title>
