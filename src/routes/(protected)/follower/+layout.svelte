@@ -12,7 +12,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
 	import NavigationMenuFollower from '$lib/components/navigation/FollowerNavigationMenu.svelte';
-	import SignoutButton from '../../auth/sign-out/signout-button.svelte';
+	import SignoutButton from '$lib/components/base/SignOutButton.svelte';
 </script>
 
 <ModeWatcher />

@@ -4,58 +4,15 @@ import { setError, superValidate } from 'sveltekit-superforms/server';
 import { Argon2id } from 'oslo/password';
 import { createUser } from '$lib/server/database/user-model';
 import { zod } from 'sveltekit-superforms/adapters';
-import { z } from 'zod';
 import { userSchema } from '$lib/config/zod-schemas';
 import { sendVerificationEmail } from '$lib/config/email-messages';
 import { lucia } from '$lib/server/lucia.js';
-
-const signUpSchema = userSchema
-	.pick({
-		firstName: true,
-		lastName: true,
-		email: true,
-		password: true,
-		confirmPassword: true,
-		terms: true,
-		isCreator: true,
-		isFollower: true
-	})
-	.and(
-		z.object({
-			roleError: z.string().optional()
-		})
-	)
-	.refine((data) => data.password === data.confirmPassword, {
-		message: "Passwords don't match",
-		path: ['confirmPassword']
-	});
-// .refine((data) => data.isCreator && data.isFollower, {
-// 	message: 'You must select at least one role, Creator or Follower',
-// 	path: ['isCreator']
-// });
-// .refine((data) => data.password !== data.confirmPassword, {
-// 	message: "Passwords don't match",
-// 	path: ['confirmPassword'] // This will make the error appear on the confirmPassword field
-// });
-// .superRefine(({ confirmPassword, password }, ctx) => {
-// 	if (confirmPassword !== password) {
-// 		ctx.addIssue({
-// 			code: 'custom',
-// 			message: 'Password and Confirm Password must match'
-// 		});
-// 	}
-// });
-// .refine(({ confirmPassword, password }) => {
-// 	if (confirmPassword !== password) {
-// 		return { ['confirmPassword']: 'Passwords must match' };
-// 	}
-// });
 
 export const load = async (event) => {
 	if (event.locals.user) {
 		redirect(302, '/dashboard');
 	}
-	const form = await superValidate(event, zod(signUpSchema));
+	const form = await superValidate(event, zod(userSchema));
 	return {
 		form
 	};
@@ -63,7 +20,7 @@ export const load = async (event) => {
 
 export const actions = {
 	signup: async (event) => {
-		const form = await superValidate(event, zod(signUpSchema));
+		const form = await superValidate(event, zod(userSchema));
 
 		let newUser = null;
 
@@ -72,6 +29,10 @@ export const actions = {
 			return fail(400, {
 				form
 			});
+		}
+
+		if (form.data.password !== form.data.confirmPassword) {
+			return setError(form, 'confirmPassword', "Passwords don't match");
 		}
 
 		if (form.data.isCreator === false && form.data.isFollower === false) {
@@ -132,7 +93,7 @@ export const actions = {
 		}
 
 		if (newUser.is_creator && newUser.is_follower) {
-			throw redirect(302, '/');
+			throw redirect(302, '/both');
 		}
 
 		if (newUser.is_creator) {

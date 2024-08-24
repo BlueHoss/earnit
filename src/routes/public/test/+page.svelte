@@ -1,33 +1,47 @@
 <script lang="ts">
-	import SuperDebug, { superForm } from 'sveltekit-superforms';
-	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { signInSchema, type SignInSchema } from '$lib/config/zod-schemas';
-
-	export let data;
-
-	const { form, enhance, errors } = superForm(data.form, {
-		validators: zodClient(signInSchema),
-		dataType: 'json'
-	});
-
-	// const { form, errors, enhance } = superForm<SignInSchema>({
-	// 	schema: signInSchema
-	// });
-	//const { form, enhance } = superForm<SignInSchema>(signInSchema);
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
+	import SignupForm from '../../auth/sign-up/SignUpForm.svelte';
 </script>
 
-<form method="POST">
-	<div>
-		<label for="email">Email</label>
-		<input type="text" id="email" name="email" bind:value={$form.email} />
-		{#if $errors.email}<span class="error">{$errors.email}</span>{/if}
+<div class="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
+	<div class="flex items-center justify-center py-12">
+		<div class="mx-auto grid w-[350px] gap-6">
+			<div class="grid gap-2 text-center">
+				<h1 class="text-3xl font-bold">Earn It - Login</h1>
+				<p class="text-muted-foreground text-balance">
+					Enter your email below to login to your account
+				</p>
+			</div>
+			<div class="grid gap-4">
+				<div class="grid gap-2">
+					<Label for="email">Email</Label>
+					<Input id="email" type="email" placeholder="m@example.com" required />
+				</div>
+				<div class="grid gap-2">
+					<div class="flex items-center">
+						<Label for="password">Password</Label>
+						<a href="##" class="ml-auto inline-block text-sm underline"> Forgot your password? </a>
+					</div>
+					<Input id="password" type="password" required />
+				</div>
+				<Button type="submit" class="w-full">Login</Button>
+				<Button variant="outline" class="w-full">Login with Google</Button>
+			</div>
+			<div class="mt-4 text-center text-sm">
+				Don&apos;t have an account?
+				<a href="##" class="underline"> Sign up </a>
+			</div>
+		</div>
 	</div>
-
-	<div>
-		<label for="password">Password</label>
-		<input type="text" id="password" name="password" bind:value={$form.name} />
-		{#if $errors.name}<span class="error">{$errors.name}</span>{/if}
+	<div class="bg-muted hidden lg:block">
+		<img
+			src="/img/login-page.webp"
+			alt="placeholder"
+			width="1920"
+			height="1080"
+			class="h-full w-full"
+		/>
 	</div>
-
-	<button type="submit">Sign In</button>
-</form>
+</div>

@@ -35,7 +35,8 @@ export const userSchema = z.object({
 	token: z.string().optional(),
 	receiveEmail: z.boolean().default(true),
 	createdAt: z.date().optional(),
-	updatedAt: z.date().optional()
+	updatedAt: z.date().optional(),
+	roleError: z.string().optional() //Used for custom error messages
 });
 
 export type UserSchema = typeof userSchema;
