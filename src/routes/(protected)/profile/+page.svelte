@@ -8,7 +8,7 @@
 	import { Loader2 } from 'lucide-svelte';
 	import { AlertCircle } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
-	export let data: any;
+	//export let data: any;
 
 	const profileSchema = userSchema.pick({
 		firstName: true,
@@ -18,12 +18,12 @@
 
 	type ProfileSchema = typeof profileSchema;
 
-	export let form: SuperValidated<ProfileSchema>;
-	form = data.form;
+	// export let form: SuperValidated<ProfileSchema>;
+	// form = data.form;
 </script>
 
 <div class="flex items-center justify-center mx-auto max-w-2xl">
-	<Form.Root let:submitting let:errors method="POST" {form} schema={profileSchema} let:config>
+	<!-- <Form.Root let:submitting let:errors method="POST" {form} schema={profileSchema} let:config>
 		<Card.Root>
 			<Card.Header class="space-y-1">
 				<Card.Title class="text-2xl">Profile</Card.Title>
@@ -78,5 +78,5 @@
 				</div>
 			</Card.Footer>
 		</Card.Root>
-	</Form.Root>
+	</Form.Root> -->
 </div>

@@ -9,11 +9,11 @@
 
 	type UserUpdatePasswordSchema = typeof userUpdatePasswordSchema;
 
-	export let form: SuperValidated<UserUpdatePasswordSchema>;
+	//export let form: SuperValidated<UserUpdatePasswordSchema>;
 </script>
 
 <div class="flex items-center justify-center mx-auto max-w-2xl">
-	<Form.Root
+	<!-- <Form.Root
 		let:submitting
 		let:errors
 		method="POST"
@@ -64,5 +64,5 @@
 				</div>
 			</Card.Footer>
 		</Card.Root>
-	</Form.Root>
+	</Form.Root> -->
 </div>

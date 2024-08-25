@@ -14,11 +14,11 @@
 
 	type ResetPasswordSchema = typeof resetPasswordSchema;
 
-	export let form: SuperValidated<ResetPasswordSchema>;
+	//export let form: SuperValidated<ResetPasswordSchema>;
 </script>
 
 <div class="flex items-center justify-center mx-auto max-w-2xl">
-	<Form.Root let:submitting let:errors method="POST" {form} schema={resetPasswordSchema} let:config>
+	<!-- <Form.Root let:submitting let:errors method="POST" {form} schema={resetPasswordSchema} let:config>
 		<Card.Root>
 			<Card.Header class="space-y-1">
 				<Card.Title class="text-2xl">Reset Your Password</Card.Title>
@@ -54,5 +54,5 @@
 				</div>
 			</Card.Footer>
 		</Card.Root>
-	</Form.Root>
+	</Form.Root> -->
 </div>
