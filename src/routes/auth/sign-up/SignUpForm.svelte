@@ -10,7 +10,6 @@
 	import { type Infer, type SuperValidated, superForm } from 'sveltekit-superforms';
 	import { Loader2 } from 'lucide-svelte';
 	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
-	import PageTitle from '../components/PageTitle.svelte';
 
 	const form = superForm(data, {
 		validators: zodClient(userSchema),

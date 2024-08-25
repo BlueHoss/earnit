@@ -1,17 +1,50 @@
-<script>
+<script lang="ts">
+	export let profilePicUrl: string | '' = '';
 	import Label from '$lib/components/ui/label/label.svelte';
+	import { onMount } from 'svelte';
 
 	let imagePreview = '';
+	let fileInput: HTMLInputElement;
 
-	function handleImageUpload(event) {
-		const file = event.target.files[0];
-		if (file) {
-			const reader = new FileReader();
-			reader.onload = (e) => {
-				imagePreview = e.target.result;
-			};
-			reader.readAsDataURL(file);
+	onMount(() => {
+		imagePreview = profilePicUrl;
+	});
+
+	async function handleFileChange(event: Event) {
+		try {
+			const target = event.target as HTMLInputElement;
+			const file = target.files?.[0];
+			if (file) {
+				const fileUrl = await uploadProfilePic(file);
+
+				if (!fileUrl) {
+					throw new Error('Failed to upload image');
+				}
+				profilePicUrl = fileUrl;
+
+				// Create image preview
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					imagePreview = e.target?.result as string;
+				};
+				reader.readAsDataURL(file);
+			}
+		} catch (error) {
+			console.error('Error in handleFileChange:', error);
 		}
+	}
+
+	async function uploadProfilePic(file: File) {
+		const formData = new FormData();
+		formData.append('file', file);
+
+		const response = await fetch('/api/profile-image', {
+			method: 'POST',
+			body: formData
+		});
+
+		const result = await response.json();
+		return result.url;
 	}
 </script>
 
@@ -47,10 +80,17 @@
 						></path>
 					</svg>
 					<p class="mb-2 text-sm text-gray-500">Click to upload</p>
-					<p class="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
+					<p class="text-xs text-gray-400">PNG, JPG, GIF up to 1MB</p>
 				</div>
 			{/if}
-			<input id="file-upload" type="file" class="hidden" on:change={handleImageUpload} />
+			<input
+				id="file-upload"
+				type="file"
+				class="hidden"
+				bind:this={fileInput}
+				on:change={handleFileChange}
+				accept="image/*"
+			/>
 		</label>
 	</div>
 </div>

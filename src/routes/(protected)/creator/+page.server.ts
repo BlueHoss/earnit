@@ -8,7 +8,7 @@ import {
 	getProductsPurchasedCount,
 	getProductsPurchasedAmount,
 	getProductsPurchasedList
-} from '$lib/server/services/follower-dashboard-service';
+} from '$lib/server/services/creator-dashboard-service';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const subscriberCount = await getPaidSubscribers(locals.user.id);

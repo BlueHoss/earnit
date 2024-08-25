@@ -26,7 +26,7 @@ export const lucia = new Lucia(adapter, {
 			provider: attributes.provider,
 			providerId: attributes.providerId,
 			email: attributes.email,
-			handle: attributes.first_name + ' ' + attributes.last_name,
+			handle: attributes.handle,
 			first_name: attributes.first_name,
 			last_name: attributes.last_name,
 			role: attributes.role,
@@ -37,7 +37,9 @@ export const lucia = new Lucia(adapter, {
 			is_follower: attributes.is_follower,
 			follower_count: attributes.follower_count,
 			profile_pic: attributes.profile_pic,
-			initials: makeInitials(attributes.first_name, attributes.last_name)
+			initials: makeInitials(attributes.first_name, attributes.last_name),
+			title: attributes.title,
+			tag_line: attributes.tag_line
 		};
 	}
 });
@@ -67,6 +69,8 @@ interface DatabaseUserAttributes {
 	follower_count: number;
 	profile_pic: string;
 	initials: string;
+	title: string;
+	tag_line: string;
 }
 
 function makeInitials(firstName: string, lastName: string) {

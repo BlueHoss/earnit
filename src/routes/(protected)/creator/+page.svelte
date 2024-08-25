@@ -10,6 +10,7 @@
 	import PaidSubscribers from './components/PaidSubscribers.svelte';
 	import EarnItFollowers from './components/EarnItFollowers.svelte';
 	import Currency from '$lib/components/base/Currency.svelte';
+	import Handle from '$lib/components/base/Handle.svelte';
 
 	export let data: PageData;
 	$: ({ creatorDashboard } = data);
@@ -54,7 +55,7 @@
 								<Table.Cell>
 									<div class="font-medium">{redemption.follower}</div>
 									<div class="hidden text-sm text-muted-foreground md:inline">
-										{redemption.handle}
+										<Handle handle={redemption.handle} />
 									</div>
 								</Table.Cell>
 								<Table.Cell>{redemption.name}</Table.Cell>

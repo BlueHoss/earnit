@@ -7,10 +7,11 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { userSchema } from '$lib/config/zod-schemas';
 import { sendVerificationEmail } from '$lib/config/email-messages';
 import { lucia } from '$lib/server/lucia.js';
+import { removeAllSpaces } from '$lib/utils/text-util.js';
 
 export const load = async (event) => {
 	if (event.locals.user) {
-		redirect(302, '/dashboard');
+		redirect(302, '/auth/sign-in');
 	}
 	const form = await superValidate(event, zod(userSchema));
 	return {
@@ -50,7 +51,7 @@ export const actions = {
 				first_name: form.data.firstName,
 				last_name: form.data.lastName,
 				hashed_password: password,
-				handle: form.data.firstName + '_' + form.data.lastName,
+				handle: removeAllSpaces(form.data.firstName + '_' + form.data.lastName),
 				role: 'USER',
 				verified: false,
 				receive_email: true,
@@ -62,7 +63,6 @@ export const actions = {
 			};
 			newUser = await createUser(user);
 			if (newUser) {
-				console.log('newUser	', newUser);
 				await sendVerificationEmail(newUser.email, token);
 				const session = await lucia.createSession(newUser.id.toString(), { token: token });
 				const sessionCookie = lucia.createSessionCookie(session.id);

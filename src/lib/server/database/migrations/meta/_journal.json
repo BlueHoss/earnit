@@ -64,6 +64,27 @@
       "when": 1724526584454,
       "tag": "0008_medical_puff_adder",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1724529564404,
+      "tag": "0009_curious_tombstone",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1724529929066,
+      "tag": "0010_worthless_grandmaster",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1724531913325,
+      "tag": "0011_rare_sue_storm",
+      "breakpoints": true
     }
   ]
 }

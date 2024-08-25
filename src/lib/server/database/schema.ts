@@ -44,13 +44,13 @@ export const login_table = pgTable('login', {
 	handle: text('handle').notNull(),
 	email: text('email').notNull().unique(),
 	first_name: text('first_name').notNull(),
-	last_name: text('last_name'),
+	last_name: text('last_name').notNull(),
 	token: text('token').unique(),
 	verified: boolean('verified').notNull().default(false),
 	receive_email: boolean('receive_email').notNull().default(true),
 	hashed_password: text('hashed_password').notNull(),
-	created_at: timestamp('created_at').defaultNow().notNull(),
-	updated_at: timestamp('updated_at').defaultNow().notNull(),
+	date_created: timestamp('date_created').defaultNow().notNull(),
+	date_updated: timestamp('date_updated').defaultNow().notNull(),
 	provider_id: text('provider_id'),
 	provider: text('provider'),
 	profile_pic: text('profile_pic'),
@@ -58,7 +58,10 @@ export const login_table = pgTable('login', {
 	role: text('role').notNull().default('USER'),
 	is_follower: boolean('is_follower').notNull().default(false),
 	is_creator: boolean('is_creator').notNull().default(false),
-	follower_count: integer('follower_count').notNull().default(0)
+	follower_count: integer('follower_count').notNull().default(0),
+	title: text('title'),
+	tag_line: text('tag_line'),
+	bio: text('bio')
 });
 
 export const auth_session_table = pgTable('auth_session', {

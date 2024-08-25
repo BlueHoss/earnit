@@ -1,0 +1,15 @@
+import type { RequestEvent } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
+import { ImageService } from '$lib/server/services/image.service';
+
+export async function POST({ request }: RequestEvent) {
+	const formData = await request.formData();
+	const file = formData.get('file') as File;
+
+	try {
+		const url = await ImageService.uploadProfileImage(file);
+		return json({ url });
+	} catch (error) {
+		return json({ error }, { status: 400 });
+	}
+}

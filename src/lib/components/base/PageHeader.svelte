@@ -6,6 +6,7 @@
 	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
 	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
 	import Number from './Number.svelte';
+	import Handle from './Handle.svelte';
 </script>
 
 <div class="flex items-center justify-between space-x-4">
@@ -16,6 +17,9 @@
 		</Avatar>
 		<div>
 			<h1 class="text-2xl font-semibold">{data.user?.first_name}'s {Title}</h1>
+			<p>
+				<Handle handle={data.user?.handle} />
+			</p>
 			<p class="text-sm text-gray-400">
 				<Number amount={data.user?.follower_count} /> social media followers
 			</p>
