@@ -1,5 +1,10 @@
 import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import dotenv from 'dotenv';
+
+// Load environment-specific .env file
+const env = process.env.NODE_ENV || 'staging';
+dotenv.config({ path: `.env.${env}` });
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {

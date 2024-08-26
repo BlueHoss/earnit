@@ -4,13 +4,12 @@ import { AXIOM_TOKEN, AXIOM_ORG_ID, AXIOM_DATASET } from '$env/static/private';
 import getAllUrlParams from '$lib/_helpers/getAllUrlParams';
 import parseTrack from '$lib/_helpers/parseTrack';
 import parseMessage from '$lib/_helpers/parseMessage';
-import { DOMAIN } from '$lib/config/constants';
+import { PUBLIC_PROD_DOMAIN } from '$env/static/public';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 export default async function log(statusCode: number, event) {
 	try {
-
 		let level = 'info';
 		if (statusCode >= 400) {
 			level = 'error';
@@ -35,7 +34,7 @@ export default async function log(statusCode: number, event) {
 		if (referer) {
 			const refererUrl = await new URL(referer);
 			const refererHostname = refererUrl.hostname;
-			if (refererHostname === 'localhost' || refererHostname === DOMAIN) {
+			if (refererHostname === 'localhost' || refererHostname === PUBLIC_PROD_DOMAIN) {
 				referer = refererUrl.pathname;
 			}
 		} else {

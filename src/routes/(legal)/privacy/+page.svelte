@@ -1,24 +1,24 @@
 <script lang="ts">
 	import {
-		TERMS_PRIVACY_COMPANY,
-		TERMS_PRIVACY_EFFECTIVE_DATE,
-		TERMS_PRIVACY_WEBSITE,
-		TERMS_PRIVACY_CONTACT_EMAIL
-	} from '$lib/config/constants';
+		PUBLIC_TERMS_PRIVACY_COMPANY,
+		PUBLIC_TERMS_PRIVACY_WEBSITE,
+		PUBLIC_TERMS_PRIVACY_EFFECTIVE_DATE,
+		PUBLIC_TERMS_PRIVACY_CONTACT_EMAIL
+	} from '$env/static/public';
 </script>
 
 <section class="container grid items-center gap-6">
 	<div class="flex max-w-[980px] flex-col items-start gap-2">
 		<h1 class="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
-			Privacy Policy for {TERMS_PRIVACY_WEBSITE}
+			Privacy Policy for {PUBLIC_TERMS_PRIVACY_WEBSITE}
 		</h1>
 
 		<h4 class="mt-3 text-xl font-extrabold leading-tight tracking-tighter md:text-2xl">
-			Effective Date: {TERMS_PRIVACY_EFFECTIVE_DATE}
+			Effective Date: {PUBLIC_TERMS_PRIVACY_EFFECTIVE_DATE}
 		</h4>
 
 		<p class="max-w-[700px] text-lg text-muted-foreground">
-			This privacy policy (the “Policy”) sets out the privacy policies and practices for {TERMS_PRIVACY_COMPANY}
+			This privacy policy (the “Policy”) sets out the privacy policies and practices for {PUBLIC_TERMS_PRIVACY_COMPANY}
 			and its subsidiaries and affiliates (collectively, “we”, “us”, “our”) with respect to how we collect
 			personal information. It also describes how we maintain, use, and disclose personal information.
 		</p>
@@ -61,9 +61,9 @@
 		</h4>
 
 		<p class="max-w-[700px] text-lg text-muted-foreground">
-			{TERMS_PRIVACY_COMPANY} does not sell or rent your personally identifiable information to anyone.
-			We only disclose personally identifiable information about our users when we believe, in good faith,
-			that either the law requires it, to protect the rights or property of {TERMS_PRIVACY_COMPANY},
+			{PUBLIC_TERMS_PRIVACY_COMPANY} does not sell or rent your personally identifiable information to
+			anyone. We only disclose personally identifiable information about our users when we believe, in
+			good faith, that either the law requires it, to protect the rights or property of {PUBLIC_TERMS_PRIVACY_COMPANY},
 			or we must to provide you with the services or products you requested.
 		</p>
 		<h4 class="mt-3 text-xl font-extrabold leading-tight tracking-tighter md:text-2xl">Cookies</h4>
@@ -83,7 +83,7 @@
 		</h4>
 
 		<p class="max-w-[700px] text-lg text-muted-foreground">
-			You may request deletion of your email address by sending an e-mail to {TERMS_PRIVACY_CONTACT_EMAIL}.
+			You may request deletion of your email address by sending an e-mail to {PUBLIC_TERMS_PRIVACY_CONTACT_EMAIL}.
 			However, please note that your identification, billing and contact information will remain on
 			our records for some period.
 		</p>
@@ -99,7 +99,7 @@
 			How to Contact Us
 		</h4>
 		<p class="max-w-[700px] text-lg text-muted-foreground">
-			If you have any questions about this privacy policy, please contact us at {TERMS_PRIVACY_CONTACT_EMAIL}.
+			If you have any questions about this privacy policy, please contact us at {PUBLIC_TERMS_PRIVACY_CONTACT_EMAIL}.
 		</p>
 	</div>
 </section>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SignOutButton from '$lib/components/base/SignOutButton.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { APP_NAME } from '$lib/config/constants';
+	import { PUBLIC_APP_NAME } from '$env/static/public';
 	export let data;
 </script>
 
@@ -9,8 +9,8 @@
 	Confirm Your Email Address
 </h1>
 <p class="max-w-[900px] text-lg text-muted-foreground">
-	Please check your email account for a message to confirm your email address for {APP_NAME}. If you
-	did not receive the email click the button below to resent it.
+	Please check your email account for a message to confirm your email address for {PUBLIC_APP_NAME}.
+	If you did not receive the email click the button below to resent it.
 </p>
 
 <div class="pt-5 flex items-center gap-2">

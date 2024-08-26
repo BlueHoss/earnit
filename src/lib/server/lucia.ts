@@ -6,8 +6,7 @@ import db from '$lib/server/database/drizzle';
 import { dev } from '$app/environment';
 import { Google } from 'arctic';
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
-
-import { BASE_URL } from '$lib/config/constants';
+import { PUBLIC_BASE_URL } from '$env/static/public';
 
 const adapter = new DrizzlePostgreSQLAdapter(db, auth_session_table, login_table);
 
@@ -81,6 +80,6 @@ function makeInitials(firstName: string, lastName: string) {
 
 const googleRedirectUrl = dev
 	? 'http://localhost:5173/auth/oauth/google/callback'
-	: `${BASE_URL}/auth/oauth/google/callback`;
+	: `${PUBLIC_BASE_URL}/auth/oauth/google/callback`;
 
 export const googleOauth = new Google(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, googleRedirectUrl);

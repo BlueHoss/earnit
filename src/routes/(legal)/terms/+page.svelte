@@ -1,30 +1,30 @@
 <script lang="ts">
 	import {
-		TERMS_PRIVACY_COMPANY,
-		TERMS_PRIVACY_EFFECTIVE_DATE,
-		TERMS_PRIVACY_CONTACT_EMAIL,
-		TERMS_PRIVACY_APP_NAME,
-		TERMS_PRIVACY_APP_PRICING_AND_SUBSCRIPTIONS,
-		TERMS_PRIVACY_COUNTRY
-	} from '$lib/config/constants';
+		PUBLIC_TERMS_PRIVACY_COMPANY,
+		PUBLIC_TERMS_PRIVACY_EFFECTIVE_DATE,
+		PUBLIC_TERMS_PRIVACY_CONTACT_EMAIL,
+		PUBLIC_TERMS_PRIVACY_APP_NAME,
+		PUBLIC_TERMS_PRIVACY_APP_PRICING_AND_SUBSCRIPTIONS,
+		PUBLIC_TERMS_PRIVACY_COUNTRY
+	} from '$env/static/public';
 </script>
 
 <section class="container grid items-center gap-6">
 	<div class="flex max-w-[980px] flex-col items-start gap-2">
 		<h1 class="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
-			Terms and Conditions for {TERMS_PRIVACY_APP_NAME}
+			Terms and Conditions for {PUBLIC_TERMS_PRIVACY_APP_NAME}
 		</h1>
 
 		<h4 class="mt-3 text-xl font-extrabold leading-tight tracking-tighter md:text-2xl">
-			Effective Date: {TERMS_PRIVACY_EFFECTIVE_DATE}
+			Effective Date: {PUBLIC_TERMS_PRIVACY_EFFECTIVE_DATE}
 		</h4>
 
 		<h4 class="mt-3 text-xl font-extrabold leading-tight tracking-tighter md:text-2xl">
 			Acceptance of Terms
 		</h4>
 		<p class="max-w-[700px] text-lg text-muted-foreground">
-			By accessing and using {TERMS_PRIVACY_APP_NAME} ("Service"), you accept and agree to be bound by
-			the terms and provision of this agreement.
+			By accessing and using {PUBLIC_TERMS_PRIVACY_APP_NAME} ("Service"), you accept and agree to be
+			bound by the terms and provision of this agreement.
 		</p>
 		<h4 class="mt-3 text-xl font-extrabold leading-tight tracking-tighter md:text-2xl">
 			Changes to Terms
@@ -54,15 +54,15 @@
 			Payment and Fees
 		</h4>
 		<p class="max-w-[700px] text-lg text-muted-foreground">
-			{TERMS_PRIVACY_APP_PRICING_AND_SUBSCRIPTIONS}
+			{PUBLIC_TERMS_PRIVACY_APP_PRICING_AND_SUBSCRIPTIONS}
 		</p>
 		<h4 class="mt-3 text-xl font-extrabold leading-tight tracking-tighter md:text-2xl">
 			Intellectual Property
 		</h4>
 		<p class="max-w-[700px] text-lg text-muted-foreground">
 			The Service and its original content, features and functionality are and will remain the
-			exclusive property of {TERMS_PRIVACY_COMPANY}. The Service is protected by copyright,
-			trademark, and other laws of both the {TERMS_PRIVACY_COUNTRY} and foreign countries.
+			exclusive property of {PUBLIC_TERMS_PRIVACY_COMPANY}. The Service is protected by copyright,
+			trademark, and other laws of both the {PUBLIC_TERMS_PRIVACY_COMPANY} and foreign countries.
 		</p>
 		<h4 class="mt-3 text-xl font-extrabold leading-tight tracking-tighter md:text-2xl">
 			Termination
@@ -76,24 +76,24 @@
 			Limitation Of Liability
 		</h4>
 		<p class="max-w-[700px] text-lg text-muted-foreground">
-			In no event shall {TERMS_PRIVACY_COMPANY}, nor its directors, employees, partners, agents,
-			suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or
-			punitive damages, including without limitation, loss of profits, data, use, goodwill, or other
-			intangible losses, resulting from your access to or use of or inability to access or use the
-			Service.
+			In no event shall {PUBLIC_TERMS_PRIVACY_COMPANY}, nor its directors, employees, partners,
+			agents, suppliers, or affiliates, be liable for any indirect, incidental, special,
+			consequential or punitive damages, including without limitation, loss of profits, data, use,
+			goodwill, or other intangible losses, resulting from your access to or use of or inability to
+			access or use the Service.
 		</p>
 		<h4 class="mt-3 text-xl font-extrabold leading-tight tracking-tighter md:text-2xl">
 			Governing Law
 		</h4>
 		<p class="max-w-[700px] text-lg text-muted-foreground">
-			These Terms shall be governed and construed in accordance with the laws of {TERMS_PRIVACY_COUNTRY},
+			These Terms shall be governed and construed in accordance with the laws of {PUBLIC_TERMS_PRIVACY_COUNTRY},
 			without regard to its conflict of law provisions.
 		</p>
 		<h4 class="mt-3 text-xl font-extrabold leading-tight tracking-tighter md:text-2xl">
 			Contact Us
 		</h4>
 		<p class="max-w-[700px] text-lg text-muted-foreground">
-			If you have any questions about these Terms, please contact us at {TERMS_PRIVACY_CONTACT_EMAIL}.
+			If you have any questions about these Terms, please contact us at {PUBLIC_TERMS_PRIVACY_CONTACT_EMAIL}.
 		</p>
 	</div>
 </section>
