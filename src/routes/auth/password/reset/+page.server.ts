@@ -1,13 +1,12 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { setError, superValidate } from 'sveltekit-superforms/server';
-import { userSchema } from '$lib/config/zod-schemas';
 import { sendPasswordResetEmail } from '$lib/config/email-messages';
 import { getUserByEmail, updateUser } from '$lib/server/database/user-model.js';
-
-const resetPasswordSchema = userSchema.pick({ email: true });
+import { passworUpdateRequestSchema } from '$lib/schema/login.schema.js';
+import { zod } from 'sveltekit-superforms/adapters';
 
 export const load = async (event) => {
-	const form = await superValidate(event, resetPasswordSchema);
+	const form = await superValidate(event, zod(passworUpdateRequestSchema));
 	return {
 		form
 	};
@@ -15,7 +14,7 @@ export const load = async (event) => {
 
 export const actions = {
 	default: async (event) => {
-		const form = await superValidate(event, resetPasswordSchema);
+		const form = await superValidate(event, zod(passworUpdateRequestSchema));
 
 		if (!form.valid) {
 			return fail(400, {
@@ -26,7 +25,11 @@ export const actions = {
 		try {
 			const user = await getUserByEmail(form.data.email);
 			if (!user) {
-				return setError(form, 'The email address does not have an account.');
+				return setError(
+					form,
+					'email',
+					'Error resetting password. Please contact support if you need further help.'
+				);
 			}
 			console.log('reset user password');
 			const token = crypto.randomUUID();
@@ -36,6 +39,7 @@ export const actions = {
 			console.error(e);
 			return setError(
 				form,
+				'email',
 				'The was a problem resetting your password. Please contact support if you need further help.'
 			);
 		}

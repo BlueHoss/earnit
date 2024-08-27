@@ -11,6 +11,7 @@ import db from '$lib/server/database/drizzle';
 import { login_table } from '$lib/server/database/schema';
 import { TextUtilities } from '$lib/utils/text-utilities';
 import { ImageService } from './image.service.server';
+import type { ProfileEditUser } from '$lib/schema/login.schema';
 
 /**
  * Get the user bio
@@ -34,7 +35,7 @@ async function getUserBio(userid: number) {
  * @param {number} userid
  * @returns {Promise<any>}
  */
-async function getUserProfile(userid: number) {
+async function getUserProfile(userid: number): Promise<ProfileEditUser> {
 	const bio = await db
 		.select({
 			id: login_table.id,
@@ -61,7 +62,7 @@ async function getUserProfile(userid: number) {
  * @param {any} data
  * @returns {Promise<any>}
  */
-async function setUserProfile(userid: number, data) {
+async function setUserProfile(userid: number, data: ProfileEditUser) {
 	//get the user profile and see if the profile pic is different, if so delete the old profile pic from storage
 	removeOldProfilePic(userid, data.profile_pic);
 
@@ -90,7 +91,7 @@ async function setUserProfile(userid: number, data) {
  * @param {string} newProfilePic
  * @returns {Promise<void>}
  */
-async function removeOldProfilePic(userid: number, newProfilePic: string) {
+async function removeOldProfilePic(userid: number, newProfilePic: string | null) {
 	if (!newProfilePic) {
 		return;
 	}

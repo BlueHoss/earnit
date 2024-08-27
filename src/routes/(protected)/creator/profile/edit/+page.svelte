@@ -12,17 +12,17 @@
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import Profile from 'lucide-svelte/icons/user';
 	import ProfileImageUpload from './components/ProfileImageUpload.svelte';
-	import { userProfile, type UserProfile } from '$lib/config/zod-schemas';
 	import SuperDebug, { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
 	import AvatarImage from '$lib/components/ui/avatar/avatar-image.svelte';
 	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
+	import { profileEditSchema } from '$lib/schema/login.schema.js';
 
-	export let data: SuperValidated<Infer<UserProfile>>;
+	export let data; //: SuperValidated<Infer<UserProfile>>;
 
 	const form = superForm(data.form, {
-		validators: zodClient(userProfile),
+		validators: zodClient(profileEditSchema),
 		dataType: 'json',
 		invalidateAll: false,
 		resetForm: false
@@ -135,13 +135,10 @@
 				<Form.Field name="bio" {form} class="flex-1">
 					<Form.Control let:attrs>
 						<Form.Label>Your bio</Form.Label>
-						<Input {...attrs} bind:value={$formData.bio} />
+						<Textarea placeholder="Your bio here..." {...attrs} bind:value={$formData.bio} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
-				<div class="flex flex-col gap-4">
-					<Textarea />
-				</div>
 			</Card.Content>
 		</Card.Root>
 		<Card.Root>

@@ -14,11 +14,12 @@
 </p>
 
 <div class="pt-5 flex items-center gap-2">
-	<a href="/auth/verify/resend-email-{encodeURIComponent(data.user.email)}" class="underline"
-		><Button>Resend Email</Button></a
+	<Button
+		data-sveltekit-preload-data="off"
+		href="/auth/verify/resend-email-{encodeURIComponent(data.user.email)}">Resend Email</Button
 	>
 
 	or
 
-	<SignOutButton />
+	<SignOutButton buttonText="Sign In" />
 </div>

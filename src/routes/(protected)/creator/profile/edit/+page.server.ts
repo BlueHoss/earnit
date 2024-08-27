@@ -3,11 +3,11 @@ import { CreatorProfileService } from '$lib/server/services/creator.profile.serv
 import { fail, redirect, type Actions } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
-import { userProfile } from '$lib/config/zod-schemas';
+import { profileEditSchema } from '$lib/schema/login.schema';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const dbProfile = await CreatorProfileService.getUserProfile(locals.user.id);
-	const form = await superValidate(dbProfile, zod(userProfile));
+	const form = await superValidate(dbProfile, zod(profileEditSchema));
 
 	return {
 		form
@@ -16,7 +16,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
 	default: async ({ request, locals }) => {
-		const form = await superValidate(request, zod(userProfile));
+		const form = await superValidate(request, zod(profileEditSchema));
 
 		if (!form.valid) {
 			return fail(400, {
@@ -29,7 +29,7 @@ export const actions: Actions = {
 
 			throw redirect(303, '/creator/profile');
 		} catch (error) {
-			if ((error as any).status === 303) {
+			if ((error as Error & { status: number }).status === 303) {
 				throw error; // Re-throw the redirect
 			}
 

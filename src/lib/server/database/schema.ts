@@ -54,7 +54,7 @@ export const login_table = pgTable('login', {
 	provider_id: text('provider_id'),
 	provider: text('provider'),
 	profile_pic: text('profile_pic'),
-	social_media_profile: text('social_media_profile'),
+	social_media_profile: text('social_media_profile').notNull(),
 	role: text('role').notNull().default('USER'),
 	is_follower: boolean('is_follower').notNull().default(false),
 	is_creator: boolean('is_creator').notNull().default(false),

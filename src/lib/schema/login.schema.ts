@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+/**
+ * Base User Schema for the Login table
+ **/
 export const baseUserSchema = z.object({
 	handle: z
 		.string({ required_error: 'Handle is required' })
@@ -27,12 +30,12 @@ export const baseUserSchema = z.object({
 	is_follower: z.boolean().default(false),
 	provider: z.string().optional(),
 	provider_id: z.string().optional(),
-	profile_pic: z.string().optional(),
+	profile_pic: z.string().nullable(),
 	social_media_profile: z.string().optional(),
 	follower_count: z.number().default(0),
-	title: z.string().optional(),
-	tag_line: z.string().optional(),
-	bio: z.string().optional(),
+	title: z.string().nullable(),
+	tag_line: z.string().nullable(),
+	bio: z.string().nullable(),
 	terms: z
 		.literal<boolean>(true, {
 			errorMap: () => ({ message: 'You must accept the terms & privacy policy' })
@@ -45,7 +48,14 @@ export const baseUserSchema = z.object({
 	roleError: z.string().optional() //Used for custom error messages
 });
 
-// Schema for user signup (without handle)
+/**
+ * Type for base user schema (login table)
+ */
+export type BaseUser = z.infer<typeof baseUserSchema>;
+
+/**
+ * Schema for new sign ups
+ */
 export const signupSchema = baseUserSchema
 	.omit({ handle: true, hashed_password: true, token: true })
 	.extend({
@@ -57,13 +67,50 @@ export const signupSchema = baseUserSchema
 		path: ['confirmPassword']
 	});
 
-// Type for the base user schema
-export type BaseUser = z.infer<typeof baseUserSchema>;
-
+/**
+ * Type for sign up object
+ */
 export type SignupUser = z.infer<typeof signupSchema>;
 
-// Schema for user profile edit (including handle)
-export const profileEditSchema = baseUserSchema.omit({ hashed_password: true, terms: true });
+/**
+ * Schema for user profile edit (including handle)
+ */
+export const profileEditSchema = baseUserSchema.omit({
+	hashed_password: true,
+	terms: true,
+	role: true,
+	verified: true,
+	is_creator: true,
+	is_follower: true,
+	token: true,
+	date_created: true,
+	date_updated: true,
+	follower_count: true,
+	roleError: true
+});
 
-// Type for profile edit schema
+/**
+ * Profile Edit Object
+ */
 export type ProfileEditUser = z.infer<typeof profileEditSchema>;
+
+/**
+ * Password Update request Schema
+ */
+export const passworUpdateRequestSchema = baseUserSchema.pick({ email: true });
+export type PasswordUpdateRequest = z.infer<typeof passworUpdateRequestSchema>;
+
+/**
+ * Password Update Schema
+ */
+export const passworUpdateSchema = z
+	.object({
+		password: z.string().min(6, 'Confirm Password is required'),
+		confirmPassword: z.string().min(6, 'Confirm Password is required')
+	})
+	.refine((data) => data.password === data.confirmPassword, {
+		message: "Passwords don't match",
+		path: ['confirmPassword']
+	});
+
+export type PasswordUpdate = z.infer<typeof passworUpdateSchema>;

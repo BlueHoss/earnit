@@ -1,14 +1,9 @@
 <script lang="ts">
-	export let profilePicUrl: string | '' = '';
+	export let profilePicUrl: string | null = '';
 	import Label from '$lib/components/ui/label/label.svelte';
-	import { onMount } from 'svelte';
 
-	let imagePreview = '';
+	let imagePreview = profilePicUrl;
 	let fileInput: HTMLInputElement;
-
-	onMount(() => {
-		imagePreview = profilePicUrl;
-	});
 
 	async function handleFileChange(event: Event) {
 		try {
