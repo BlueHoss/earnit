@@ -90,13 +90,13 @@ export const product_table = pgTable('product', {
 	description: text('description'),
 	store_id: integer('store_id').references(() => store_table.id),
 	cover_image: text('cover_image'),
-	cost: numeric('cost')
+	cost: numeric('cost', { precision: 10, scale: 2 }).notNull().default('0.00')
 });
 
 export const product_invoice_table = pgTable('product_invoice', {
 	id: serial('id').primaryKey().notNull(),
 	product_id: integer('product_id').references(() => product_table.id),
-	cost: numeric('cost'),
+	cost: numeric('cost', { precision: 10, scale: 2 }).notNull().default('0.00'),
 	date_purchased: timestamp('date_purchased', { mode: 'date' }),
 	creator_user_id: integer('creator_user_id').references(() => login_table.id),
 	follower_user_id: integer('follower_user_id').references(() => login_table.id)

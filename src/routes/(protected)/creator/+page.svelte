@@ -11,6 +11,7 @@
 	import EarnItFollowers from './components/EarnItFollowers.svelte';
 	import RewardCurrency from '$lib/components/base/RewardCurrency.svelte';
 	import Handle from '$lib/components/base/Handle.svelte';
+	import CreatorProfileHeader from './components/CreatorProfileHeader.svelte';
 
 	export let data: PageData;
 	$: ({ creatorDashboard } = data);
@@ -26,7 +27,7 @@
 			redeemedThisMonth={creatorDashboard.purchaseCount}
 			purchaseAmount={creatorDashboard.purchaseAmount}
 		/>
-		<EarnItFollowers followers={9} />
+		<EarnItFollowers followers={creatorDashboard.followerCount} />
 		<PaidSubscribers
 			paidSubscribers={creatorDashboard.subscriberCount}
 			totalMonthlyRevenue={creatorDashboard.revenue}
@@ -59,7 +60,7 @@
 										<Handle handle={redemption.handle} />
 									</div>
 								</Table.Cell>
-								<Table.Cell>{redemption.name}</Table.Cell>
+								<Table.Cell>{redemption.product_name}</Table.Cell>
 								<Table.Cell class="text-right">
 									<RewardCurrency amount={redemption.cost} />
 								</Table.Cell>

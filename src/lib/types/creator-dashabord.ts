@@ -1,16 +1,19 @@
+import type { ProductInvoiceResult } from '$lib/schema/product_invoice.schema';
+
 export interface CreatorDashboard {
 	subscriberCount: number;
 	revenue: number;
 	rewardsUsed: number;
 	purchaseCount: number;
 	purchaseAmount: number;
-	productPurchaseList: ProductPurchase[] | [];
+	followerCount: number;
+	productPurchaseList: ProductInvoiceResult[] | [];
 }
 
-export interface ProductPurchase {
-	id: number;
-	name: string;
-	follower: string;
-	handle: string;
-	cost: number;
-}
+// export interface ProductPurchase {
+// 	id: number;
+// 	name: string;
+// 	follower: string;
+// 	handle: string;
+// 	cost: number;
+// }

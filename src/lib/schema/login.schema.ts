@@ -3,7 +3,7 @@ import { z } from 'zod';
 /**
  * Base User Schema for the Login table
  **/
-export const baseUserSchema = z.object({
+export const baseLoginSchema = z.object({
 	handle: z
 		.string({ required_error: 'Handle is required' })
 		.min(1, { message: 'Handle is required' })
@@ -51,12 +51,12 @@ export const baseUserSchema = z.object({
 /**
  * Type for base user schema (login table)
  */
-export type BaseUser = z.infer<typeof baseUserSchema>;
+export type BaseUser = z.infer<typeof baseLoginSchema>;
 
 /**
  * Schema for new sign ups
  */
-export const signupSchema = baseUserSchema
+export const signupSchema = baseLoginSchema
 	.omit({ handle: true, hashed_password: true, token: true })
 	.extend({
 		password: z.string().min(6, 'Confirm Password is required'),
@@ -75,7 +75,7 @@ export type SignupUser = z.infer<typeof signupSchema>;
 /**
  * Schema for user profile edit (including handle)
  */
-export const profileEditSchema = baseUserSchema.omit({
+export const profileEditSchema = baseLoginSchema.omit({
 	hashed_password: true,
 	terms: true,
 	role: true,
@@ -97,7 +97,7 @@ export type ProfileEditUser = z.infer<typeof profileEditSchema>;
 /**
  * Password Update request Schema
  */
-export const passworUpdateRequestSchema = baseUserSchema.pick({ email: true });
+export const passworUpdateRequestSchema = baseLoginSchema.pick({ email: true });
 export type PasswordUpdateRequest = z.infer<typeof passworUpdateRequestSchema>;
 
 /**
@@ -114,3 +114,10 @@ export const passworUpdateSchema = z
 	});
 
 export type PasswordUpdate = z.infer<typeof passworUpdateSchema>;
+
+/**
+ * Fetch Followers/Creators schema
+ *
+ */
+export const loginQueryResultSchema = baseLoginSchema.partial();
+export type LoginQueryResult = z.infer<typeof loginQueryResultSchema>;

@@ -1,6 +1,7 @@
 import { eq, and, sql, sum, between } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import {
+	follower_creator_table,
 	login_table,
 	plan_subscription_table,
 	plan_table,
@@ -9,7 +10,8 @@ import {
 	reward_earned_table,
 	store_table
 } from '$lib/server/database/schema';
-import type { ProductPurchase } from '$lib/types';
+import type { LoginQueryResult } from '$lib/schema/login.schema';
+import type { ProductInvoiceResult } from '$lib/schema/product_invoice.schema';
 //import type { User, UpdateUser } from '$lib/server/database/drizzle-schemas';
 
 /**
@@ -162,11 +164,11 @@ async function getProductsPurchasedList(
 	userid: number,
 	startDate: Date,
 	endDate: Date
-): Promise<ProductPurchase[]> {
+): Promise<ProductInvoiceResult[]> {
 	const list = await db
 		.select({
 			id: product_table.id,
-			name: product_table.name,
+			product_name: product_table.name,
 			follower: sql`${login_table.first_name} || ' ' || ${login_table.last_name}`.as('follower'),
 			handle: login_table.handle,
 			cost: product_invoice_table.cost
@@ -182,16 +184,48 @@ async function getProductsPurchasedList(
 			)
 		);
 
-	// Transform the query result to match ProductPurchase interface
-	const transformedList: ProductPurchase[] = list.map((item) => ({
-		id: item.id,
-		name: item.name ?? '', // Convert null to empty string
-		follower: item.follower as string, // Assert follower as string
-		handle: item.handle,
-		cost: Number(item.cost) || 0 // Convert to number, use 0 if null or NaN
-	}));
+	return list;
+}
 
-	return transformedList;
+async function getCreatorFollowerCount(userid: number): Promise<number> {
+	const followerCount = await db
+		.select({
+			follower_count: sql<number>`count(${follower_creator_table.follower_user_id})`.as(
+				'follower_count'
+			)
+		})
+		.from(follower_creator_table)
+		.innerJoin(login_table, eq(login_table.id, follower_creator_table.creator_user_id))
+		.where(eq(follower_creator_table.creator_user_id, userid));
+
+	if (followerCount.length === 0) {
+		return 0;
+	} else {
+		return Number(followerCount[0].follower_count);
+	}
+}
+
+/**
+ * returns the followers (from login table) of a creator
+ *
+ * @param userid
+ *  @returns LoginQueryResult[]
+ */
+async function getCreatorFollowerList(userid: number): Promise<LoginQueryResult[]> {
+	const followers = await db
+		.select({
+			id: login_table.id,
+			handle: login_table.handle,
+			email: login_table.email,
+			firstName: login_table.first_name,
+			lastName: login_table.last_name,
+			profilePic: login_table.profile_pic
+		})
+		.from(login_table)
+		.innerJoin(follower_creator_table, eq(login_table.id, follower_creator_table.follower_user_id))
+		.where(eq(follower_creator_table.creator_user_id, userid));
+
+	return followers;
 }
 
 export const CreatorDashboardService = {
@@ -200,5 +234,7 @@ export const CreatorDashboardService = {
 	getRewardsUsed,
 	getProductsPurchasedCount,
 	getProductsPurchasedAmount,
-	getProductsPurchasedList
+	getProductsPurchasedList,
+	getCreatorFollowerCount,
+	getCreatorFollowerList
 };

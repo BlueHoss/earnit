@@ -11,18 +11,17 @@
 
 <div class="flex items-center justify-between space-x-4">
 	<div class="flex items-center space-x-4">
-		<Avatar style="height: 5rem; width: 5rem;">
-			<AvatarImage src={data.user?.profile_pic} alt="Suzy's Profile Picture" />
-			<AvatarFallback>{data.user?.initials}</AvatarFallback>
-		</Avatar>
-		<div>
+		<a href="/creator/profile/">
+			<Avatar style="height: 6rem; width: 6rem;">
+				<AvatarImage src={data.user?.profile_pic} alt="Suzy's Profile Picture" />
+				<AvatarFallback>{data.user?.initials}</AvatarFallback>
+			</Avatar>
+		</a>
+		<div class="flex flex-col justify-center">
 			<h1 class="text-2xl font-semibold">{data.user?.first_name}'s {Title}</h1>
-			<p>
-				<Handle handle={data.user?.handle} />
-			</p>
-			<p class="text-sm text-gray-400">
-				<Number amount={data.user?.follower_count} /> social media followers
-			</p>
+			<Handle handle={data.user?.handle} />
+			<p class="text-sm">{data.user?.title}</p>
+			<p><Number amount={data.user?.follower_count} /> social media followers</p>
 		</div>
 	</div>
 </div>
