@@ -1,6 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
-import { ImageService } from '$lib/server/services/image.service';
+import { ImageService } from '$lib/server/services/image.service.server';
 
 export async function POST({ request }: RequestEvent) {
 	const formData = await request.formData();

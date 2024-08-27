@@ -45,7 +45,8 @@ export default async function sendEmail(
 				},
 				(err) => {
 					if (err) {
-						throw new Error(`Error sending email: ${JSON.stringify(err)}`);
+						//throw new Error(`Error sending email: ${JSON.stringify(err)}`);
+						console.error(`Error sending email with subject "${subject}": ${JSON.stringify(err)}`);
 					}
 				}
 			);
@@ -59,7 +60,8 @@ export default async function sendEmail(
 				},
 				(err) => {
 					if (err) {
-						throw new Error(`Error sending email: ${JSON.stringify(err)}`);
+						//throw new Error(`Error sending email: ${JSON.stringify(err)}`);
+						console.error(`Error sending email with subject "${subject}": ${JSON.stringify(err)}`);
 					}
 				}
 			);
@@ -74,7 +76,8 @@ export default async function sendEmail(
 				},
 				(err) => {
 					if (err) {
-						throw new Error(`Error sending email: ${JSON.stringify(err)}`);
+						//throw new Error(`Error sending email: ${JSON.stringify(err)}`);
+						console.error(`Error sending email with subject "${subject}": ${JSON.stringify(err)}`);
 					}
 				}
 			);
@@ -85,6 +88,6 @@ export default async function sendEmail(
 			message: 'E-mail sent successfully.'
 		};
 	} catch (error) {
-		throw new Error(`Error sending email: ${JSON.stringify(error)}`);
+		throw new Error(`Error sending email with subject "${subject}": ${JSON.stringify(error)}`);
 	}
 }

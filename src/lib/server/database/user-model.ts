@@ -1,7 +1,8 @@
 import { eq } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import { login_table } from '$lib/server/database/schema';
-import type { User, UpdateUser } from '$lib/server/database/drizzle-schemas';
+import type { User, UpdateUser } from '$lib/server/database/schema';
+import type { BaseUser } from '$lib/schema/login.schema';
 
 export const getUserByEmail = async (email: string) => {
 	const user = await db.select().from(login_table).where(eq(login_table.email, email));
@@ -32,14 +33,11 @@ export const updateUser = async (id: number, user: UpdateUser) => {
 	}
 };
 
-export const createUser = async (user: User) => {
-	//remove ID so that user keeps int..
-	delete user.id;
-
+export async function createUser(user: BaseUser): Promise<User | null> {
 	const result = await db.insert(login_table).values(user).onConflictDoNothing().returning();
 	if (result.length === 0) {
 		return null;
 	} else {
 		return result[0];
 	}
-};
+}

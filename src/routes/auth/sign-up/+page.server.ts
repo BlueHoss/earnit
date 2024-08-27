@@ -1,19 +1,17 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
 import { setError, superValidate } from 'sveltekit-superforms/server';
-import { Argon2id } from 'oslo/password';
-import { createUser } from '$lib/server/database/user-model';
 import { zod } from 'sveltekit-superforms/adapters';
-import { userSchema } from '$lib/config/zod-schemas';
-import { sendVerificationEmail } from '$lib/config/email-messages';
+import { signupSchema } from '$lib/schema/login.schema';
+import { UserSignUpService } from '$lib/server/services/user.signup.service.server.js';
+//import { sendVerificationEmail } from '$lib/config/email-messages.js';
 import { lucia } from '$lib/server/lucia.js';
-import { removeAllSpaces } from '$lib/utils/text-util.js';
 
 export const load = async (event) => {
 	if (event.locals.user) {
 		redirect(302, '/auth/sign-in');
 	}
-	const form = await superValidate(event, zod(userSchema));
+	const form = await superValidate(event, zod(signupSchema));
 	return {
 		form
 	};
@@ -21,9 +19,7 @@ export const load = async (event) => {
 
 export const actions = {
 	signup: async (event) => {
-		const form = await superValidate(event, zod(userSchema));
-
-		let newUser = null;
+		const form = await superValidate(event, zod(signupSchema));
 
 		if (!form.valid) {
 			console.log('form', form);
@@ -36,35 +32,18 @@ export const actions = {
 			return setError(form, 'confirmPassword', "Passwords don't match");
 		}
 
-		if (form.data.isCreator === false && form.data.isFollower === false) {
+		if (form.data.is_creator === false && form.data.is_follower === false) {
 			return setError(form, 'roleError', 'You must select at least one role, Creator or Follower');
 		}
 
-		try {
-			const password = await new Argon2id().hash(form.data.password);
-			const token = crypto.randomUUID();
-			const id = 0;
+		let newUser = null;
 
-			const user = {
-				id: id,
-				email: form.data.email.toLowerCase(),
-				first_name: form.data.firstName,
-				last_name: form.data.lastName,
-				hashed_password: password,
-				handle: removeAllSpaces(form.data.firstName + '_' + form.data.lastName),
-				role: 'USER',
-				verified: false,
-				receive_email: true,
-				token: token,
-				created_at: new Date(),
-				updated_at: new Date(),
-				is_creator: form.data.isCreator,
-				is_follower: form.data.isFollower
-			};
-			newUser = await createUser(user);
-			if (newUser) {
-				await sendVerificationEmail(newUser.email, token);
-				const session = await lucia.createSession(newUser.id.toString(), { token: token });
+		try {
+			newUser = await UserSignUpService.createNewUser(form.data);
+
+			if (newUser && newUser.id) {
+				//await sendVerificationEmail(newUser.email, newUser.token);
+				const session = await lucia.createSession(newUser.id.toString(), { token: newUser.token });
 				const sessionCookie = lucia.createSessionCookie(session.id);
 				event.cookies.set(sessionCookie.name, sessionCookie.value, {
 					path: '.',
@@ -92,18 +71,20 @@ export const actions = {
 			return setError(form, 'email', 'A user with that email already exists.');
 		}
 
-		if (newUser.is_creator && newUser.is_follower) {
-			throw redirect(302, '/both');
-		}
+		throw redirect(302, '/both');
+		// //TODO: too much redirect. just go to verify email page.
+		// if (newUser.is_creator && newUser.is_follower) {
+		// 	throw redirect(302, '/both');
+		// }
 
-		if (newUser.is_creator) {
-			throw redirect(302, '/creator');
-		}
+		// if (newUser.is_creator) {
+		// 	throw redirect(302, '/creator');
+		// }
 
-		if (newUser.is_follower) {
-			throw redirect(302, '/follower');
-		}
+		// if (newUser.is_follower) {
+		// 	throw redirect(302, '/follower');
+		// }
 
-		return { form };
+		//return { form };
 	}
 };

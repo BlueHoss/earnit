@@ -10,7 +10,7 @@
 
 // Libraries and modules
 import { v4 as uuidv4 } from 'uuid';
-import { supabaseServerClient } from './supabase.service';
+import { supabaseServerClient } from './supabase.service.server';
 
 // Variables
 import { PRIVATE_SUPABASE_PROFILE_IMAGE_BUCKET } from '$env/static/private';
@@ -56,7 +56,7 @@ async function addToBucket(imageBlob: Blob, suffix: string): Promise<string | un
 	}
 }
 
-export async function deleteProfileImage(fileUrl: string) {
+async function deleteProfileImage(fileUrl: string) {
 	const { error } = await supabaseServerClient.storage
 		.from(PRIVATE_SUPABASE_PROFILE_IMAGE_BUCKET)
 		.remove([`${fileUrl}`]);
@@ -89,5 +89,6 @@ function getImageSuffix(mimeType: string): string | undefined {
 }
 
 export const ImageService = {
-	uploadProfileImage
+	uploadProfileImage,
+	deleteProfileImage
 };

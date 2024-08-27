@@ -45,7 +45,7 @@ export const login_table = pgTable('login', {
 	email: text('email').notNull().unique(),
 	first_name: text('first_name').notNull(),
 	last_name: text('last_name').notNull(),
-	token: text('token').unique(),
+	token: text('token').notNull().unique(),
 	verified: boolean('verified').notNull().default(false),
 	receive_email: boolean('receive_email').notNull().default(true),
 	hashed_password: text('hashed_password').notNull(),
@@ -64,9 +64,15 @@ export const login_table = pgTable('login', {
 	bio: text('bio')
 });
 
+export type User = typeof login_table.$inferInsert;
+export type UpdateUser = Partial<typeof login_table.$inferInsert>;
+export type Session = typeof auth_session_table.$inferInsert;
+
 export const auth_session_table = pgTable('auth_session', {
 	id: text('id').primaryKey(), // Auto-incrementing primary key
-	userId: integer('user_id').notNull(), // User ID associated with the session
+	userId: integer('user_id')
+		.notNull()
+		.references(() => login_table.id), // User ID associated with the session
 	expiresAt: timestamp('expires_at').notNull(), // Expiration time of the session
 	token: text('token').notNull() // Session token
 });

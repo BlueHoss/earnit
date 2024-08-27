@@ -9,7 +9,7 @@
 	import ProductsRedeemedThisMonth from './components/ProductsRedeemedThisMonth.svelte';
 	import PaidSubscribers from './components/PaidSubscribers.svelte';
 	import EarnItFollowers from './components/EarnItFollowers.svelte';
-	import Currency from '$lib/components/base/Currency.svelte';
+	import RewardCurrency from '$lib/components/base/RewardCurrency.svelte';
 	import Handle from '$lib/components/base/Handle.svelte';
 
 	export let data: PageData;
@@ -20,16 +20,17 @@
 	<PageHeader {data} Title="Dashboard" />
 	<div class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
 		<!-- <EffortCreditsAvailable effortCredits={600} /> -->
-		<PaidSubscribers
-			paidSubscribers={creatorDashboard.subscriberCount}
-			totalMonthlyRevenue={creatorDashboard.revenue}
-		/>
+
 		<EffortCreditsThisMonth effortCredits={creatorDashboard.rewardsUsed} />
 		<ProductsRedeemedThisMonth
 			redeemedThisMonth={creatorDashboard.purchaseCount}
 			purchaseAmount={creatorDashboard.purchaseAmount}
 		/>
 		<EarnItFollowers followers={9} />
+		<PaidSubscribers
+			paidSubscribers={creatorDashboard.subscriberCount}
+			totalMonthlyRevenue={creatorDashboard.revenue}
+		/>
 	</div>
 	<div>
 		<Card.Root class="xl:col-span-2">
@@ -60,7 +61,7 @@
 								</Table.Cell>
 								<Table.Cell>{redemption.name}</Table.Cell>
 								<Table.Cell class="text-right">
-									<Currency amount={redemption.cost} />
+									<RewardCurrency amount={redemption.cost} />
 								</Table.Cell>
 							</Table.Row>
 						{/each}

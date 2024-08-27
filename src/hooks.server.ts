@@ -3,6 +3,7 @@ import { redirect, type Handle } from '@sveltejs/kit';
 import type { HandleServerError } from '@sveltejs/kit';
 
 import log from '$lib/server/log';
+import type { User } from '$lib/server/database/drizzle-schemas';
 
 export const handleError: HandleServerError = async ({ error, event }) => {
 	const errorId = crypto.randomUUID();
@@ -72,7 +73,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	return response;
 };
 
-function getUserType(user) {
+function getUserType(user: User | null) {
 	if (!user) return 'none';
 	if (user.is_creator && user.is_follower) {
 		return 'both';

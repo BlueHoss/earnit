@@ -12,7 +12,13 @@ import {
 import type { ProductPurchase } from '$lib/types';
 //import type { User, UpdateUser } from '$lib/server/database/drizzle-schemas';
 
-export const getPaidSubscribers = async (userid: number) => {
+/**
+ * Retrieves the number of paid subscribers for a given Creator.
+ *
+ * @param {number} userid - The ID of the user.
+ * @returns {Promise<number>} - The number of paid subscribers.
+ */
+async function getPaidSubscribers(userid: number) {
 	const count = await db
 		.select({
 			count: sql<number>`count(*) as integer`
@@ -31,9 +37,15 @@ export const getPaidSubscribers = async (userid: number) => {
 	} else {
 		return count[0].count;
 	}
-};
+}
 
-export const getMonthlyRevenue = async (userid: number) => {
+/**
+ * Retrieves the expected monthly revenue for a given Creator based on total subscribers.
+ *
+ * @param {number} userid - The ID of the user.
+ * @returns {Promise<number>} - The monthly revenue.
+ */
+async function getMonthlyRevenue(userid: number) {
 	const count = await db
 		.select({
 			total: sum(plan_table.cost)
@@ -52,9 +64,17 @@ export const getMonthlyRevenue = async (userid: number) => {
 	} else {
 		return Number(count[0].total);
 	}
-};
+}
 
-export const getRewardsUsed = async (userid: number, startDate: Date, endDate: Date) => {
+/**
+ * Retrieves the rewards used for a given Creator.
+ *
+ * @param {number} userid - The ID of the user.
+ * @param {Date} startDate - The start date.
+ * @param {Date} endDate - The end date.
+ * @returns {Promise<number>} - The rewards used.
+ */
+async function getRewardsUsed(userid: number, startDate: Date, endDate: Date) {
 	const count = await db
 		.select({
 			total: sum(reward_earned_table.reward_value)
@@ -72,9 +92,17 @@ export const getRewardsUsed = async (userid: number, startDate: Date, endDate: D
 	} else {
 		return Number(count[0].total);
 	}
-};
+}
 
-export const getProductsPurchasedCount = async (userid: number, startDate: Date, endDate: Date) => {
+/**
+ * Retrieves the number of products purchased for a given Creator.
+ *
+ * @param {number} userid - The ID of the user.
+ * @param {Date} startDate - The start date.
+ * @param {Date} endDate - The end date.
+ * @returns {Promise<number>} - The number of products purchased.
+ */
+async function getProductsPurchasedCount(userid: number, startDate: Date, endDate: Date) {
 	const count = await db
 		.select({
 			count: sql<number>`count(*) as integer`
@@ -92,13 +120,17 @@ export const getProductsPurchasedCount = async (userid: number, startDate: Date,
 	} else {
 		return Number(count[0].count);
 	}
-};
+}
 
-export const getProductsPurchasedAmount = async (
-	userid: number,
-	startDate: Date,
-	endDate: Date
-) => {
+/**
+ * Retrieves the amount of products purchased for a given Creator.
+ *
+ * @param {number} userid - The ID of the user.
+ * @param {Date} startDate - The start date.
+ * @param {Date} endDate - The end date.
+ * @returns {Promise<number>} - The amount of products purchased.
+ */
+async function getProductsPurchasedAmount(userid: number, startDate: Date, endDate: Date) {
 	const count = await db
 		.select({
 			total: sum(product_invoice_table.cost)
@@ -116,13 +148,21 @@ export const getProductsPurchasedAmount = async (
 	} else {
 		return Number(count[0].total);
 	}
-};
+}
 
-export const getProductsPurchasedList = async (
+/**
+ * Retrieves the list of products purchased for a given Creator.
+ *
+ * @param {number} userid - The ID of the user.
+ * @param {Date} startDate - The start date.
+ * @param {Date} endDate - The end date.
+ * @returns {Promise<ProductPurchase[]>} - The list of products purchased.
+ */
+async function getProductsPurchasedList(
 	userid: number,
 	startDate: Date,
 	endDate: Date
-): Promise<ProductPurchase[]> => {
+): Promise<ProductPurchase[]> {
 	const list = await db
 		.select({
 			id: product_table.id,
@@ -152,11 +192,13 @@ export const getProductsPurchasedList = async (
 	}));
 
 	return transformedList;
-};
+}
 
-// select product.name,login.first_name as Follower, login.handle, product_invoice.cost from store
-// inner join product on product.store_id = store.id
-// inner join product_invoice on product.id = product_invoice.product_id
-// inner join login on product_invoice.follower_user_id = login.id
-// where store.creator_user_id = 28
-// and product_invoice.date_purchased >= '8/01/24' and product_invoice.date_purchased <= '8/31/2024'
+export const CreatorDashboardService = {
+	getPaidSubscribers,
+	getMonthlyRevenue,
+	getRewardsUsed,
+	getProductsPurchasedCount,
+	getProductsPurchasedAmount,
+	getProductsPurchasedList
+};

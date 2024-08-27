@@ -9,8 +9,8 @@
 import { eq } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import { login_table } from '$lib/server/database/schema';
-import { removeAllSpaces } from '$lib/utils/text-util';
-import { deleteProfileImage } from './image.service';
+import { TextUtilities } from '$lib/utils/text-utilities';
+import { ImageService } from './image.service.server';
 
 /**
  * Get the user bio
@@ -18,7 +18,7 @@ import { deleteProfileImage } from './image.service';
  * @param {number} userid
  * @returns {Promise<any>}
  */
-export const getUserBio = async (userid: number) => {
+async function getUserBio(userid: number) {
 	const bio = await db
 		.select({
 			bio: login_table.bio
@@ -26,7 +26,7 @@ export const getUserBio = async (userid: number) => {
 		.from(login_table)
 		.where(eq(login_table.id, userid));
 	return bio[0];
-};
+}
 
 /**
  * Get the user profile
@@ -34,7 +34,7 @@ export const getUserBio = async (userid: number) => {
  * @param {number} userid
  * @returns {Promise<any>}
  */
-export const getUserProfile = async (userid: number) => {
+async function getUserProfile(userid: number) {
 	const bio = await db
 		.select({
 			id: login_table.id,
@@ -52,7 +52,7 @@ export const getUserProfile = async (userid: number) => {
 		.from(login_table)
 		.where(eq(login_table.id, userid));
 	return bio[0];
-};
+}
 
 /**
  * Set the user profile
@@ -61,9 +61,9 @@ export const getUserProfile = async (userid: number) => {
  * @param {any} data
  * @returns {Promise<any>}
  */
-export const setUserProfile = async (userid: number, data) => {
+async function setUserProfile(userid: number, data) {
 	//get the user profile and see if the profile pic is different, if so delete the old profile pic from storage
-	handleUserProfilePic(userid, data.profile_pic);
+	removeOldProfilePic(userid, data.profile_pic);
 
 	const result = await db
 		.update(login_table)
@@ -74,16 +74,23 @@ export const setUserProfile = async (userid: number, data) => {
 			date_updated: new Date(),
 			title: data.title,
 			tag_line: data.tag_line,
-			handle: removeAllSpaces(data.handle),
+			handle: TextUtilities.removeAllSpaces(data.handle),
 			receive_email: data.receive_email,
 			profile_pic: data.profile_pic
 		})
 		.where(eq(login_table.id, userid));
 
 	return result;
-};
+}
 
-const handleUserProfilePic = async (userid: number, newProfilePic: string) => {
+/**
+ * Delete old user profile pic if new profile pic is different
+ *
+ * @param {number} userid
+ * @param {string} newProfilePic
+ * @returns {Promise<void>}
+ */
+async function removeOldProfilePic(userid: number, newProfilePic: string) {
 	if (!newProfilePic) {
 		return;
 	}
@@ -97,7 +104,13 @@ const handleUserProfilePic = async (userid: number, newProfilePic: string) => {
 	if (userProfile.profile_pic !== newProfilePic) {
 		const profilePicName = userProfile.profile_pic.split('/').pop();
 		if (profilePicName) {
-			deleteProfileImage(profilePicName);
+			ImageService.deleteProfileImage(profilePicName);
 		}
 	}
+}
+
+export const CreatorProfileService = {
+	setUserProfile,
+	getUserBio,
+	getUserProfile
 };

@@ -15,6 +15,9 @@
 	import { userProfile, type UserProfile } from '$lib/config/zod-schemas';
 	import SuperDebug, { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
+	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
+	import AvatarImage from '$lib/components/ui/avatar/avatar-image.svelte';
+	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
 
 	export let data: SuperValidated<Infer<UserProfile>>;
 
@@ -26,6 +29,8 @@
 	});
 	const { form: formData, errors, enhance, delayed } = form;
 
+	console.log(data);
+
 	function goBack() {
 		window.history.back();
 	}
@@ -33,8 +38,11 @@
 
 <PageWrapper>
 	<form method="POST" use:enhance>
-		<Label class="flex items-center text-2xl font-semibold">
-			<Profile class="mr-2 h-32 w-32" />
+		<Label class="flex items-center text-2xl pb-4 font-semibold">
+			<Avatar class="h-24 w-24 mr-5">
+				<AvatarImage src={data.user?.profile_pic} alt="Your Profile Picture" />
+				<AvatarFallback>{data.user?.initials}</AvatarFallback>
+			</Avatar>
 			Edit your Earn It Profile
 		</Label>
 		<p class="text-md text-gray-400">Use this page modify your public Earn It profile.</p>
@@ -152,5 +160,5 @@
 			<Button type="submit">Save</Button>
 		</div>
 	</form>
-	<SuperDebug data={$formData} />
+	<!-- <SuperDebug data={$formData} /> -->
 </PageWrapper>

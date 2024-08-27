@@ -1,8 +1,8 @@
 import type { PageServerLoad } from './$types';
-import { getUserBio } from '$lib/server/services/creatorprofile.service';
+import { CreatorProfileService } from '$lib/server/services/creator.profile.service.server';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const bio = await getUserBio(locals.user.id);
+	const bio = await CreatorProfileService.getUserBio(locals.user.id);
 	return {
 		bio
 	};

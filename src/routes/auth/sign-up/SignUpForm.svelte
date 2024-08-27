@@ -1,18 +1,20 @@
 <script lang="ts">
-	export let data: SuperValidated<Infer<UserSchema>>;
+	//export let data: SuperValidated<Infer<UserSchema>>;
+	export let data: SuperValidated<SignupUser>;
 
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import * as Card from '$lib/components/ui/card';
 	import { Switch } from '$lib/components/ui/switch';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { userSchema, type UserSchema } from '$lib/config/zod-schemas';
+	//import { userSchema, type UserSchema } from '$lib/config/zod-schemas';
+	import { signupSchema, type SignupUser } from '$lib/schema/login.schema';
 	import { type Infer, type SuperValidated, superForm } from 'sveltekit-superforms';
 	import { Loader2 } from 'lucide-svelte';
 	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
 
 	const form = superForm(data, {
-		validators: zodClient(userSchema),
+		validators: zodClient(signupSchema),
 		dataType: 'json',
 		invalidateAll: false,
 		resetForm: false
@@ -38,18 +40,18 @@
 				</div>
 			{/if}
 			<div class="flex flex-wrap gap-2">
-				<Form.Field name="firstName" {form} class="flex-1">
+				<Form.Field name="first_name" {form} class="flex-1">
 					<Form.Control let:attrs>
 						<Form.Label>First Name</Form.Label>
-						<Input {...attrs} bind:value={$formData.firstName} />
+						<Input {...attrs} bind:value={$formData.first_name} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
 
-				<Form.Field {form} name="lastName" class="flex-1">
+				<Form.Field {form} name="last_name" class="flex-1">
 					<Form.Control let:attrs>
 						<Form.Label>Last Name</Form.Label>
-						<Input {...attrs} bind:value={$formData.lastName} />
+						<Input {...attrs} bind:value={$formData.last_name} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
@@ -80,22 +82,22 @@
 			</Form.Field>
 			<h2>Are you a digital Creator or here to Follow a digital creator?</h2>
 			{#if $errors.roleError}<span class="error">{$errors.roleError}</span>{/if}
-			<Form.Field {form} name="isCreator">
+			<Form.Field {form} name="is_creator">
 				<Form.Control let:attrs>
 					<div class="space-y-0.5">
 						<Form.Label>Creator</Form.Label>
-						<Switch includeInput {...attrs} bind:checked={$formData.isCreator} />
+						<Switch includeInput {...attrs} bind:checked={$formData.is_creator} />
 						<Form.Description>
 							I am a creator and want to sell my products on the platform.
 						</Form.Description>
 					</div>
 				</Form.Control>
 			</Form.Field>
-			<Form.Field {form} name="isFollower">
+			<Form.Field {form} name="is_follower">
 				<Form.Control let:attrs>
 					<div class="space-y-0.5">
 						<Form.Label>Follower</Form.Label>
-						<Switch includeInput {...attrs} bind:checked={$formData.isFollower} />
+						<Switch includeInput {...attrs} bind:checked={$formData.is_follower} />
 						<Form.Description>
 							I am a follower and want to follow creators on the platform.
 						</Form.Description>

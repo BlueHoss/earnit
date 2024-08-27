@@ -2,7 +2,7 @@
 	export let redeemedThisMonth;
 	export let purchaseAmount;
 
-	import Currency from '$lib/components/base/Currency.svelte';
+	import RewardCurrency from '$lib/components/base/RewardCurrency.svelte';
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import MarketplaceIcon from 'lucide-svelte/icons/store';
 </script>
@@ -15,7 +15,7 @@
 	<Card.Content>
 		<div class="text-2xl font-bold text-primary">{redeemedThisMonth}</div>
 		<p class="text-xs text-muted-foreground flex items-center gap-2">
-			<Currency amount={purchaseAmount} /> this month
+			<RewardCurrency amount={purchaseAmount} /> this month
 		</p>
 	</Card.Content>
 </Card.Root>

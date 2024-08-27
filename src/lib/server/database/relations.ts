@@ -1,12 +1,11 @@
 import { relations } from 'drizzle-orm/relations';
 import {
 	auth_session_table,
-	auth_key_table,
 	login_table,
 	reward_ledger_table,
 	store_table,
 	product_table,
-	invoice_table,
+	product_invoice_table,
 	plan_subscription_table,
 	plan_table,
 	product_item_table,
@@ -24,15 +23,7 @@ export const auth_sessionRelations = relations(auth_session_table, ({ one }) => 
 }));
 
 export const auth_userRelations = relations(login_table, ({ many }) => ({
-	auth_sessions: many(auth_session_table),
-	auth_keys: many(auth_key_table)
-}));
-
-export const auth_keyRelations = relations(auth_key_table, ({ one }) => ({
-	auth_user: one(login_table, {
-		fields: [auth_key_table.user_id],
-		references: [login_table.id]
-	})
+	auth_sessions: many(auth_session_table)
 }));
 
 export const reward_ledgerRelations = relations(reward_ledger_table, ({ one }) => ({
@@ -44,7 +35,7 @@ export const reward_ledgerRelations = relations(reward_ledger_table, ({ one }) =
 
 export const loginRelations = relations(login_table, ({ many }) => ({
 	reward_ledgers: many(reward_ledger_table),
-	invoices: many(invoice_table),
+	invoices: many(product_invoice_table),
 	plan_subscriptions_creator_user_id: many(plan_subscription_table, {
 		relationName: 'plan_subscription_creator_user_id_login_id'
 	}),
@@ -71,7 +62,7 @@ export const productRelations = relations(product_table, ({ one, many }) => ({
 		fields: [product_table.store_id],
 		references: [store_table.id]
 	}),
-	invoices: many(invoice_table),
+	invoices: many(product_invoice_table),
 	product_items: many(product_item_table)
 }));
 
@@ -79,13 +70,13 @@ export const storeRelations = relations(store_table, ({ many }) => ({
 	products: many(product_table)
 }));
 
-export const invoiceRelations = relations(invoice_table, ({ one }) => ({
+export const invoiceRelations = relations(product_invoice_table, ({ one }) => ({
 	login: one(login_table, {
-		fields: [invoice_table.login_id],
+		fields: [product_invoice_table.creator_user_id],
 		references: [login_table.id]
 	}),
 	product: one(product_table, {
-		fields: [invoice_table.product_id],
+		fields: [product_invoice_table.product_id],
 		references: [product_table.id]
 	})
 }));
@@ -140,11 +131,6 @@ export const missionRelations = relations(mission_table, ({ many }) => ({
 }));
 
 export const reward_earnedRelations = relations(reward_earned_table, ({ one }) => ({
-	reward_action_action_id: one(reward_action_table, {
-		fields: [reward_earned_table.action_id],
-		references: [reward_action_table.id],
-		relationName: 'reward_earned_action_id_reward_action_id'
-	}),
 	login_creator_user_id: one(login_table, {
 		fields: [reward_earned_table.creator_user_id],
 		references: [login_table.id],

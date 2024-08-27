@@ -1,26 +1,39 @@
 import type { PageServerLoad } from './$types';
 import type { CreatorDashboard } from '$lib/types';
 
-import {
-	getPaidSubscribers,
-	getMonthlyRevenue,
-	getRewardsUsed,
-	getProductsPurchasedCount,
-	getProductsPurchasedAmount,
-	getProductsPurchasedList
-} from '$lib/server/services/creator-dashboard-service';
+import { CreatorDashboardService } from '$lib/server/services/creator.dashboard.service.server';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const subscriberCount = await getPaidSubscribers(locals.user.id);
-	const revenue = await getMonthlyRevenue(locals.user.id);
+	const subscriberCount = await CreatorDashboardService.getPaidSubscribers(locals.user.id);
+	const revenue = await CreatorDashboardService.getMonthlyRevenue(locals.user.id);
 
-	const startDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-	const endDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+	//Sliding 30 day window
+	// Get today's date
+	const endDate = new Date();
+	// Get the date 30 days ago
+	const startDate = new Date();
+	startDate.setDate(startDate.getDate() - 30);
 
-	const rewardsUsed = await getRewardsUsed(locals.user.id, startDate, endDate);
-	const purchaseCount = await getProductsPurchasedCount(locals.user.id, startDate, endDate);
-	const purchaseAmount = await getProductsPurchasedAmount(locals.user.id, startDate, endDate);
-	const productPurchaseList = await getProductsPurchasedList(locals.user.id, startDate, endDate);
+	const rewardsUsed = await CreatorDashboardService.getRewardsUsed(
+		locals.user.id,
+		startDate,
+		endDate
+	);
+	const purchaseCount = await CreatorDashboardService.getProductsPurchasedCount(
+		locals.user.id,
+		startDate,
+		endDate
+	);
+	const purchaseAmount = await CreatorDashboardService.getProductsPurchasedAmount(
+		locals.user.id,
+		startDate,
+		endDate
+	);
+	const productPurchaseList = await CreatorDashboardService.getProductsPurchasedList(
+		locals.user.id,
+		startDate,
+		endDate
+	);
 
 	const creatorDashboard: CreatorDashboard = {
 		subscriberCount,

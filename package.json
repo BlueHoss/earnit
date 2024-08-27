@@ -71,7 +71,7 @@
 		"lucide-svelte": "^0.427.0",
 		"mode-watcher": "^0.4.1",
 		"nodemailer": "^6.9.7",
-		"oslo": "^1.1.2",
+		"oslo": "^1.2.1",
 		"pg": "^8.11.3",
 		"svelte-radix": "^1.1.0",
 		"svelte-sonner": "^0.3.11",
