@@ -1,28 +1,39 @@
 <!-- Page Marketplace -->
 <script lang="ts">
-	export let data;
-
+	import type { PageData } from './$types';
 	import Activity from 'lucide-svelte/icons/activity';
 	import CreditCard from 'lucide-svelte/icons/credit-card';
-	import Users from 'lucide-svelte/icons/users';
+
 	import HeartIcon from 'lucide-svelte/icons/heart';
 	import FilmIcon from 'lucide-svelte/icons/film';
 	import FollowIcon from 'lucide-svelte/icons/user-round-check';
 	import CommentIcon from 'lucide-svelte/icons/message-square-more';
 	import CopyIcon from 'lucide-svelte/icons/copy';
 	import SendIcon from 'lucide-svelte/icons/send';
-
+	import TwitterIcon from '$lib/components/ui/svgIcons/TwitterIcon.svelte';
+	import FacebookIcon from '$lib/components/ui/svgIcons/FacebookIcon.svelte';
+	import LinkedInIcon from 'lucide-svelte/icons/linkedin';
 	import { Button } from '$lib/components/ui/button/index.ts';
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import EditMissionItem from './components/EditMissionItem.svelte';
 	import MeritOfferingCard from '$lib/components/base/MeritOfferingCard.svelte';
 	import PageHeader from '$lib/components/base/PageHeader.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
+	import * as Dialog from '$lib/components/ui/dialog';
 
+	export let data: PageData;
+	$: ({ creatorDashboard } = data);
+
+	let showShareDialog = false;
+
+	import { PUBLIC_BASE_URL } from '$env/static/public';
+	import CreatorProductCount from '../components/CreatorProductCount.svelte';
+
+	const profileLink = PUBLIC_BASE_URL + '/public/market/' + data.user.handle;
 	let copyButtonText = 'Copy profile link';
-	function copyText(text: any) {
+	function copyText() {
 		navigator.clipboard
-			.writeText(text)
+			.writeText(profileLink)
 			.then(() => {
 				copyButtonText = 'Copied!';
 
@@ -34,6 +45,10 @@
 				console.error('Failed to copy text: ', err);
 			});
 	}
+
+	function openShareDialog() {
+		showShareDialog = true;
+	}
 </script>
 
 <PageWrapper>
@@ -43,29 +58,19 @@
 
 		<!-- Right Section: Buttons stacked vertically -->
 		<div class="flex flex-col space-y-2">
-			<Button
-				on:click={() => copyText('https://app.earnitrewards.com/profile/brett')}
-				class="flex items-center px-6 py-2"
-			>
-				<CopyIcon class="pr-1" /> Copy profile link
+			<Button on:click={() => copyText()} class="flex items-center justify-center px-6 py-2 w-full">
+				<CopyIcon class="mr-2" />
+				<span class="min-w-[100px] text-center">{copyButtonText}</span>
 			</Button>
-			<Button class="flex items-center px-6 py-2">
-				<SendIcon class="pr-1" /> Share
+			<Button class="flex items-center justify-center px-6 py-2 w-full" on:click={openShareDialog}>
+				<SendIcon class="mr-2" />
+				<span class="min-w-[100px] text-center">Share</span>
 			</Button>
 		</div>
 	</div>
 
 	<div class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-		<Card.Root>
-			<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-				<Card.Title class="text-sm font-medium">Total Merit Offerings</Card.Title>
-				<Users class="h-4 w-4 text-muted-foreground" />
-			</Card.Header>
-			<Card.Content>
-				<div class="text-2xl font-bold text-primary">4</div>
-				<!-- <p class="text-xs text-muted-foreground">Edit merit offerings amounts below</p> -->
-			</Card.Content>
-		</Card.Root>
+		<CreatorProductCount productCount={creatorDashboard.productCount} />
 		<Card.Root>
 			<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
 				<Card.Title class="text-sm font-medium">Total Redeemed Products</Card.Title>
@@ -130,3 +135,33 @@
 		</Card.Root>
 	</div>
 </PageWrapper>
+
+<Dialog.Root bind:open={showShareDialog}>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Share Profile</Dialog.Title>
+			<Dialog.Description>Share your profile link on various platforms.</Dialog.Description>
+		</Dialog.Header>
+		<div class="grid gap-4 py-4">
+			<Button class="w-full">
+				<TwitterIcon className="mr-2" />
+				Share on Twitter
+			</Button>
+			<Button class="w-full">
+				<FacebookIcon className="mr-2" />
+				Share on Facebook
+			</Button>
+			<Button class="w-full">
+				<LinkedInIcon class="mr-2" />
+				Share on LinkedIn
+			</Button>
+			<Button on:click={() => copyText()}>
+				<CopyIcon class="mr-2" />
+				<span class="min-w-[100px] text-center">{copyButtonText}</span>
+			</Button>
+		</div>
+		<Dialog.Footer>
+			<Button on:click={() => (showShareDialog = false)}>Close</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>

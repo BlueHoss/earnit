@@ -1,4 +1,4 @@
-import { eq, and, sql, sum, between } from 'drizzle-orm';
+import { eq, and, sql, sum, between, type SQL } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import {
 	follower_creator_table,
@@ -77,17 +77,17 @@ async function getMonthlyRevenue(userid: number) {
  * @returns {Promise<number>} - The rewards used.
  */
 async function getRewardsUsed(userid: number, startDate: Date, endDate: Date) {
+	let whereClause: SQL<unknown> | undefined = eq(reward_earned_table.creator_user_id, userid);
+
+	if (startDate !== null && endDate !== null) {
+		whereClause = and(whereClause, between(reward_earned_table.date_awarded, startDate, endDate));
+	}
 	const count = await db
 		.select({
 			total: sum(reward_earned_table.reward_value)
 		})
 		.from(reward_earned_table)
-		.where(
-			and(
-				eq(reward_earned_table.creator_user_id, userid),
-				between(reward_earned_table.date_awarded, startDate, endDate)
-			)
-		);
+		.where(whereClause);
 
 	if (count.length === 0) {
 		return 0;
@@ -104,18 +104,27 @@ async function getRewardsUsed(userid: number, startDate: Date, endDate: Date) {
  * @param {Date} endDate - The end date.
  * @returns {Promise<number>} - The number of products purchased.
  */
-async function getProductsPurchasedCount(userid: number, startDate: Date, endDate: Date) {
+
+async function getProductsPurchasedCount(
+	userid: number,
+	startDate: Date | null,
+	endDate: Date | null
+) {
+	let whereClause: SQL<unknown> | undefined = eq(product_invoice_table.creator_user_id, userid);
+
+	if (startDate !== null && endDate !== null) {
+		whereClause = and(
+			whereClause,
+			between(product_invoice_table.date_purchased, startDate, endDate)
+		);
+	}
+
 	const count = await db
 		.select({
 			count: sql<number>`count(*) as integer`
 		})
 		.from(product_invoice_table)
-		.where(
-			and(
-				eq(product_invoice_table.creator_user_id, userid),
-				between(product_invoice_table.date_purchased, startDate, endDate)
-			)
-		);
+		.where(whereClause);
 
 	if (count.length === 0) {
 		return 0;
@@ -133,17 +142,21 @@ async function getProductsPurchasedCount(userid: number, startDate: Date, endDat
  * @returns {Promise<number>} - The amount of products purchased.
  */
 async function getProductsPurchasedAmount(userid: number, startDate: Date, endDate: Date) {
+	let whereClause: SQL<unknown> | undefined = eq(product_invoice_table.creator_user_id, userid);
+
+	if (startDate !== null && endDate !== null) {
+		whereClause = and(
+			whereClause,
+			between(product_invoice_table.date_purchased, startDate, endDate)
+		);
+	}
+
 	const count = await db
 		.select({
 			total: sum(product_invoice_table.cost)
 		})
 		.from(product_invoice_table)
-		.where(
-			and(
-				eq(product_invoice_table.creator_user_id, userid),
-				between(product_invoice_table.date_purchased, startDate, endDate)
-			)
-		);
+		.where(whereClause);
 
 	if (count.length === 0) {
 		return 0;
@@ -165,6 +178,15 @@ async function getProductsPurchasedList(
 	startDate: Date,
 	endDate: Date
 ): Promise<ProductInvoiceResult[]> {
+	let whereClause: SQL<unknown> | undefined = eq(product_invoice_table.creator_user_id, userid);
+
+	if (startDate !== null && endDate !== null) {
+		whereClause = and(
+			whereClause,
+			between(product_invoice_table.date_purchased, startDate, endDate)
+		);
+	}
+
 	const list = await db
 		.select({
 			id: product_table.id,
@@ -177,16 +199,23 @@ async function getProductsPurchasedList(
 		.innerJoin(product_table, eq(store_table.id, product_table.store_id))
 		.innerJoin(product_invoice_table, eq(product_table.id, product_invoice_table.product_id))
 		.innerJoin(login_table, eq(product_invoice_table.follower_user_id, login_table.id))
-		.where(
-			and(
-				eq(product_invoice_table.creator_user_id, userid),
-				between(product_invoice_table.date_purchased, startDate, endDate)
-			)
-		);
+		.where(whereClause);
 
-	return list;
+	return list.map((item) => ({
+		id: item.id,
+		product_name: item.product_name,
+		follower: item.follower as string | null,
+		handle: item.handle,
+		cost: Number(item.cost)
+	}));
 }
 
+/**
+ * Retrieves the number of followers for a given Creator.
+ *
+ * @param {number} userid - The ID of the user.
+ * @returns {Promise<number>} - The number of followers.
+ */
 async function getCreatorFollowerCount(userid: number): Promise<number> {
 	const followerCount = await db
 		.select({
@@ -228,6 +257,28 @@ async function getCreatorFollowerList(userid: number): Promise<LoginQueryResult[
 	return followers;
 }
 
+/**
+ * Retrieves the number of enabled products for a given Creator.
+ *
+ * @param {number} userid - The ID of the user.
+ * @returns {Promise<number>} - The number of enabled products.
+ */
+async function getProductCount(userid: number): Promise<number> {
+	const productCount = await db
+		.select({
+			count: sql<number>`count(*)`.as('count')
+		})
+		.from(product_table)
+		.innerJoin(store_table, eq(store_table.id, product_table.store_id))
+		.where(and(eq(store_table.creator_user_id, userid), eq(product_table.enabled, true)));
+
+	if (productCount.length === 0) {
+		return 0;
+	} else {
+		return Number(productCount[0].count);
+	}
+}
+
 export const CreatorDashboardService = {
 	getPaidSubscribers,
 	getMonthlyRevenue,
@@ -236,5 +287,6 @@ export const CreatorDashboardService = {
 	getProductsPurchasedAmount,
 	getProductsPurchasedList,
 	getCreatorFollowerCount,
-	getCreatorFollowerList
+	getCreatorFollowerList,
+	getProductCount
 };

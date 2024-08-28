@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import type { CreatorDashboard } from '$lib/types';
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import * as Table from '$lib/components/ui/table/index.ts';
 	import PageHeader from '$lib/components/base/PageHeader.svelte';
@@ -11,7 +10,6 @@
 	import EarnItFollowers from './components/EarnItFollowers.svelte';
 	import RewardCurrency from '$lib/components/base/RewardCurrency.svelte';
 	import Handle from '$lib/components/base/Handle.svelte';
-	import CreatorProfileHeader from './components/CreatorProfileHeader.svelte';
 
 	export let data: PageData;
 	$: ({ creatorDashboard } = data);

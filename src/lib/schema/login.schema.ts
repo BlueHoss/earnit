@@ -4,6 +4,7 @@ import { z } from 'zod';
  * Base User Schema for the Login table
  **/
 export const baseLoginSchema = z.object({
+	id: z.number(),
 	handle: z
 		.string({ required_error: 'Handle is required' })
 		.min(1, { message: 'Handle is required' })
@@ -22,25 +23,32 @@ export const baseLoginSchema = z.object({
 		.string({ required_error: 'Email is required' })
 		.email({ message: 'Please enter a valid email address' }),
 	hashed_password: z.string(),
-	role: z
-		.enum(['USER', 'PREMIUM', 'ADMIN'], { required_error: 'You must have a role' })
-		.default('USER'),
+	role: z.string().default('USER'),
 	verified: z.boolean().default(false),
 	is_creator: z.boolean().default(false),
 	is_follower: z.boolean().default(false),
-	provider: z.string().optional(),
-	provider_id: z.string().optional(),
+	provider: z.string().nullable(),
+	provider_id: z.string().nullable(),
 	profile_pic: z.string().nullable(),
 	social_media_profile: z.string().optional(),
 	follower_count: z.number().default(0),
 	title: z.string().nullable(),
 	tag_line: z.string().nullable(),
 	bio: z.string().nullable(),
+	// terms: z
+	// 	.literal<boolean>(true, {
+	// 		errorMap: () => ({ message: 'You must accept the terms & privacy policy' })
+	// 	})
+	// 	.default(false as true),
 	terms: z
-		.literal<boolean>(true, {
-			errorMap: () => ({ message: 'You must accept the terms & privacy policy' })
+		.boolean({
+			required_error: 'You must accept the terms & privacy policy',
+			invalid_type_error: 'Terms must be a yes or no value'
 		})
-		.default(false as true),
+		.refine((val) => val === true, {
+			message: 'You must accept the terms & privacy policy'
+		}),
+	//terms: z.boolean().default(false),
 	token: z.string(),
 	receive_email: z.boolean().default(true),
 	date_created: z.date().optional(),
@@ -51,7 +59,11 @@ export const baseLoginSchema = z.object({
 /**
  * Type for base user schema (login table)
  */
-export type BaseUser = z.infer<typeof baseLoginSchema>;
+export const baseUserModifedSchema = baseLoginSchema.omit({ roleError: true });
+export type BaseUser = z.infer<typeof baseUserModifedSchema>;
+
+export const updateBaseUserSchema = baseLoginSchema.partial().omit({ roleError: true });
+export type BaseUserUpdate = z.infer<typeof updateBaseUserSchema>;
 
 /**
  * Schema for new sign ups

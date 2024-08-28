@@ -24,8 +24,6 @@
 		{#if $errors}
 			<span>{$errors}</span>
 		{/if}
-		<SuperDebug data={$formData} />
-		<SuperDebug data={$errors} />
 		<Card.Root>
 			<Card.Header class="space-y-1">
 				<Card.Title class="text-2xl">Change Your Password</Card.Title>

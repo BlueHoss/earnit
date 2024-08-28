@@ -13,8 +13,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { supabaseServerClient } from './supabase.service.server';
 
 // Variables
-import { PRIVATE_SUPABASE_PROFILE_IMAGE_BUCKET } from '$env/static/private';
-import { PUBLIC_SUPABASE_STORAGE_URL } from '$env/static/public';
+import {
+	PUBLIC_SUPABASE_STORAGE_URL,
+	PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET
+} from '$env/static/public';
 
 /**
  * Given a File type it checks the suffix to ensure it's a valid image type.
@@ -42,7 +44,7 @@ async function addToBucket(imageBlob: Blob, suffix: string): Promise<string | un
 	const imageBuffer = Buffer.from(buffer);
 	const imageName = uuidv4() + suffix;
 	const { data, error } = await supabaseServerClient.storage
-		.from(PRIVATE_SUPABASE_PROFILE_IMAGE_BUCKET)
+		.from(PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET)
 		.upload(imageName, imageBuffer, {
 			contentType: imageBlob.type,
 			upsert: true
@@ -58,7 +60,7 @@ async function addToBucket(imageBlob: Blob, suffix: string): Promise<string | un
 
 async function deleteProfileImage(fileUrl: string) {
 	const { error } = await supabaseServerClient.storage
-		.from(PRIVATE_SUPABASE_PROFILE_IMAGE_BUCKET)
+		.from(PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET)
 		.remove([`${fileUrl}`]);
 
 	if (error) {

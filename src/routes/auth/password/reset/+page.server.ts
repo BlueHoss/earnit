@@ -1,7 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { setError, superValidate } from 'sveltekit-superforms/server';
 import { sendPasswordResetEmail } from '$lib/config/email-messages';
-import { getUserByEmail, updateUser } from '$lib/server/database/user-model.js';
+import { UserService } from '$lib/server/services/user.service.server';
 import { passworUpdateRequestSchema } from '$lib/schema/login.schema.js';
 import { zod } from 'sveltekit-superforms/adapters';
 
@@ -23,7 +23,7 @@ export const actions = {
 		}
 
 		try {
-			const user = await getUserByEmail(form.data.email);
+			const user = await UserService.getUserByEmail(form.data.email);
 			if (!user) {
 				return setError(
 					form,
@@ -33,7 +33,7 @@ export const actions = {
 			}
 			console.log('reset user password');
 			const token = crypto.randomUUID();
-			await updateUser(user.id, { token: token });
+			await UserService.updateUser(user.id, { token: token });
 			await sendPasswordResetEmail(form.data.email, token);
 		} catch (e) {
 			console.error(e);

@@ -54,7 +54,8 @@ export const login_table = pgTable('login', {
 	provider_id: text('provider_id'),
 	provider: text('provider'),
 	profile_pic: text('profile_pic'),
-	social_media_profile: text('social_media_profile').notNull(),
+	terms: boolean('terms').notNull().default(false),
+	social_media_profile: text('social_media_profile'),
 	role: text('role').notNull().default('USER'),
 	is_follower: boolean('is_follower').notNull().default(false),
 	is_creator: boolean('is_creator').notNull().default(false),
@@ -90,7 +91,8 @@ export const product_table = pgTable('product', {
 	description: text('description'),
 	store_id: integer('store_id').references(() => store_table.id),
 	cover_image: text('cover_image'),
-	cost: numeric('cost', { precision: 10, scale: 2 }).notNull().default('0.00')
+	cost: numeric('cost', { precision: 10, scale: 2 }).notNull().default('0.00'),
+	enabled: boolean('enabled').notNull().default(true)
 });
 
 export const product_invoice_table = pgTable('product_invoice', {

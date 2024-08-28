@@ -1,6 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { setError, superValidate } from 'sveltekit-superforms/server';
-import { getUserByToken, updateUser } from '$lib/server/database/user-model.js';
+import { UserService } from '$lib/server/services/user.service.server';
 import { Argon2id } from 'oslo/password';
 import { passworUpdateSchema } from '$lib/schema/login.schema.js';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -27,14 +27,14 @@ export const actions = {
 			console.log('update user password');
 			const newToken = crypto.randomUUID();
 			//get email from token
-			const user = await getUserByToken(token);
+			const user = await UserService.getUserByToken(token);
 
 			if (user) {
 				const password = await new Argon2id().hash(form.data.password);
 				// need to update with new token because token is also used for verification
 				// and needs a new verification token in case user has not verified their account
 				// and already forgot their password before verifying. Now they can get a new one resent.
-				await updateUser(user.id, { token: newToken, hashed_password: password });
+				await UserService.updateUser(user.id, { token: newToken, hashed_password: password });
 			} else {
 				return setError(
 					form,

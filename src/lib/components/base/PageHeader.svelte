@@ -43,10 +43,6 @@
 		font-weight: 600;
 	}
 
-	.text-gray-400 {
-		color: #9ca3af;
-	}
-
 	.text-sm {
 		font-size: 0.875rem;
 	}

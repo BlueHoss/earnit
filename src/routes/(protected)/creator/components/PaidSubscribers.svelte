@@ -1,5 +1,5 @@
 <script lang="ts">
-	import RewardCurrency from '$lib/components/base/RewardCurrency.svelte';
+	import Currency from '$lib/components/base/Currency.svelte';
 
 	export let paidSubscribers;
 	export let totalMonthlyRevenue;
@@ -16,7 +16,7 @@
 	<Card.Content>
 		<div class="text-2xl font-bold text-primary">{paidSubscribers}</div>
 		<p class="text-xs text-muted-foreground flex items-center gap-2">
-			<RewardCurrency amount={totalMonthlyRevenue} /> this month
+			<Currency amount={totalMonthlyRevenue} /> this month
 		</p>
 	</Card.Content>
 </Card.Root>

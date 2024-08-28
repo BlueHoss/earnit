@@ -7,6 +7,7 @@ export interface CreatorDashboard {
 	purchaseCount: number;
 	purchaseAmount: number;
 	followerCount: number;
+	productCount: number;
 	productPurchaseList: ProductInvoiceResult[] | [];
 }
 

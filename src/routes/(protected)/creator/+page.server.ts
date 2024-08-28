@@ -35,6 +35,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		endDate
 	);
 	const followerCount = await CreatorDashboardService.getCreatorFollowerCount(locals.user.id);
+	const productCount = await CreatorDashboardService.getProductCount(locals.user.id);
 
 	const creatorDashboard: CreatorDashboard = {
 		subscriberCount,
@@ -43,7 +44,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		purchaseCount,
 		purchaseAmount,
 		productPurchaseList,
-		followerCount
+		followerCount,
+		productCount
 	};
 
 	return {

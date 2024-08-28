@@ -1,11 +1,11 @@
-import { getUserByToken, updateUser } from '$lib/server/database/user-model.js';
+import { UserService } from '$lib/server/services/user.service.server';
 import { sendWelcomeEmail } from '$lib/config/email-messages';
-import type { User } from '$lib/server/database/drizzle-schemas';
+import type { BaseUser } from '$lib/schema/login.schema.js';
 
 export async function load({ params }) {
 	try {
 		const token = params.token as string;
-		const user: User | null = await getUserByToken(token);
+		const user: BaseUser | null = await UserService.getUserByToken(token);
 
 		if (!user) {
 			return {
@@ -24,7 +24,7 @@ export async function load({ params }) {
 			heading = 'Email Verified';
 			message =
 				'Your email has been verified. You can now <a href="/auth/sign-in" class="underline">sign in</a>';
-			await updateUser(user.id, { verified: true });
+			await UserService.updateUser(user.id, { verified: true });
 		}
 		return { heading, message };
 	} catch (e) {

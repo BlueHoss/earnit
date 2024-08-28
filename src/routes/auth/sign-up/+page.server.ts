@@ -3,7 +3,7 @@ import { setFlash } from 'sveltekit-flash-message/server';
 import { setError, superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
 import { signupSchema } from '$lib/schema/login.schema';
-import { UserSignUpService } from '$lib/server/services/user.signup.service.server.js';
+import { UserService } from '$lib/server/services/user.service.server.js';
 //import { sendVerificationEmail } from '$lib/config/email-messages.js';
 import { lucia } from '$lib/server/lucia.js';
 
@@ -39,7 +39,7 @@ export const actions = {
 		let newUser = null;
 
 		try {
-			newUser = await UserSignUpService.createNewUser(form.data);
+			newUser = await UserService.createNewUser(form.data);
 
 			if (newUser && newUser.id) {
 				//await sendVerificationEmail(newUser.email, newUser.token);
