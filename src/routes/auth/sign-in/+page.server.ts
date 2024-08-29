@@ -32,7 +32,7 @@ export const actions: Actions = {
 			existingUser = await UserService.getUserByEmail(email);
 			if (!existingUser) {
 				setFlash({ type: 'error', message: 'The email or password is incorrect.' }, event);
-				return setError(form, 'The email or password is incorrect.');
+				return setError(form, 'email', 'The email or password is incorrect.');
 			}
 			if (existingUser.hashed_password) {
 				const validPassword = await new Argon2id().verify(
@@ -41,7 +41,7 @@ export const actions: Actions = {
 				);
 				if (!validPassword) {
 					setFlash({ type: 'error', message: 'The email or password is incorrect.' }, event);
-					return setError(form, 'The email or password is incorrect.');
+					return setError(form, 'email', 'The email or password is incorrect.');
 				} else {
 					//password valid - set session
 					const session = await lucia.createSession(existingUser.id.toString(), {

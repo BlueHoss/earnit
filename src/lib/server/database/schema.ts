@@ -7,8 +7,11 @@ import {
 	timestamp,
 	integer,
 	numeric,
-	primaryKey
+	primaryKey,
+	uniqueIndex
 } from 'drizzle-orm/pg-core';
+
+import { TextUtilities } from '$lib/utils/text-utilities';
 
 export const aal_level = pgEnum('aal_level', ['aal1', 'aal2', 'aal3']);
 export const code_challenge_method = pgEnum('code_challenge_method', ['s256', 'plain']);
@@ -39,31 +42,37 @@ export const key_type = pgEnum('key_type', [
 export const action = pgEnum('action', ['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE', 'ERROR']);
 export const equality_op = pgEnum('equality_op', ['eq', 'neq', 'lt', 'lte', 'gt', 'gte', 'in']);
 
-export const login_table = pgTable('login', {
-	id: serial('id').primaryKey().notNull(),
-	handle: text('handle').notNull(),
-	email: text('email').notNull().unique(),
-	first_name: text('first_name').notNull(),
-	last_name: text('last_name').notNull(),
-	token: text('token').notNull().unique(),
-	verified: boolean('verified').notNull().default(false),
-	receive_email: boolean('receive_email').notNull().default(true),
-	hashed_password: text('hashed_password').notNull(),
-	date_created: timestamp('date_created').defaultNow().notNull(),
-	date_updated: timestamp('date_updated').defaultNow().notNull(),
-	provider_id: text('provider_id'),
-	provider: text('provider'),
-	profile_pic: text('profile_pic'),
-	terms: boolean('terms').notNull().default(false),
-	social_media_profile: text('social_media_profile'),
-	role: text('role').notNull().default('USER'),
-	is_follower: boolean('is_follower').notNull().default(false),
-	is_creator: boolean('is_creator').notNull().default(false),
-	follower_count: integer('follower_count').notNull().default(0),
-	title: text('title'),
-	tag_line: text('tag_line'),
-	bio: text('bio')
-});
+export const login_table = pgTable(
+	'login',
+	{
+		id: serial('id').primaryKey().notNull(),
+		handle: text('handle').notNull(),
+		email: text('email').notNull().unique(),
+		first_name: text('first_name').notNull(),
+		last_name: text('last_name').notNull(),
+		token: text('token').notNull().unique(),
+		verified: boolean('verified').notNull().default(false),
+		receive_email: boolean('receive_email').notNull().default(true),
+		hashed_password: text('hashed_password').notNull(),
+		date_created: timestamp('date_created').defaultNow().notNull(),
+		date_updated: timestamp('date_updated').defaultNow().notNull(),
+		provider_id: text('provider_id'),
+		provider: text('provider'),
+		profile_pic: text('profile_pic'),
+		terms: boolean('terms').notNull().default(false),
+		social_media_profile: text('social_media_profile'),
+		role: text('role').notNull().default('USER'),
+		is_follower: boolean('is_follower').notNull().default(false),
+		is_creator: boolean('is_creator').notNull().default(false),
+		follower_count: integer('follower_count').notNull().default(0),
+		title: text('title'),
+		tag_line: text('tag_line'),
+		bio: text('bio')
+	},
+	(table) => ({
+		emailUniqueIndex: uniqueIndex('emailUniqueIndex').on(TextUtilities.lower(table.email))
+	})
+);
 
 export type User = typeof login_table.$inferInsert;
 export type UpdateUser = Partial<typeof login_table.$inferInsert>;

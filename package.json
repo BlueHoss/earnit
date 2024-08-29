@@ -74,7 +74,7 @@
 		"oslo": "^1.2.1",
 		"pg": "^8.11.3",
 		"svelte-radix": "^1.1.1",
-		"svelte-sonner": "^0.3.11",
+		"svelte-sonner": "^0.3.27",
 		"tailwind-merge": "^2.5.2",
 		"tailwind-variants": "^0.2.1",
 		"typescript-eslint": "^8.2.0",

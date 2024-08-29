@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import * as aws from '@aws-sdk/client-ses';
 import {
-	FROM_EMAIL,
+	AWS_FROM_EMAIL,
 	AWS_ACCESS_KEY_ID,
 	AWS_SECRET_ACCESS_KEY,
 	AWS_REGION,
@@ -38,7 +38,7 @@ export default async function sendEmail(
 		if (!bodyText) {
 			transporter.sendMail(
 				{
-					from: FROM_EMAIL,
+					from: AWS_FROM_EMAIL,
 					to: email,
 					subject: subject,
 					html: bodyHtml
@@ -53,7 +53,7 @@ export default async function sendEmail(
 		} else if (!bodyHtml) {
 			transporter.sendMail(
 				{
-					from: FROM_EMAIL,
+					from: AWS_FROM_EMAIL,
 					to: email,
 					subject: subject,
 					text: bodyText
@@ -68,7 +68,7 @@ export default async function sendEmail(
 		} else {
 			transporter.sendMail(
 				{
-					from: FROM_EMAIL,
+					from: AWS_FROM_EMAIL,
 					to: email,
 					subject: subject,
 					html: bodyHtml,

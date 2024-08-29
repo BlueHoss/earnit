@@ -69,7 +69,10 @@ function createHandle(firstName: string, lastName: string): string {
  * @returns BaseUser | null
  */
 async function getUserByEmail(email: string): Promise<BaseUser | null> {
-	const user = await db.select().from(login_table).where(eq(login_table.email, email));
+	const user = await db
+		.select()
+		.from(login_table)
+		.where(eq(TextUtilities.lower(login_table.email), email.toLowerCase()));
 	if (user.length === 0) {
 		return null;
 	} else {
@@ -113,7 +116,8 @@ async function updateUser(id: number, user: BaseUserUpdate): Promise<BaseUser | 
  * @returns BaseUser | null
  */
 async function createUser(user: BaseUser): Promise<BaseUser | null> {
-	const { id, ...newUser } = user;
+	//remove ID so the db creates a serial,identity or autoincrement.
+	const { id: _, ...newUser } = user;
 
 	const result: BaseUser[] = await db
 		.insert(login_table)

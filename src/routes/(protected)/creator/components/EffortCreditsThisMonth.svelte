@@ -2,13 +2,13 @@
 	export let effortCredits;
 
 	import * as Card from '$lib/components/ui/card/index.ts';
-	import UsersIcon from 'lucide-svelte/icons/users';
+	import CurrencyIcon from 'lucide-svelte/icons/currency';
 </script>
 
 <Card.Root>
 	<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-		<Card.Title class="text-sm font-medium">Credits Distributed (last 30 days)</Card.Title>
-		<UsersIcon class="h-4 w-4 text-muted-foreground" />
+		<Card.Title class="text-sm font-medium">Credits Distributed <br /> (last 30 days)</Card.Title>
+		<CurrencyIcon class="h-4 w-4 text-muted-foreground" />
 	</Card.Header>
 	<Card.Content>
 		<div class="text-2xl font-bold text-primary">{effortCredits}</div>

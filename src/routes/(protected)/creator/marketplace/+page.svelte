@@ -28,6 +28,8 @@
 
 	import { PUBLIC_BASE_URL } from '$env/static/public';
 	import CreatorProductCount from '../components/CreatorProductCount.svelte';
+	import ProductsRedeemed from '../components/ProductsRedeemed.svelte';
+	import Subscribers from '../components/Subscribers.svelte';
 
 	const profileLink = PUBLIC_BASE_URL + '/public/market/' + data.user.handle;
 	let copyButtonText = 'Copy profile link';
@@ -71,28 +73,8 @@
 
 	<div class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
 		<CreatorProductCount productCount={creatorDashboard.productCount} />
-		<Card.Root>
-			<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-				<Card.Title class="text-sm font-medium">Total Redeemed Products</Card.Title>
-				<CreditCard class="h-4 w-4 text-muted-foreground" />
-			</Card.Header>
-			<Card.Content>
-				<div class="text-2xl font-bold text-primary">52</div>
-				<!-- <p class="text-xs text-muted-foreground">
-					<Button variant="outline" class="hover:text-primary">View Breakdown</Button>
-				</p> -->
-			</Card.Content>
-		</Card.Root>
-		<Card.Root>
-			<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-				<Card.Title class="text-sm font-medium">Subscribers</Card.Title>
-				<Activity class="h-4 w-4 text-muted-foreground" />
-			</Card.Header>
-			<Card.Content>
-				<div class="text-2xl font-bold text-primary">35</div>
-				<!-- <p class="text-xs text-muted-foreground">+6 this month</p> -->
-			</Card.Content>
-		</Card.Root>
+		<ProductsRedeemed totalRedeemed={creatorDashboard.purchaseCount} />
+		<Subscribers subscriberCount={creatorDashboard.subscriberCount} />
 	</div>
 	<div>
 		<Card.Root class="xl:col-span-2">
