@@ -73,7 +73,7 @@ export const auth_session_table = pgTable('auth_session', {
 	id: text('id').primaryKey(), // Auto-incrementing primary key
 	userId: integer('user_id')
 		.notNull()
-		.references(() => login_table.id), // User ID associated with the session
+		.references(() => login_table.id, { onDelete: 'cascade' }), // User ID associated with the session
 	expiresAt: timestamp('expires_at').notNull(), // Expiration time of the session
 	token: text('token').notNull() // Session token
 });
