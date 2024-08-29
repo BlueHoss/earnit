@@ -4,7 +4,7 @@ import { setError, superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
 import { signupSchema } from '$lib/schema/login.schema';
 import { UserService } from '$lib/server/services/user.service.server.js';
-//import { sendVerificationEmail } from '$lib/config/email-messages.js';
+import { sendVerificationEmail } from '$lib/config/email-messages.js';
 import { lucia } from '$lib/server/lucia.js';
 
 export const load = async (event) => {
@@ -42,7 +42,7 @@ export const actions = {
 			newUser = await UserService.createNewUser(form.data);
 
 			if (newUser && newUser.id) {
-				//await sendVerificationEmail(newUser.email, newUser.token);
+				await sendVerificationEmail(newUser.email, newUser.token);
 				const session = await lucia.createSession(newUser.id.toString(), { token: newUser.token });
 				const sessionCookie = lucia.createSessionCookie(session.id);
 				event.cookies.set(sessionCookie.name, sessionCookie.value, {

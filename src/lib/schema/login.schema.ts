@@ -30,7 +30,7 @@ export const baseLoginSchema = z.object({
 	provider: z.string().nullable(),
 	provider_id: z.string().nullable(),
 	profile_pic: z.string().nullable(),
-	social_media_profile: z.string().optional(),
+	social_media_profile: z.string().nullable(),
 	follower_count: z.number().default(0),
 	title: z.string().nullable(),
 	tag_line: z.string().nullable(),

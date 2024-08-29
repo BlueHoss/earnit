@@ -113,9 +113,11 @@ async function updateUser(id: number, user: BaseUserUpdate): Promise<BaseUser | 
  * @returns BaseUser | null
  */
 async function createUser(user: BaseUser): Promise<BaseUser | null> {
+	const { id, ...newUser } = user;
+
 	const result: BaseUser[] = await db
 		.insert(login_table)
-		.values(user)
+		.values(newUser)
 		.onConflictDoNothing()
 		.returning();
 	if (result.length === 0) {
