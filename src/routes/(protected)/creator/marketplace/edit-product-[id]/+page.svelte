@@ -48,8 +48,8 @@
 
 <PageWrapper>
 	<form method="POST" action="?/update" use:enhance>
-		<SuperDebug data={$formData} />
-		<SuperDebug data={$errors} />
+		<!-- <SuperDebug data={$formData} />
+		<SuperDebug data={$errors} /> -->
 
 		<Label class="flex items-center text-2xl font-semibold">
 			<Marketplace class="mr-2" />
