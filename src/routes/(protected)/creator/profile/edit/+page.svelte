@@ -29,8 +29,6 @@
 	});
 	const { form: formData, errors, enhance, delayed } = form;
 
-	console.log(data);
-
 	function goBack() {
 		window.history.back();
 	}

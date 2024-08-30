@@ -1,8 +1,6 @@
 <!-- Page Marketplace -->
 <script lang="ts">
 	import type { PageData } from './$types';
-	import Activity from 'lucide-svelte/icons/activity';
-	import CreditCard from 'lucide-svelte/icons/credit-card';
 
 	import HeartIcon from 'lucide-svelte/icons/heart';
 	import FilmIcon from 'lucide-svelte/icons/film';
@@ -13,6 +11,7 @@
 	import TwitterIcon from '$lib/components/ui/svgIcons/TwitterIcon.svelte';
 	import FacebookIcon from '$lib/components/ui/svgIcons/FacebookIcon.svelte';
 	import LinkedInIcon from 'lucide-svelte/icons/linkedin';
+	import CirclePlus from 'lucide-svelte/icons/circle-plus';
 	import { Button } from '$lib/components/ui/button/index.ts';
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import EditMissionItem from './components/EditMissionItem.svelte';
@@ -30,6 +29,7 @@
 	import CreatorProductCount from '../components/CreatorProductCount.svelte';
 	import ProductsRedeemed from '../components/ProductsRedeemed.svelte';
 	import Subscribers from '../components/Subscribers.svelte';
+	import EarnItFollowers from '../components/EarnItFollowers.svelte';
 
 	const profileLink = PUBLIC_BASE_URL + '/public/market/' + data.user.handle;
 	let copyButtonText = 'Copy profile link';
@@ -75,20 +75,24 @@
 		<CreatorProductCount productCount={creatorDashboard.productCount} />
 		<ProductsRedeemed totalRedeemed={creatorDashboard.purchaseCount} />
 		<Subscribers subscriberCount={creatorDashboard.subscriberCount} />
+		<EarnItFollowers followers={creatorDashboard.followerCount} />
 	</div>
 	<div>
 		<Card.Root class="xl:col-span-2">
-			<Card.Header class="flex flex-row items-center">
+			<Card.Header class="flex flex-row justify-between">
 				<div class="grid gap-2">
 					<Card.Title>Merit Offerings</Card.Title>
 					<Card.Description
 						>All of your Merit Offerings that are displayed in your Marketplace</Card.Description
 					>
 				</div>
+				<Button href="/creator/marketplace/edit-product-0"><CirclePlus /> Add New Merit Item</Button
+				>
 			</Card.Header>
 			<Card.Content class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-				<MeritOfferingCard CardName="Facebook Course" EffortCredit="27" />
-				<MeritOfferingCard CardName="Google Ads Course" EffortCredit="33" />
+				{#each creatorDashboard.products as product}
+					<MeritOfferingCard {product} />
+				{/each}
 			</Card.Content>
 		</Card.Root>
 	</div>

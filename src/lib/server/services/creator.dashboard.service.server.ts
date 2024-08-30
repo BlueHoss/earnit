@@ -7,8 +7,7 @@ import {
 	plan_table,
 	product_invoice_table,
 	product_table,
-	reward_earned_table,
-	store_table
+	reward_earned_table
 } from '$lib/server/database/schema';
 import type { LoginQueryResult } from '$lib/schema/login.schema';
 import type { ProductInvoiceResult } from '$lib/schema/product_invoice.schema';
@@ -269,8 +268,7 @@ async function getProductCount(userid: number): Promise<number> {
 			count: sql<number>`count(*)`.as('count')
 		})
 		.from(product_table)
-		.innerJoin(store_table, eq(store_table.id, product_table.store_id))
-		.where(and(eq(store_table.creator_user_id, userid), eq(product_table.enabled, true)));
+		.where(and(eq(product_table.creator_user_id, userid), eq(product_table.enabled, true)));
 
 	if (productCount.length === 0) {
 		return 0;

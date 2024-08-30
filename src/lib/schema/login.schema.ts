@@ -53,6 +53,8 @@ export const baseLoginSchema = z.object({
 	receive_email: z.boolean().default(true),
 	date_created: z.date().optional(),
 	date_updated: z.date().optional(),
+	store_name: z.string().nullable(),
+	reward_name: z.string().nullable(),
 	roleError: z.string().optional() //Used for custom error messages
 });
 
@@ -69,7 +71,7 @@ export type BaseUserUpdate = z.infer<typeof updateBaseUserSchema>;
  * Schema for new sign ups
  */
 export const signupSchema = baseLoginSchema
-	.omit({ handle: true, hashed_password: true, token: true })
+	.omit({ id: true, handle: true, hashed_password: true, token: true })
 	.extend({
 		password: z.string().min(6, 'Confirm Password is required'),
 		confirmPassword: z.string().min(6, 'Confirm Password is required')

@@ -11,7 +11,7 @@ import {
 	uniqueIndex
 } from 'drizzle-orm/pg-core';
 
-import { TextUtilities } from '$lib/utils/text-utilities';
+import { TextUtilities } from '../../utils/text-utilities';
 
 export const aal_level = pgEnum('aal_level', ['aal1', 'aal2', 'aal3']);
 export const code_challenge_method = pgEnum('code_challenge_method', ['s256', 'plain']);
@@ -67,7 +67,9 @@ export const login_table = pgTable(
 		follower_count: integer('follower_count').notNull().default(0),
 		title: text('title'),
 		tag_line: text('tag_line'),
-		bio: text('bio')
+		bio: text('bio'),
+		reward_name: text('reward_name'),
+		store_name: text('store_name')
 	},
 	(table) => ({
 		emailUniqueIndex: uniqueIndex('emailUniqueIndex').on(TextUtilities.lower(table.email))
@@ -96,9 +98,11 @@ export const reward_ledger_table = pgTable('reward_ledger', {
 
 export const product_table = pgTable('product', {
 	id: serial('id').primaryKey().notNull(),
-	name: text('name'),
+	name: text('name').notNull(),
 	description: text('description'),
-	store_id: integer('store_id').references(() => store_table.id),
+	creator_user_id: integer('creator_user_id')
+		.notNull()
+		.references(() => login_table.id, { onDelete: 'cascade' }),
 	cover_image: text('cover_image'),
 	cost: numeric('cost', { precision: 10, scale: 2 }).notNull().default('0.00'),
 	enabled: boolean('enabled').notNull().default(true)
@@ -118,12 +122,6 @@ export const plan_table = pgTable('plan', {
 	name: text('name').notNull(),
 	plan_percent: numeric('plan_percent').notNull(),
 	cost: numeric('plan_cost').notNull()
-});
-
-export const store_table = pgTable('store', {
-	id: serial('id').primaryKey().notNull(),
-	name: text('name'),
-	creator_user_id: integer('creator_user_id')
 });
 
 export const mission_table = pgTable('mission', {
@@ -146,7 +144,7 @@ export const product_item_table = pgTable('product_item', {
 	id: serial('id').primaryKey().notNull(),
 	name: text('name'),
 	download_url: text('download_url'),
-	product_id: integer('product_id').references(() => product_table.id),
+	product_id: integer('product_id').references(() => product_table.id, { onDelete: 'cascade' }),
 	buyitnow_link: text('buyitnow_link')
 });
 

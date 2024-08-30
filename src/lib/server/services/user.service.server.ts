@@ -37,7 +37,9 @@ async function transformSignupToUser(signupData: SignupUser): Promise<BaseUser> 
 			bio: 'Say hi. I am new here!',
 			token: crypto.randomUUID(),
 			date_created: new Date(),
-			date_updated: new Date()
+			date_updated: new Date(),
+			store_name: `${signupData.first_name}'s Store`,
+			reward_name: `${signupData.first_name} Token`
 		};
 	} else {
 		return {
@@ -73,6 +75,20 @@ async function getUserByEmail(email: string): Promise<BaseUser | null> {
 		.select()
 		.from(login_table)
 		.where(eq(TextUtilities.lower(login_table.email), email.toLowerCase()));
+	if (user.length === 0) {
+		return null;
+	} else {
+		return user[0];
+	}
+}
+
+/**
+ * Get a user by ID
+ * @param userId
+ * @returns BaseUser | null
+ */
+async function getUserByUserId(userId: number): Promise<BaseUser | null> {
+	const user = await db.select().from(login_table).where(eq(login_table.id, userId));
 	if (user.length === 0) {
 		return null;
 	} else {
@@ -117,11 +133,11 @@ async function updateUser(id: number, user: BaseUserUpdate): Promise<BaseUser | 
  */
 async function createUser(user: BaseUser): Promise<BaseUser | null> {
 	//remove ID so the db creates a serial,identity or autoincrement.
-	const { id: _, ...newUser } = user;
+	//const { id: _, ...newUser } = user;
 
 	const result: BaseUser[] = await db
 		.insert(login_table)
-		.values(newUser)
+		.values(user)
 		.onConflictDoNothing()
 		.returning();
 	if (result.length === 0) {
@@ -135,5 +151,6 @@ export const UserService = {
 	createNewUser,
 	updateUser,
 	getUserByToken,
-	getUserByEmail
+	getUserByEmail,
+	getUserByUserId
 };

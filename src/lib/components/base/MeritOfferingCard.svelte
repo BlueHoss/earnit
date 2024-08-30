@@ -1,6 +1,5 @@
-<script>
-	export let CardName = 'Unknown';
-	export let EffortCredit = '0';
+<script lang="ts">
+	export let product: ProductType;
 
 	import CardContent from '$lib/components/ui/card/card-content.svelte';
 	import CardDescription from '$lib/components/ui/card/card-description.svelte';
@@ -11,6 +10,7 @@
 
 	import { getUserRole } from '$lib/utils/auth';
 	import Button from '../ui/button/button.svelte';
+	import type { ProductType } from '$lib/schema/product.schema';
 
 	var canEdit = false;
 	function setPermission() {
@@ -26,24 +26,24 @@
 
 <Card class="overflow-hidden rounded-lg bg-gray-900 shadow-lg">
 	<div class="relative">
-		<img src="/img/facebook-course.png" alt={CardName} class="h-48 w-full object-cover" />
+		<img src="/img/facebook-course.png" alt={product.name} class="h-48 w-full object-cover" />
 	</div>
 	<CardContent class="p-4">
 		<CardTitle class="flex justify-between text-xl font-semibold ">
-			{CardName}
+			{product.name}
 			{#if canEdit}
 				<Button variant="link">
-					<a href="/creator/marketplace/edit"><PencilIcon /></a>
+					<a href={'/creator/marketplace/edit-product-' + product.id}><PencilIcon /></a>
 				</Button>
 			{/if}
 		</CardTitle>
 		<CardDescription class="mt-2 text-gray-400">
 			<p class="mb-2">
-				This is a detailed description of the product, explaining what it is, its features....
+				{product.description}
 			</p>
 			<div class="mt-2 flex justify-start text-gray-200">
 				<CurrencyIcon class="mr-2" />
-				{EffortCredit} Suzy Tokens
+				{product.cost} Tokens
 			</div>
 		</CardDescription>
 	</CardContent>
