@@ -21,8 +21,8 @@ export type ProductType = z.infer<typeof productSchema>;
 export type ProductSchema = typeof productSchema;
 
 // If you need a create schema without the id field
-export const productCreateSchema = productSchema.partial().omit({ id: true });
-export type ProductCreateType = z.infer<typeof productCreateSchema>;
+export const productNewUpdateSchema = productSchema.partial();
+export type ProductNewUpdateType = z.infer<typeof productNewUpdateSchema>;
 
 export const productItemSchema = z.object({
 	id: z.number().int().positive(),

@@ -1,7 +1,8 @@
 import { TextUtilities } from '$lib/utils/text-utilities.js';
 import {
 	PUBLIC_SUPABASE_STORAGE_URL,
-	PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET
+	PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET,
+	PUBLIC_DEFAULT_PROFILE_IMAGE
 } from '$env/static/public';
 import { type BaseUser, type BaseUserUpdate, type SignupUser } from '$lib/schema/login.schema';
 import { Argon2id } from 'oslo/password';
@@ -32,7 +33,7 @@ async function transformSignupToUser(signupData: SignupUser): Promise<BaseUser> 
 			handle: createHandle(signupData.first_name, signupData.last_name),
 			hashed_password: await new Argon2id().hash(signupData.password),
 			title: "Earn It's Newest Creator",
-			profile_pic: `${PUBLIC_SUPABASE_STORAGE_URL}/${PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET}/defaultuser.png`,
+			profile_pic: `${PUBLIC_SUPABASE_STORAGE_URL}/${PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET}/${PUBLIC_DEFAULT_PROFILE_IMAGE}`,
 			tag_line: 'Selling digital products is my jam!',
 			bio: 'Say hi. I am new here!',
 			token: crypto.randomUUID(),

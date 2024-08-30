@@ -26,7 +26,7 @@
 
 <Card class="overflow-hidden rounded-lg bg-gray-900 shadow-lg">
 	<div class="relative">
-		<img src="/img/facebook-course.png" alt={product.name} class="h-48 w-full object-cover" />
+		<img src={product.cover_image} alt={product.name} class="h-48 w-full object-cover" />
 	</div>
 	<CardContent class="p-4">
 		<CardTitle class="flex justify-between text-xl font-semibold ">

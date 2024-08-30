@@ -6,25 +6,26 @@
 	import Label from '$lib/components/ui/label/label.svelte';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
+	import UploadType from '$lib/components/base/ImageUpload.svelte';
+	import ImageUpload from '$lib/components/base/ImageUpload.svelte';
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import Marketplace from 'lucide-svelte/icons/store';
 	import Captions from 'lucide-svelte/icons/captions';
 	import FileText from 'lucide-svelte/icons/file-text';
 	import Image from 'lucide-svelte/icons/image';
 	import Currency from 'lucide-svelte/icons/currency';
-	import ImageUpload from '../components/ImageUpload.svelte';
 	import MeritItem from '../components/MeritItem.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import { superForm, superValidate, type Infer, type SuperValidated } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { productCreateSchema } from '$lib/schema/product.schema.ts';
-	import type { ProductCreateType } from '$lib/schema/product.schema.ts';
+	import { productNewUpdateSchema } from '$lib/schema/product.schema.ts';
+	//import type { ProductNewUpdateType } from '$lib/schema/product.schema.ts';
 	import SuperDebug from 'sveltekit-superforms';
 
 	export let data;
 
 	const form = superForm(data.form, {
-		validators: zodClient(productCreateSchema),
+		validators: zodClient(productNewUpdateSchema),
 		dataType: 'json',
 		invalidateAll: false,
 		resetForm: false
@@ -46,7 +47,7 @@
 </script>
 
 <PageWrapper>
-	<form method="POST" use:enhance>
+	<form method="POST" action="?/update" use:enhance>
 		<SuperDebug data={$formData} />
 		<SuperDebug data={$errors} />
 
@@ -123,7 +124,11 @@
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
-				<ImageUpload />
+				<ImageUpload
+					title="Upload your product image"
+					bind:imageUrl={$formData.cover_image}
+					uploadType="product_image"
+				/>
 			</Card.Content>
 		</Card.Root>
 		<Card.Root>
@@ -143,5 +148,9 @@
 			<Button on:click={() => window.history.back()} variant="secondary">Cancel</Button>
 			<Button type="submit">Save</Button>
 		</div>
+	</form>
+
+	<form method="POST" action="?/delete" use:enhance>
+		<button type="submit">Delete Product</button>
 	</form>
 </PageWrapper>

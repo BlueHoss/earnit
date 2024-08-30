@@ -15,6 +15,7 @@ import { supabaseServerClient } from './supabase.service.server';
 // Variables
 import {
 	PUBLIC_SUPABASE_STORAGE_URL,
+	PUBLIC_SUPABASE_PRODUCT_IMAGE_BUCKET,
 	PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET
 } from '$env/static/public';
 
@@ -26,10 +27,16 @@ import {
  * @param profileImageUrl
  * @returns
  */
-async function uploadProfileImage(file: File): Promise<string | undefined> {
+async function uploadProfileImage(file: File, uploadType: string): Promise<string | undefined> {
 	const suffix = getImageSuffix(file.type);
+
 	if (suffix) {
-		return await addToBucket(file, suffix);
+		switch (uploadType) {
+			case 'profile_image':
+				return await addToBucket(file, suffix, PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET);
+			case 'product_image':
+				return await addToBucket(file, suffix, PUBLIC_SUPABASE_PRODUCT_IMAGE_BUCKET);
+		}
 	}
 }
 
@@ -39,12 +46,16 @@ async function uploadProfileImage(file: File): Promise<string | undefined> {
  * @param supabase
  * @param imageBlob
  */
-async function addToBucket(imageBlob: Blob, suffix: string): Promise<string | undefined> {
+async function addToBucket(
+	imageBlob: Blob,
+	suffix: string,
+	bucket: string
+): Promise<string | undefined> {
 	const buffer = await imageBlob.arrayBuffer();
 	const imageBuffer = Buffer.from(buffer);
 	const imageName = uuidv4() + suffix;
 	const { data, error } = await supabaseServerClient.storage
-		.from(PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET)
+		.from(bucket)
 		.upload(imageName, imageBuffer, {
 			contentType: imageBlob.type,
 			upsert: true
@@ -58,10 +69,14 @@ async function addToBucket(imageBlob: Blob, suffix: string): Promise<string | un
 	}
 }
 
-async function deleteProfileImage(fileUrl: string) {
-	const { error } = await supabaseServerClient.storage
-		.from(PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET)
-		.remove([`${fileUrl}`]);
+async function deleteProfileImage(fileUrl: string, uploadType: string) {
+	let bucket = PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET;
+
+	if (uploadType === 'product_image') {
+		bucket = PUBLIC_SUPABASE_PRODUCT_IMAGE_BUCKET;
+	}
+
+	const { error } = await supabaseServerClient.storage.from(bucket).remove([`${fileUrl}`]);
 
 	if (error) {
 		console.error('Error deleting file:', error);

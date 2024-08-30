@@ -194,8 +194,7 @@ async function getProductsPurchasedList(
 			handle: login_table.handle,
 			cost: product_invoice_table.cost
 		})
-		.from(store_table)
-		.innerJoin(product_table, eq(store_table.id, product_table.store_id))
+		.from(product_table)
 		.innerJoin(product_invoice_table, eq(product_table.id, product_invoice_table.product_id))
 		.innerJoin(login_table, eq(product_invoice_table.follower_user_id, login_table.id))
 		.where(whereClause);

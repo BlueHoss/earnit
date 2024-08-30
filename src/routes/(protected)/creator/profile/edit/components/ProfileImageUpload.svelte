@@ -32,6 +32,7 @@
 	async function uploadProfilePic(file: File) {
 		const formData = new FormData();
 		formData.append('file', file);
+		formData.append('uploadType', 'profile');
 
 		const response = await fetch('/api/profile-image', {
 			method: 'POST',

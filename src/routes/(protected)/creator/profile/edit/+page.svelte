@@ -18,6 +18,7 @@
 	import AvatarImage from '$lib/components/ui/avatar/avatar-image.svelte';
 	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
 	import { profileEditSchema } from '$lib/schema/login.schema.js';
+	import ImageUpload from '$lib/components/base/ImageUpload.svelte';
 
 	export let data; //: SuperValidated<Infer<UserProfile>>;
 
@@ -147,7 +148,13 @@
 					Earn It.
 				</Card.Description>
 			</Card.Header>
-			<Card.Content><ProfileImageUpload bind:profilePicUrl={$formData.profile_pic} /></Card.Content>
+			<Card.Content
+				><ImageUpload
+					title="Upload your profile pic!"
+					uploadType="profile_image"
+					bind:imageUrl={$formData.profile_pic}
+				/></Card.Content
+			>
 		</Card.Root>
 
 		<div class="mt-8 flex justify-end space-x-4">

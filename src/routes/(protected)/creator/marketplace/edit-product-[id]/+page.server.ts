@@ -1,9 +1,10 @@
-import { fail, superValidate } from 'sveltekit-superforms';
+import { fail, setError, superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { zod } from 'sveltekit-superforms/adapters';
-import { productCreateSchema } from '$lib/schema/product.schema';
+import { productNewUpdateSchema } from '$lib/schema/product.schema';
 import { redirect, type Actions } from '@sveltejs/kit';
 import { ProductService } from '$lib/server/services/product.service.server';
+import { setFlash } from 'sveltekit-flash-message/server';
 
 export const load: PageServerLoad = async (event) => {
 	const productId = Number(event.params.id);
@@ -11,7 +12,7 @@ export const load: PageServerLoad = async (event) => {
 
 	ProductService.getProductById(userId, productId);
 	const product = await ProductService.getProductById(userId, productId);
-	const form = await superValidate(product, zod(productCreateSchema));
+	const form = await superValidate(product, zod(productNewUpdateSchema));
 
 	return {
 		form
@@ -19,8 +20,8 @@ export const load: PageServerLoad = async (event) => {
 };
 
 export const actions: Actions = {
-	default: async ({ request }) => {
-		const form = await superValidate(request, zod(productCreateSchema));
+	update: async ({ request }) => {
+		const form = await superValidate(request, zod(productNewUpdateSchema));
 
 		if (!form.valid) {
 			return fail(400, {
@@ -29,8 +30,13 @@ export const actions: Actions = {
 		}
 
 		try {
-			//form.data.creator_user_id = request.locals.user.id;
-			await ProductService.createProduct(form.data);
+			if (form.data.id === 0 || form.data.id === undefined) {
+				//new product
+				await ProductService.createProduct(form.data);
+			} else {
+				//update product
+				await ProductService.updateProduct(form.data);
+			}
 
 			throw redirect(303, '/creator/marketplace');
 		} catch (error) {
@@ -40,5 +46,27 @@ export const actions: Actions = {
 
 			return fail(500, { form, error: 'Failed to create the product.' });
 		}
+	},
+
+	delete: async (event) => {
+		const { params } = event;
+		const productId = Number(params.id);
+
+		if (isNaN(productId)) {
+			return { success: false, error: 'Invalid product ID' };
+		}
+
+		try {
+			const deletedProduct = await ProductService.deleteProduct(productId);
+			if (deletedProduct) {
+				setFlash({ type: 'success', message: 'Product deleted successfully' }, event);
+			} else {
+				setFlash({ type: 'error', message: 'Product was not deleted' }, event);
+			}
+		} catch (error) {
+			console.error('Error in delete action:', error);
+			setFlash({ type: 'error', message: 'Product was not deleted' }, event);
+		}
+		throw redirect(303, '/creator/marketplace');
 	}
 };
