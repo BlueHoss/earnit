@@ -1,4 +1,4 @@
-import type { ProductType } from '$lib/schema/product.schema';
+import type { Product } from '$lib/schema/product.schema';
 import type { ProductInvoiceResult } from '$lib/schema/product_invoice.schema';
 
 export interface CreatorDashboard {
@@ -17,7 +17,7 @@ export interface CreatorDashboardPublic {
 	followerCount: number;
 	purchaseCount: number;
 	productCount: number;
-	products: ProductType[];
+	products: Product[];
 }
 
 // export interface ProductPurchase {

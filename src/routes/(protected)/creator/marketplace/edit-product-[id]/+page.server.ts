@@ -1,4 +1,4 @@
-import { fail, setError, superValidate } from 'sveltekit-superforms';
+import { fail, superValidate } from 'sveltekit-superforms';
 import type { PageServerLoad } from './$types';
 import { zod } from 'sveltekit-superforms/adapters';
 import { productNewUpdateSchema } from '$lib/schema/product.schema';
@@ -12,6 +12,14 @@ export const load: PageServerLoad = async (event) => {
 
 	ProductService.getProductById(userId, productId);
 	const product = await ProductService.getProductById(userId, productId);
+	//Get file uploads associated to this product.
+	const productItems = await ProductService.getProductItemsByProductId(productId);
+
+	if (!product) {
+		throw redirect(303, '/creator/marketplace');
+	}
+
+	product.productItems = productItems;
 	const form = await superValidate(product, zod(productNewUpdateSchema));
 
 	return {
@@ -21,12 +29,11 @@ export const load: PageServerLoad = async (event) => {
 
 export const actions: Actions = {
 	update: async ({ request }) => {
-		const form = await superValidate(request, zod(productNewUpdateSchema));
+		const formData = await request.formData();
+		const form = await superValidate(formData, zod(productNewUpdateSchema));
 
 		if (!form.valid) {
-			return fail(400, {
-				form
-			});
+			return fail(400, { form });
 		}
 
 		try {
@@ -68,5 +75,27 @@ export const actions: Actions = {
 			setFlash({ type: 'error', message: 'Product was not deleted' }, event);
 		}
 		throw redirect(303, '/creator/marketplace');
+	},
+
+	deleteProductItem: async (event) => {
+		const formData = await event.request.formData();
+		const productItemId = parseInt(formData.get('productItemId') as string);
+
+		if (isNaN(productItemId)) {
+			return setFlash({ type: 'success', message: 'Product item deleted successfully' }, event);
+		}
+
+		try {
+			const deletedProductItem = await ProductService.deleteProductItemById(productItemId);
+			if (deletedProductItem) {
+				return setFlash({ type: 'success', message: 'Product item deleted successfully' }, event);
+			} else {
+				return setFlash({ type: 'error', message: 'Product item was not deleted' }, event);
+			}
+		} catch (error) {
+			console.error('Error in deleteProductItem action:', error);
+			return setFlash({ type: 'error', message: 'Product item was not deleted' }, event);
+		}
+		//throw redirect(303, '/creator/marketplace');
 	}
 };

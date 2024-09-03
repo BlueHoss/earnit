@@ -148,6 +148,20 @@
       "when": 1724983114101,
       "tag": "0020_jazzy_darkhawk",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1725050426647,
+      "tag": "0021_magical_catseye",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1725387843543,
+      "tag": "0022_superb_radioactive_man",
+      "breakpoints": true
     }
   ]
 }

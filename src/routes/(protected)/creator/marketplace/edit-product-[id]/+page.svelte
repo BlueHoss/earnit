@@ -21,33 +21,35 @@
 	import { productNewUpdateSchema } from '$lib/schema/product.schema.ts';
 	//import type { ProductNewUpdateType } from '$lib/schema/product.schema.ts';
 	import SuperDebug from 'sveltekit-superforms';
+	import ButtonConfirmAction from '$lib/components/base/ButtonConfirmAction.svelte';
 
 	export let data;
+	export let fileUploadList: { id: number; name: string; file: File | null }[] = [];
 
 	const form = superForm(data.form, {
 		validators: zodClient(productNewUpdateSchema),
 		dataType: 'json',
 		invalidateAll: false,
-		resetForm: false
+		resetForm: false,
+		onSubmit: ({ formData, cancel }) => {
+			// Append each file and its metadata to formData
+			fileUploadList.forEach((upload, index) => {
+				formData.append(`productItems[${index}].name`, upload.name);
+				if (upload.file) {
+					formData.append(`productItems[${index}].file`, upload.file);
+				}
+			});
+
+			// Add the number of productItems
+			formData.append('productItemsCount', fileUploadList.length.toString());
+		}
 	});
 
-	// export let data; //: SuperValidated<Infer<ProductCreateType>>;
-
-	// const form = superForm(data.form, {
-	// 	validators: zodClient(productCreateSchema),
-	// 	onUpdate: ({ form }) => {
-	// 		// Convert cost to number before validation
-	// 		form.cost = form.cost ? parseFloat(form.cost) : null;
-	// 	},
-	// 	dataType: 'json',
-	// 	invalidateAll: false,
-	// 	resetForm: false
-	// });
 	const { form: formData, errors, enhance, delayed } = form;
 </script>
 
 <PageWrapper>
-	<form method="POST" action="?/update" use:enhance>
+	<form method="POST" id="productForm" action="?/update" use:enhance enctype="multipart/form-data">
 		<!-- <SuperDebug data={$formData} />
 		<SuperDebug data={$errors} /> -->
 
@@ -55,7 +57,9 @@
 			<Marketplace class="mr-2" />
 			Add/Edit a Marketplace Offering
 		</Label>
-		<p class="text-md text-gray-400">Use this page to add and modify your Marketplace offerings.</p>
+		<p class="text-md pb-5 text-gray-400">
+			Use this page to add and modify your Marketplace offerings.
+		</p>
 		<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 			<Card.Root>
 				<Card.Header>
@@ -93,64 +97,77 @@
 				</Card.Content>
 			</Card.Root>
 		</div>
-		<Card.Root>
-			<Card.Header>
-				<Card.Title class="flex items-center"><FileText class="mr-2" />Item Description</Card.Title>
-				<Card.Description>
-					The 500 word description shown for this item on the marketplace.
-				</Card.Description>
-			</Card.Header>
-			<Card.Content>
-				<form class="flex flex-col gap-4">
-					<Card.Content>
-						<Form.Field name="description" {form} class="flex-1">
-							<Form.Control let:attrs>
-								<Textarea {...attrs} bind:value={$formData.description} />
-							</Form.Control>
-							<Form.FieldErrors />
-						</Form.Field>
-					</Card.Content>
-					<p class="text-sm text-muted-foreground">
-						The first 30 characters are shown in the marketplace listings view.
-					</p>
-				</form>
-			</Card.Content>
-		</Card.Root>
-		<Card.Root>
-			<Card.Header>
-				<Card.Title class="flex items-center"><Image class="mr-2" />Cover Image</Card.Title>
-				<Card.Description>
-					Your cover image is the first thing people see when they view your item.
-				</Card.Description>
-			</Card.Header>
-			<Card.Content>
-				<ImageUpload
-					title="Upload your product image"
-					bind:imageUrl={$formData.cover_image}
-					uploadType="product_image"
-				/>
-			</Card.Content>
-		</Card.Root>
-		<Card.Root>
-			<Card.Header>
-				<Card.Title class="flex items-center"><Image class="mr-2" />Merit Item</Card.Title>
-				<Card.Description>
-					Earn It allows you to unloack many Merit Items in each Merit Offering. Add all of your
-					digital products can be uploaded below.
-				</Card.Description>
-			</Card.Header>
-			<Card.Content>
-				<MeritItem />
-			</Card.Content>
-		</Card.Root>
+
+		<div class="grid grid-cols-1 pt-5 gap-6">
+			<Card.Root>
+				<Card.Header>
+					<Card.Title class="flex items-center"
+						><FileText class="mr-2" />Item Description</Card.Title
+					>
+					<Card.Description>
+						The 500 word description shown for this item on the marketplace.
+					</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<div class="flex flex-col gap-4">
+						<Card.Content>
+							<Form.Field name="description" {form} class="flex-1">
+								<Form.Control let:attrs>
+									<Textarea {...attrs} bind:value={$formData.description} />
+								</Form.Control>
+								<Form.FieldErrors />
+							</Form.Field>
+						</Card.Content>
+						<p class="text-sm text-muted-foreground">
+							The first 30 characters are shown in the marketplace listings view.
+						</p>
+					</div>
+				</Card.Content>
+			</Card.Root>
+			<Card.Root>
+				<Card.Header>
+					<Card.Title class="flex items-center"><Image class="mr-2" />Cover Image</Card.Title>
+					<Card.Description>
+						Your cover image is the first thing people see when they view your item.
+					</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<ImageUpload
+						title="Upload your product image"
+						bind:imageUrl={$formData.cover_image}
+						uploadType="product_image"
+					/>
+				</Card.Content>
+			</Card.Root>
+			<Card.Root>
+				<Card.Header>
+					<Card.Title class="flex items-center"><Image class="mr-2" />Merit Item</Card.Title>
+					<Card.Description>
+						Earn It allows you to unloack many Merit Items in each Merit Offering. Add all of your
+						digital products can be uploaded below.
+					</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<MeritItem bind:uploads={$formData.productItems} />
+				</Card.Content>
+			</Card.Root>
+		</div>
 
 		<div class="mt-8 flex justify-end space-x-4">
+			<form id="deleteForm" method="POST" action="?/delete" use:enhance>
+				<ButtonConfirmAction
+					buttonText="Delete Product"
+					warningText="Are you sure you want to delete this product?"
+					callBack={() => {
+						var deleteForm = document.getElementById('deleteForm');
+						if (deleteForm) {
+							deleteForm.submit();
+						}
+					}}
+				></ButtonConfirmAction>
+			</form>
 			<Button on:click={() => window.history.back()} variant="secondary">Cancel</Button>
 			<Button type="submit">Save</Button>
 		</div>
-	</form>
-
-	<form method="POST" action="?/delete" use:enhance>
-		<button type="submit">Delete Product</button>
 	</form>
 </PageWrapper>

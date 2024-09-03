@@ -105,6 +105,7 @@ export const product_table = pgTable('product', {
 		.references(() => login_table.id, { onDelete: 'cascade' }),
 	cover_image: text('cover_image'),
 	cost: numeric('cost', { precision: 10, scale: 2 }).notNull().default('0.00'),
+	buyitnow_link: text('buyitnow_link'),
 	enabled: boolean('enabled').notNull().default(true)
 });
 
@@ -143,9 +144,11 @@ export const plan_subscription_table = pgTable('plan_subscription', {
 export const product_item_table = pgTable('product_item', {
 	id: serial('id').primaryKey().notNull(),
 	name: text('name'),
+	file_name: text('file_name'),
 	download_url: text('download_url'),
-	product_id: integer('product_id').references(() => product_table.id, { onDelete: 'cascade' }),
-	buyitnow_link: text('buyitnow_link')
+	product_id: integer('product_id')
+		.notNull()
+		.references(() => product_table.id, { onDelete: 'cascade' })
 });
 
 export const reward_action_table = pgTable('reward_action', {

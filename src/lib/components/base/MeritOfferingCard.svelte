@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let product: ProductType;
+	export let product: Product;
 
 	import CardContent from '$lib/components/ui/card/card-content.svelte';
 	import CardDescription from '$lib/components/ui/card/card-description.svelte';
@@ -10,7 +10,7 @@
 
 	import { getUserRole } from '$lib/utils/auth';
 	import Button from '../ui/button/button.svelte';
-	import type { ProductType } from '$lib/schema/product.schema';
+	import type { Product } from '$lib/schema/product.schema';
 
 	var canEdit = false;
 	function setPermission() {

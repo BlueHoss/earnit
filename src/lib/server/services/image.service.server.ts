@@ -102,6 +102,16 @@ function getImageSuffix(mimeType: string): string | undefined {
 			return '.tiff';
 		case 'image/webp':
 			return '.webp';
+		case 'image/gif':
+			return '.gif';
+		case 'image/svg+xml':
+			return '.svg';
+		case 'application/pdf':
+			return '.pdf';
+		case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+			return '.docx';
+		case 'text/html':
+			return '.html';
 	}
 }
 

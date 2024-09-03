@@ -8,15 +8,13 @@ export const productSchema = z.object({
 	//cover_image: z.string().url({ message: 'Invalid URL for cover image' }).nullable(),
 	cover_image: z.string().nullable(),
 	cost: z.coerce.number().positive(),
-	enabled: z.boolean().default(true)
+	enabled: z.boolean().default(true),
+	productItems: z.array(z.lazy(() => productItemNewUpdateSchema)).optional()
 });
 
-//age : z.preprocess((a) => parseInt(z.string().parse(a),10),
-//z.number().gte(18, 'Must be 18 and above'))
-//age: z.coerce.number().gte(18, 'Must be 18 and above');
-
 // This type represents the inferred type from the schema
-export type ProductType = z.infer<typeof productSchema>;
+export type Product = z.infer<typeof productSchema>;
+
 // This type represents the schema itself
 export type ProductSchema = typeof productSchema;
 
@@ -25,11 +23,16 @@ export const productNewUpdateSchema = productSchema.partial();
 export type ProductNewUpdateType = z.infer<typeof productNewUpdateSchema>;
 
 export const productItemSchema = z.object({
-	id: z.number().int().positive(),
+	id: z.number().int().positive().optional(),
 	name: z.string().min(1, { message: 'Product item name is required' }),
-	download_url: z.string().url({ message: 'Invalid download URL' }).optional(),
-	product_id: z.number().int().positive(),
-	buyitnow_link: z.string().url({ message: 'Invalid buy it now link' }).optional()
+	file_name: z.string().nullable(),
+	download_url: z.string().nullable(),
+	product_id: z.number().int().positive().optional(),
+	file: z.instanceof(File).nullable() // Add this line to handle file uploads
 });
 
+export type ProductItem = typeof productItemSchema;
 export type ProductItemSchema = z.infer<typeof productItemSchema>;
+
+export const productItemNewUpdateSchema = productItemSchema.partial();
+export type ProductItemNewUpdateType = z.infer<typeof productItemNewUpdateSchema>;
