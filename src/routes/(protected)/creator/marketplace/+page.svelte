@@ -1,11 +1,10 @@
 <!-- Page Marketplace -->
 <script lang="ts">
-	import type { PageData } from './$types';
+	interface PageData {
+		creatorMarketplaceData: CreatorMarketplaceData;
+		user: User;
+	}
 
-	import HeartIcon from 'lucide-svelte/icons/heart';
-	import FilmIcon from 'lucide-svelte/icons/film';
-	import FollowIcon from 'lucide-svelte/icons/user-round-check';
-	import CommentIcon from 'lucide-svelte/icons/message-square-more';
 	import CopyIcon from 'lucide-svelte/icons/copy';
 	import SendIcon from 'lucide-svelte/icons/send';
 	import TwitterIcon from '$lib/components/ui/svgIcons/TwitterIcon.svelte';
@@ -14,24 +13,26 @@
 	import CirclePlus from 'lucide-svelte/icons/circle-plus';
 	import { Button } from '$lib/components/ui/button/index.ts';
 	import * as Card from '$lib/components/ui/card/index.ts';
-	import EditMissionItem from './components/EditMissionItem.svelte';
 	import MeritOfferingCard from '$lib/components/base/MeritOfferingCard.svelte';
 	import PageHeader from '$lib/components/base/PageHeader.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
-
-	export let data: PageData;
-	$: ({ creatorDashboard } = data);
-
-	let showShareDialog = false;
-
 	import { PUBLIC_BASE_URL } from '$env/static/public';
 	import CreatorProductCount from '../components/CreatorProductCount.svelte';
 	import ProductsRedeemed from '../components/ProductsRedeemed.svelte';
 	import Subscribers from '../components/Subscribers.svelte';
 	import EarnItFollowers from '../components/EarnItFollowers.svelte';
+	import MissionActions from '$lib/components/base/MissionActions.svelte';
+	import type { CreatorMarketplaceData } from '$lib/types';
+	import type { User } from 'lucia';
 
-	const profileLink = PUBLIC_BASE_URL + '/public/market/' + data.user.handle;
+	export let data: PageData;
+	let creatorMarketplaceData: CreatorMarketplaceData;
+	$: ({ creatorMarketplaceData, user } = data);
+
+	let showShareDialog = false;
+
+	const profileLink = PUBLIC_BASE_URL + '/public/market/' + data.user.id;
 	let copyButtonText = 'Copy profile link';
 	function copyText() {
 		navigator.clipboard
@@ -72,10 +73,10 @@
 	</div>
 
 	<div class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-		<CreatorProductCount productCount={creatorDashboard.productCount} />
-		<ProductsRedeemed totalRedeemed={creatorDashboard.purchaseCount} />
-		<Subscribers subscriberCount={creatorDashboard.subscriberCount} />
-		<EarnItFollowers followers={creatorDashboard.followerCount} />
+		<CreatorProductCount productCount={creatorMarketplaceData.productCount} />
+		<ProductsRedeemed totalRedeemed={creatorMarketplaceData.purchaseCount} />
+		<Subscribers subscriberCount={creatorMarketplaceData.subscriberCount} />
+		<EarnItFollowers followers={creatorMarketplaceData.followerCount} />
 	</div>
 	<div>
 		<Card.Root class="xl:col-span-2">
@@ -90,8 +91,8 @@
 				>
 			</Card.Header>
 			<Card.Content class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-				{#each creatorDashboard.products as product}
-					<MeritOfferingCard {product} />
+				{#each creatorMarketplaceData.products as product}
+					<MeritOfferingCard {data} {product} />
 				{/each}
 			</Card.Content>
 		</Card.Root>
@@ -105,18 +106,7 @@
 				</Card.Description>
 			</Card.Header>
 			<Card.Content class="grid gap-8">
-				<EditMissionItem name="Like Comment" icon={HeartIcon} value={2} />
-				<EditMissionItem name="Like Video" icon={HeartIcon} value={2} />
-				<EditMissionItem name="Like Photo" icon={HeartIcon} value={2} />
-				<EditMissionItem name="Like Real" icon={FilmIcon} value={10} />
-				<EditMissionItem name="Comment" icon={CommentIcon} value={6} />
-				<!-- <EditMissionItem
-					name="Comment ('I Love you ') expires in 12h 15m"
-					icon={CommentIcon}
-					value={15}
-				/> -->
-				<EditMissionItem name="Follow" icon={FollowIcon} value={3} />
-				<!-- <EditMissionItem name="Share" icon={ShareIcon} value={10} /> -->
+				<MissionActions missionActions={creatorMarketplaceData.missionActionItems} />
 			</Card.Content>
 		</Card.Root>
 	</div>

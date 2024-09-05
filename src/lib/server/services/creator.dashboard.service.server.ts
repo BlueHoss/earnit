@@ -3,6 +3,7 @@ import db from '$lib/server/database/drizzle';
 import {
 	follower_creator_table,
 	login_table,
+	mission_action_table,
 	plan_subscription_table,
 	plan_table,
 	product_invoice_table,
@@ -11,7 +12,9 @@ import {
 } from '$lib/server/database/schema';
 import type { LoginQueryResult } from '$lib/schema/login.schema';
 import type { ProductInvoiceResult } from '$lib/schema/product_invoice.schema';
-//import type { User, UpdateUser } from '$lib/server/database/drizzle-schemas';
+import { ProductService } from './product.service.server';
+import type { CreatorDashboard, CreatorMarketplaceData } from '$lib/types';
+import type { MissionAction } from '$lib/schema/mission.schema';
 
 /**
  * Retrieves the number of paid subscribers for a given Creator.
@@ -255,6 +258,16 @@ async function getCreatorFollowerList(userid: number): Promise<LoginQueryResult[
 	return followers;
 }
 
+async function getMissionActionList(userid: number): Promise<MissionAction[]> {
+	const actions = await db
+		.select()
+		.from(mission_action_table)
+		.where(eq(mission_action_table.creator_user_id, userid))
+		.orderBy(mission_action_table.name);
+
+	return actions;
+}
+
 /**
  * Retrieves the number of enabled products for a given Creator.
  *
@@ -276,14 +289,55 @@ async function getProductCount(userid: number): Promise<number> {
 	}
 }
 
+async function loadMarketplaceData(creatorUserId: number): Promise<CreatorMarketplaceData> {
+	const subscriberCount = await getPaidSubscribers(creatorUserId);
+	const purchaseCount = await getProductsPurchasedCount(creatorUserId, null, null);
+	const products = await ProductService.getProductsByUserId(creatorUserId);
+	const followerCount = await getCreatorFollowerCount(creatorUserId);
+	const productCount = await getProductCount(creatorUserId);
+	const missionActionItems = await getMissionActionList(creatorUserId);
+
+	return (await {
+		subscriberCount,
+		purchaseCount,
+		followerCount,
+		productCount,
+		products,
+		missionActionItems
+	}) as CreatorMarketplaceData;
+}
+
+async function loadDashboardData(creatorUserId: number): Promise<CreatorDashboard> {
+	const subscriberCount = await getPaidSubscribers(creatorUserId);
+	const revenue = await getMonthlyRevenue(creatorUserId);
+
+	//Sliding 30 day window
+	// Get today's date
+	const endDate = new Date();
+	// Get the date 30 days ago
+	const startDate = new Date();
+	startDate.setDate(startDate.getDate() - 30);
+
+	const rewardsUsed = await getRewardsUsed(creatorUserId, startDate, endDate);
+	const purchaseCount = await getProductsPurchasedCount(creatorUserId, startDate, endDate);
+	const purchaseAmount = await getProductsPurchasedAmount(creatorUserId, startDate, endDate);
+	const productPurchaseList = await getProductsPurchasedList(creatorUserId, startDate, endDate);
+	const followerCount = await getCreatorFollowerCount(creatorUserId);
+	const productCount = await getProductCount(creatorUserId);
+
+	return (await {
+		subscriberCount,
+		revenue,
+		rewardsUsed,
+		purchaseCount,
+		purchaseAmount,
+		followerCount,
+		productCount,
+		productPurchaseList
+	}) as CreatorDashboard;
+}
+
 export const CreatorDashboardService = {
-	getPaidSubscribers,
-	getMonthlyRevenue,
-	getRewardsUsed,
-	getProductsPurchasedCount,
-	getProductsPurchasedAmount,
-	getProductsPurchasedList,
-	getCreatorFollowerCount,
-	getCreatorFollowerList,
-	getProductCount
+	loadDashboardData,
+	loadMarketplaceData
 };

@@ -20,7 +20,7 @@
 			<div class="w-full flex-1"></div>
 
 			<!-- Login or switch to my profile -->
-			<Button>Login</Button>
+			<Button href="/auth/sign-in">Login</Button>
 			<ModeSwitch />
 		</header>
 		<main class="flex flex-1 flex-col justify-center gap-4 p-4 lg:gap-6 lg:p-6">

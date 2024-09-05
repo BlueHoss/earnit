@@ -162,6 +162,13 @@
       "when": 1725387843543,
       "tag": "0022_superb_radioactive_man",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1725406601937,
+      "tag": "0023_eager_rick_jones",
+      "breakpoints": true
     }
   ]
 }

@@ -20,6 +20,7 @@
 	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
 	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
 	import AvatarImage from '$lib/components/ui/avatar/avatar-image.svelte';
+	import Number from '$lib/components/base/Number.svelte';
 </script>
 
 <PageWrapper>
@@ -30,13 +31,15 @@
 				<!-- Left Section: Image and Text -->
 				<div class="flex items-center space-x-4">
 					<!-- Example Profile Component with Image and Text -->
-					<Avatar class="h-16 w-16">
-						<AvatarImage src="/img/suzy.webp" alt="Suzy's Profile Picture" />
+					<Avatar class="h-24 w-24">
+						<AvatarImage src={data.creator.profile_pic} alt="{data.creator.name} Profile Picture" />
 						<AvatarFallback>SM</AvatarFallback>
 					</Avatar>
 					<div>
-						<h2 class="text-xl font-bold">{data.name}'s Marketplace</h2>
-						<p class="text-sm text-gray-400">{data.followers} followers</p>
+						<h2 class="text-xl font-bold">{data.creator.handle} Marketplace</h2>
+						<p class="text-sm text-gray-400">
+							<Number amount={data.creator.follower_count} /> followers
+						</p>
 					</div>
 				</div>
 
@@ -44,7 +47,7 @@
 				<div class="flex flex-col space-y-2">
 					<Button class="px-6"><FollowEarnItIcon class="pr-1" />Follow</Button>
 					<Button class="px-6"><PaidSubscribersIcon class="pr-1" />Subscribe</Button>
-					<a href="/profile/{data.name}">
+					<a href="/profile/{data.creator.handle}">
 						<Button class="px-6"><ProfileIcon class="pr-1" /> View Profile</Button></a
 					>
 				</div>
@@ -56,15 +59,16 @@
 		<Card.Root class="xl:col-span-2">
 			<Card.Header class="flex flex-row items-center">
 				<div class="grid gap-2">
-					<Card.Title>{data.name}'s Merit Offerings</Card.Title>
+					<Card.Title>{data.creator.handle}'s Merit Offerings</Card.Title>
 					<Card.Description
 						>All of your Merit Offerings that are displayed in your Marketplace</Card.Description
 					>
 				</div>
 			</Card.Header>
 			<Card.Content class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-				<MeritOfferingCard CardName="Facebook Course" EffortCredit="27" />
-				<MeritOfferingCard CardName="Google Ads Course" EffortCredit="33" />
+				{#each data.products as product}
+					<MeritOfferingCard {data} {product} />
+				{/each}
 			</Card.Content>
 		</Card.Root>
 	</div>

@@ -131,6 +131,18 @@ export const mission_table = pgTable('mission', {
 	platform: text('platform')
 });
 
+export const mission_action_table = pgTable('mission_action', {
+	id: serial('id').primaryKey().notNull(),
+	mission_id: integer('mission_id')
+		.references(() => mission_table.id)
+		.notNull(),
+	name: text('name').notNull(),
+	reward_per_day: integer('reward_per_day').notNull().default(0),
+	creator_user_id: integer('creator_user_id')
+		.references(() => login_table.id)
+		.notNull()
+});
+
 export const plan_subscription_table = pgTable('plan_subscription', {
 	id: serial('id').primaryKey().notNull(),
 	creator_user_id: integer('creator_user_id').references(() => login_table.id),
@@ -151,19 +163,11 @@ export const product_item_table = pgTable('product_item', {
 		.references(() => product_table.id, { onDelete: 'cascade' })
 });
 
-export const reward_action_table = pgTable('reward_action', {
-	id: serial('id').primaryKey().notNull(),
-	mission_id: integer('mission_id').references(() => mission_table.id),
-	name: text('name'),
-	reward_per_day: numeric('reward_per_day'),
-	creator_user_id: integer('creator_user_id').references(() => login_table.id)
-});
-
 export const reward_earned_table = pgTable('reward_earned', {
 	id: serial('id').primaryKey().notNull(),
 	follower_user_id: integer('follower_user_id').references(() => login_table.id),
 	date_awarded: timestamp('date_awarded', { mode: 'date' }),
-	reward_type_id: integer('reward_type_id').references(() => reward_action_table.id),
+	mission_action_id: integer('reward_type_id').references(() => mission_action_table.id),
 	reward_value: numeric('reward_value'),
 	creator_user_id: integer('creator_user_id').references(() => login_table.id)
 });

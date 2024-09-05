@@ -2,8 +2,9 @@
 	import AuthLayout from '$lib/components/navigation/AuthLayout.svelte';
 	import PublicLayout from '$lib/components/navigation/PublicLayout.svelte';
 	import { getUserRole } from '$lib/utils/auth';
-
-	let role = getUserRole();
+	export let data;
+	let role = getUserRole(data?.user);
+	console.log('user role', role);
 </script>
 
 {#if role == 'public'}
@@ -11,7 +12,7 @@
 		<slot />
 	</PublicLayout>
 {:else}
-	<AuthLayout>
+	<AuthLayout {data}>
 		<slot />
 	</AuthLayout>
 {/if}

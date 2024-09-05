@@ -1,3 +1,4 @@
+import type { MissionAction } from '$lib/schema/mission.schema';
 import type { Product } from '$lib/schema/product.schema';
 import type { ProductInvoiceResult } from '$lib/schema/product_invoice.schema';
 
@@ -12,18 +13,11 @@ export interface CreatorDashboard {
 	productPurchaseList: ProductInvoiceResult[] | [];
 }
 
-export interface CreatorDashboardPublic {
+export interface CreatorMarketplaceData {
 	subscriberCount: number;
 	followerCount: number;
 	purchaseCount: number;
 	productCount: number;
 	products: Product[];
+	missionActionItems: MissionAction[];
 }
-
-// export interface ProductPurchase {
-// 	id: number;
-// 	name: string;
-// 	follower: string;
-// 	handle: string;
-// 	cost: number;
-// }

@@ -15,10 +15,10 @@
 	import FollowerNavigationMenu from '$lib/components/navigation/FollowerNavigationMenu.svelte';
 	import { getUserRole } from '$lib/utils/auth';
 	import SignoutButton from '$lib/components/base/SignOutButton.svelte';
-
+	export let data;
 	let role: any;
 	function load() {
-		role = getUserRole();
+		role = getUserRole(data?.user);
 	}
 
 	load();
