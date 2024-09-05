@@ -1,27 +1,27 @@
 <script>
-	export let Title = 'Marketplace';
-	export let data;
-
 	import AvatarImage from '$lib/components/ui/avatar/avatar-image.svelte';
 	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
 	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
 	import Number from './Number.svelte';
 	import Handle from './Handle.svelte';
+
+	export let Title = 'Marketplace';
+	export let user;
 </script>
 
 <div class="flex items-center justify-between space-x-4">
 	<div class="flex items-center space-x-4">
 		<a href="/creator/profile/">
 			<Avatar style="height: 6rem; width: 6rem;">
-				<AvatarImage src={data.user?.profile_pic} alt="Suzy's Profile Picture" />
-				<AvatarFallback>{data.user?.initials}</AvatarFallback>
+				<AvatarImage src={user.profile_pic} alt="Suzy's Profile Picture" />
+				<AvatarFallback>{user.initials}</AvatarFallback>
 			</Avatar>
 		</a>
 		<div class="flex flex-col justify-center">
-			<h1 class="text-2xl font-semibold">{data.user?.first_name}'s {Title}</h1>
-			<Handle handle={data.user?.handle} />
-			<p class="text-sm">{data.user?.title}</p>
-			<p><Number amount={data.user?.follower_count} /> social media followers</p>
+			<h1 class="text-2xl font-semibold">{user.first_name}'s {Title}</h1>
+			<Handle handle={user.handle} />
+			<p class="text-sm">{user.title}</p>
+			<p><Number amount={user.follower_count} /> social media followers</p>
 		</div>
 	</div>
 </div>

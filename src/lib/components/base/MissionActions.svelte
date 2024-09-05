@@ -10,16 +10,13 @@
 	import * as Drawer from '$lib/components/ui/drawer';
 	import Label from '$lib/components/ui/label/label.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
+	import type { User } from 'lucia';
 
 	let isOpen = false;
 	let currentAction: MissionAction | null = null;
 
 	export let missionActions: MissionAction[] = [];
-
-	// $: if (currentAction != null) {
-	// 	const action = missionActions.find((action) => action.id === currentAction.id);
-	// 	if (action)action.reward_per_day = currentAction.reward_per_day;
-	// }
+	export let user: User | null = null;
 
 	$: missionActionsReactive = missionActions;
 
@@ -72,9 +69,11 @@
 		</div>
 		<div class="ml-auto flex items-center justify-end space-x-2 font-medium">
 			<span>{actionItem.reward_per_day}</span>
-			<Button on:click={() => openDialog(actionItem)}>
-				<Pencil class="h-5 w-5" />
-			</Button>
+			{#if user && user.is_creator}
+				<Button on:click={() => openDialog(actionItem)}>
+					<Pencil class="h-5 w-5" />
+				</Button>
+			{/if}
 		</div>
 	</div>
 {/each}

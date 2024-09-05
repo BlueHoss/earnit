@@ -1,17 +1,17 @@
 <script lang="ts">
-	//export let data: SuperValidated<Infer<UserSchema>>;
-	export let data: SuperValidated<SignupUser>;
-
+	import { page } from '$app/stores';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import * as Card from '$lib/components/ui/card';
 	import { Switch } from '$lib/components/ui/switch';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	//import { userSchema, type UserSchema } from '$lib/config/zod-schemas';
 	import { signupSchema, type SignupUser } from '$lib/schema/login.schema';
 	import { type Infer, type SuperValidated, superForm } from 'sveltekit-superforms';
 	import { Loader2 } from 'lucide-svelte';
 	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
+
+	export let data: SuperValidated<SignupUser>;
+	const user_type = $page.url.searchParams.get('user_type');
 
 	const form = superForm(data, {
 		validators: zodClient(signupSchema),
@@ -21,6 +21,12 @@
 	});
 
 	const { form: formData, errors, enhance, delayed } = form;
+
+	if (user_type && user_type === 'creator') {
+		$formData.is_creator = true;
+	} else if (user_type && user_type === 'follower') {
+		$formData.is_follower = true;
+	}
 </script>
 
 <form method="POST" use:enhance action="?/signup">

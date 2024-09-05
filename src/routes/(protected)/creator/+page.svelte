@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { PageData } from './$types';
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import * as Table from '$lib/components/ui/table/index.ts';
 	import PageHeader from '$lib/components/base/PageHeader.svelte';
@@ -10,25 +9,25 @@
 	import EarnItFollowers from './components/EarnItFollowers.svelte';
 	import RewardCurrency from '$lib/components/base/RewardCurrency.svelte';
 	import Handle from '$lib/components/base/Handle.svelte';
+	import type { UserDashboardData } from './types';
 
-	export let data: PageData;
-	$: ({ creatorDashboard } = data);
+	export let data: UserDashboardData;
 </script>
 
 <PageWrapper>
-	<PageHeader {data} Title="Dashboard" />
+	<PageHeader user={data.user} Title="Dashboard" />
 	<div class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
 		<!-- <EffortCreditsAvailable effortCredits={600} /> -->
 
-		<EffortCreditsThisMonth effortCredits={creatorDashboard.rewardsUsed} />
+		<EffortCreditsThisMonth effortCredits={data.dashboard.rewardsUsed} />
 		<ProductsRedeemedThisMonth
-			redeemedThisMonth={creatorDashboard.purchaseCount}
-			purchaseAmount={creatorDashboard.purchaseAmount}
+			redeemedThisMonth={data.dashboard.purchaseCount}
+			purchaseAmount={data.dashboard.purchaseAmount}
 		/>
-		<EarnItFollowers followers={creatorDashboard.followerCount} />
+		<EarnItFollowers followers={data.dashboard.followerCount} />
 		<PaidSubscribers
-			paidSubscribers={creatorDashboard.subscriberCount}
-			totalMonthlyRevenue={creatorDashboard.revenue}
+			paidSubscribers={data.dashboard.subscriberCount}
+			totalMonthlyRevenue={data.dashboard.revenue}
 		/>
 	</div>
 	<div>
@@ -50,7 +49,7 @@
 					</Table.Header>
 
 					<Table.Body>
-						{#each creatorDashboard.productPurchaseList as redemption}
+						{#each data.dashboard.productPurchaseList as redemption}
 							<Table.Row>
 								<Table.Cell>
 									<div class="font-medium">{redemption.follower}</div>

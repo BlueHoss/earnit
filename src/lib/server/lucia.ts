@@ -22,6 +22,8 @@ export const lucia = new Lucia(adapter, {
 	getUserAttributes: (attributes) => {
 		return {
 			userId: attributes.id,
+			//Used to determin if createor, follower or public.
+			user_type: attributes.is_creator ? 'creator' : attributes.is_follower ? 'follower' : 'public',
 			provider: attributes.provider,
 			providerId: attributes.providerId,
 			email: attributes.email,

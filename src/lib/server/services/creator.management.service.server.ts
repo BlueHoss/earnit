@@ -6,12 +6,13 @@
  */
 
 // Libraries and modules
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
-import { login_table } from '$lib/server/database/schema';
+import { follower_creator_table, login_table } from '$lib/server/database/schema';
 import { TextUtilities } from '$lib/utils/text-utilities';
 import { ImageService } from './image.service.server';
 import type { ProfileEditUser } from '$lib/schema/login.schema';
+import { boolean } from 'drizzle-orm/mysql-core';
 
 /**
  * Get the user bio
@@ -110,8 +111,37 @@ async function removeOldProfilePic(userid: number, newProfilePic: string | null)
 	}
 }
 
-export const CreatorProfileService = {
+async function addFollower(creatorId: number, followerId: number): Promise<boolean> {
+	//Ensure follower is not already following
+	const isFollowing = await db
+		.select({
+			id: follower_creator_table.follower_user_id
+		})
+		.from(follower_creator_table)
+		.where(
+			and(
+				eq(follower_creator_table.creator_user_id, creatorId),
+				eq(follower_creator_table.follower_user_id, followerId)
+			)
+		);
+
+	if (isFollowing.length > 0) {
+		return false;
+	}
+	const result = await db
+		.insert(follower_creator_table)
+		.values({
+			creator_user_id: creatorId,
+			follower_user_id: followerId
+		})
+		.returning();
+
+	return result ? true : false;
+}
+
+export const CreatorManagmentService = {
 	setUserProfile,
 	getUserBio,
-	getUserProfile
+	getUserProfile,
+	addFollower
 };

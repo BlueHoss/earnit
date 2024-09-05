@@ -5,7 +5,6 @@
 	import AvatarImage from '$lib/components/ui/avatar/avatar-image.svelte';
 	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
 	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
-	import Button from '$lib/components/ui/button/button.svelte';
 </script>
 
 <div class="flex items-center justify-between space-x-4">

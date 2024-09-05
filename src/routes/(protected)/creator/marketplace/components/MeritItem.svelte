@@ -58,7 +58,6 @@
 					callBack={() => removeUpload(index, upload.id)}
 				></ButtonConfirmAction>
 			</form>
-			<!-- <button class="text-red-500" on:click={() => removeUpload(index)}> Remove </button> -->
 		</div>
 	{/each}
 

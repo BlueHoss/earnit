@@ -1,27 +1,22 @@
 <script lang="ts">
-	export let product: Product;
-	export let data;
 	import CardContent from '$lib/components/ui/card/card-content.svelte';
 	import CardDescription from '$lib/components/ui/card/card-description.svelte';
 	import CardTitle from '$lib/components/ui/card/card-title.svelte';
 	import Card from '$lib/components/ui/card/card.svelte';
 	import PencilIcon from 'lucide-svelte/icons/pencil';
 	import CurrencyIcon from 'lucide-svelte/icons/currency';
-
-	import { getUserRole } from '$lib/utils/auth';
 	import Button from '../ui/button/button.svelte';
 	import type { Product } from '$lib/schema/product.schema';
+	import type { User } from 'lucia';
+
+	export let product: Product;
+	export let user: User;
 
 	var canEdit = false;
-	function setPermission() {
-		var role = getUserRole(data?.user);
 
-		if (role === 'creator') {
-			canEdit = true;
-		}
+	$: if (user && user.user_type === 'creator') {
+		canEdit = true;
 	}
-
-	setPermission();
 </script>
 
 {#if product}

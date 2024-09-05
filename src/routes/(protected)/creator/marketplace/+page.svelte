@@ -1,10 +1,5 @@
 <!-- Page Marketplace -->
 <script lang="ts">
-	interface PageData {
-		creatorMarketplaceData: CreatorMarketplaceData;
-		user: User;
-	}
-
 	import CopyIcon from 'lucide-svelte/icons/copy';
 	import SendIcon from 'lucide-svelte/icons/send';
 	import TwitterIcon from '$lib/components/ui/svgIcons/TwitterIcon.svelte';
@@ -25,6 +20,11 @@
 	import MissionActions from '$lib/components/base/MissionActions.svelte';
 	import type { CreatorMarketplaceData } from '$lib/types';
 	import type { User } from 'lucia';
+
+	interface PageData {
+		creatorMarketplaceData: CreatorMarketplaceData;
+		user: User;
+	}
 
 	export let data: PageData;
 	let creatorMarketplaceData: CreatorMarketplaceData;
@@ -57,7 +57,7 @@
 <PageWrapper>
 	<div class="flex items-center justify-between">
 		<!-- Left Section: Profile Picture and Title -->
-		<PageHeader {data} Title="Marketplace" />
+		<PageHeader user={data.user} Title="Marketplace" />
 
 		<!-- Right Section: Buttons stacked vertically -->
 		<div class="flex flex-col space-y-2">
@@ -92,7 +92,7 @@
 			</Card.Header>
 			<Card.Content class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
 				{#each creatorMarketplaceData.products as product}
-					<MeritOfferingCard {data} {product} />
+					<MeritOfferingCard user={data.user} {product} />
 				{/each}
 			</Card.Content>
 		</Card.Root>

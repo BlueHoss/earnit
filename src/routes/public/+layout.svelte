@@ -1,17 +1,21 @@
 <script lang="ts">
 	import AuthLayout from '$lib/components/navigation/AuthLayout.svelte';
 	import PublicLayout from '$lib/components/navigation/PublicLayout.svelte';
-	import { getUserRole } from '$lib/utils/auth';
-	export let data;
-	let role = getUserRole(data.user);
+	import type { User } from 'lucia';
+	import { userPrefersMode } from 'mode-watcher';
+
+	interface PageData {
+		user: User;
+	}
+	export let data: PageData;
 </script>
 
-{#if role == 'public'}
+{#if !data || !data.user}
 	<PublicLayout>
 		<slot />
 	</PublicLayout>
 {:else}
-	<AuthLayout data>
+	<AuthLayout user={data.user}>
 		<slot />
 	</AuthLayout>
 {/if}

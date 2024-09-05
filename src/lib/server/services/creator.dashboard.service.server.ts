@@ -339,5 +339,6 @@ async function loadDashboardData(creatorUserId: number): Promise<CreatorDashboar
 
 export const CreatorDashboardService = {
 	loadDashboardData,
-	loadMarketplaceData
+	loadMarketplaceData,
+	getMissionActionList
 };

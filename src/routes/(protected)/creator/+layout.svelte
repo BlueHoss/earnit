@@ -1,18 +1,17 @@
 <script lang="ts">
 	import AuthLayout from '$lib/components/navigation/AuthLayout.svelte';
 	import PublicLayout from '$lib/components/navigation/PublicLayout.svelte';
-	import { getUserRole } from '$lib/utils/auth';
-	export let data;
-	let role = getUserRole(data?.user);
-	console.log('user role', role);
+	import type { UserPageData } from './types';
+
+	export let data: UserPageData;
 </script>
 
-{#if role == 'public'}
+{#if data.user.user_type == 'public'}
 	<PublicLayout>
 		<slot />
 	</PublicLayout>
 {:else}
-	<AuthLayout {data}>
+	<AuthLayout user={data.user}>
 		<slot />
 	</AuthLayout>
 {/if}

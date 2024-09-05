@@ -36,3 +36,9 @@ export type ProductItemSchema = z.infer<typeof productItemSchema>;
 
 export const productItemNewUpdateSchema = productItemSchema.partial();
 export type ProductItemNewUpdateType = z.infer<typeof productItemNewUpdateSchema>;
+
+export const fullProductSchema = productSchema.extend({
+	productItems: z.array(productItemSchema).optional()
+});
+
+export type FullProduct = z.infer<typeof fullProductSchema>;

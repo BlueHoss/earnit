@@ -1,12 +1,12 @@
 import type { PageServerLoad } from './$types';
-import { CreatorProfileService } from '$lib/server/services/creator.profile.service.server';
+import { CreatorManagmentService } from '$lib/server/services/creator.management.service.server';
 import { fail, redirect, type Actions } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
 import { profileEditSchema } from '$lib/schema/login.schema';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const dbProfile = await CreatorProfileService.getUserProfile(locals.user.id);
+	const dbProfile = await CreatorManagmentService.getUserProfile(locals.user.id);
 	const form = await superValidate(dbProfile, zod(profileEditSchema));
 
 	return {
@@ -25,7 +25,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			await CreatorProfileService.setUserProfile(locals.user.id, form.data);
+			await CreatorManagmentService.setUserProfile(locals.user.id, form.data);
 
 			throw redirect(303, '/creator/profile');
 		} catch (error) {

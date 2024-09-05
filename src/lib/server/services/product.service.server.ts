@@ -1,6 +1,7 @@
 import db from '$lib/server/database/drizzle';
 import { product_item_table, product_table } from '$lib/server/database/schema';
 import type {
+	FullProduct,
 	Product,
 	ProductItemNewUpdateType,
 	ProductNewUpdateType
@@ -111,6 +112,23 @@ async function getProductById(userId: number, productId: number): Promise<Produc
 	}
 }
 
+async function getFullProductListingById(productId: number): Promise<FullProduct | null> {
+	if (!productId || productId <= 0) {
+		return null;
+	}
+
+	const result = await db.select().from(product_table).where(eq(product_table.id, productId));
+
+	if (result.length === 0) {
+		return null;
+	} else {
+		const product = result[0];
+		const productItems = await getProductItemsByProductId(productId);
+		product.productItems = productItems;
+		return product;
+	}
+}
+
 async function getProductItemsByProductId(
 	productId: number
 ): Promise<ProductItemNewUpdateType[] | []> {
@@ -205,5 +223,6 @@ export const ProductService = {
 	updateProduct,
 	deleteProduct,
 	getProductItemsByProductId,
-	deleteProductItemById
+	deleteProductItemById,
+	getFullProductListingById
 };

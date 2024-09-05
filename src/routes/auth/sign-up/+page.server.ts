@@ -11,6 +11,7 @@ export const load = async (event) => {
 	if (event.locals.user) {
 		redirect(302, '/auth/sign-in');
 	}
+
 	const form = await superValidate(event, zod(signupSchema));
 	return {
 		form

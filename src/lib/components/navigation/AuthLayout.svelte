@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ModeSwitch from '$lib/components/base/ModeSwitch.svelte';
 	import '../../../app.pcss';
-	import { ModeWatcher } from 'mode-watcher';
+	import { ModeWatcher, userPrefersMode } from 'mode-watcher';
 	import CircleUser from 'lucide-svelte/icons/circle-user';
 
 	import Bell from 'lucide-svelte/icons/bell';
@@ -13,27 +13,19 @@
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
 	import CreatorNavigationMenu from '$lib/components/navigation/CreatorNavigationMenu.svelte';
 	import FollowerNavigationMenu from '$lib/components/navigation/FollowerNavigationMenu.svelte';
-	import { getUserRole } from '$lib/utils/auth';
 	import SignoutButton from '$lib/components/base/SignOutButton.svelte';
-	export let data;
-	let role: any;
+	import type { User } from 'lucia';
+
+	export let user: User;
+	let menu: any;
+
 	function load() {
-		role = getUserRole(data?.user);
+		if (!user) menu = null;
+		if (user.user_type === 'follower') menu = FollowerNavigationMenu;
+		else if (user.user_type === 'creator') menu = CreatorNavigationMenu;
 	}
 
 	load();
-
-	let menu: any;
-
-	$: {
-		if (role === 'follower') {
-			menu = FollowerNavigationMenu;
-		} else if (role === 'creator') {
-			menu = CreatorNavigationMenu;
-		}
-
-		//If both.... navigate to selector
-	}
 </script>
 
 <ModeWatcher />
@@ -45,10 +37,10 @@
 					<Package2 class="h-6 w-6" />
 					<span class="">Earn It</span>
 				</a>
-				<Button variant="outline" size="icon" class="ml-auto h-8 w-8">
+				<!-- <Button variant="outline" size="icon" class="ml-auto h-8 w-8">
 					<Bell class="h-4 w-4" />
 					<span class="sr-only">Toggle notifications</span>
-				</Button>
+				</Button> -->
 			</div>
 			<div class="flex-1">
 				<nav class="grid items-start px-2 text-sm font-medium lg:px-4">
