@@ -1,11 +1,6 @@
 <!-- Page Marketplace -->
 <script lang="ts">
-	import HeartIcon from 'lucide-svelte/icons/heart';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import ShareIcon from 'lucide-svelte/icons/share';
-	import FilmIcon from 'lucide-svelte/icons/film';
-	import FollowIcon from 'lucide-svelte/icons/user-round-check';
-	import CommentIcon from 'lucide-svelte/icons/message-square-more';
 	import FollowEarnItIcon from 'lucide-svelte/icons/user-round-check';
 	import PaidSubscribersIcon from 'lucide-svelte/icons/activity';
 	import ProfileIcon from 'lucide-svelte/icons/person-standing';
@@ -13,12 +8,10 @@
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import MeritOfferingCard from '$lib/components/base/MeritOfferingCard.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
-	import MissionItem from './components/MissionItem.svelte';
 	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
 	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
 	import AvatarImage from '$lib/components/ui/avatar/avatar-image.svelte';
 	import Number from '$lib/components/base/Number.svelte';
-	import { redirect } from '@sveltejs/kit';
 	import type { PageData } from './$types';
 	import { goto, invalidateAll } from '$app/navigation';
 	import MissionActions from '$lib/components/base/MissionActions.svelte';
@@ -61,7 +54,7 @@
 						<AvatarFallback>{data.creator.handle}</AvatarFallback>
 					</Avatar>
 					<div>
-						<h2 class="text-xl font-bold">{data.creator.handle} Marketplace</h2>
+						<h2 class="text-xl font-bold">{data.creator.store_name}</h2>
 						<p class="text-sm text-gray-400">
 							<Number amount={data.creator.follower_count} /> followers
 						</p>
@@ -94,7 +87,7 @@
 			</Card.Header>
 			<Card.Content class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
 				{#each data.products as product}
-					<a href="/public/market/{data.creator.id}/offering-{product.id}">
+					<a href="/public/market/{data.creator.id}/offering/{product.id}">
 						<MeritOfferingCard user={data.creator} {product} />
 					</a>
 				{/each}

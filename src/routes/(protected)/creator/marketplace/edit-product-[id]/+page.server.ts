@@ -10,15 +10,14 @@ export const load: PageServerLoad = async (event) => {
 	const productId = Number(event.params.id);
 	const userId = event.locals.user.id;
 
-	ProductService.getProductById(userId, productId);
 	const product = await ProductService.getProductById(userId, productId);
-	//Get file uploads associated to this product.
-	const productItems = await ProductService.getProductItemsByProductId(productId);
 
 	if (!product) {
 		throw redirect(303, '/creator/marketplace');
 	}
 
+	//Get file uploads associated to this product.
+	const productItems = await ProductService.getProductItemsByProductId(productId);
 	product.productItems = productItems;
 	const form = await superValidate(product, zod(productNewUpdateSchema));
 

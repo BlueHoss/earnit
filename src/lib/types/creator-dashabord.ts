@@ -5,7 +5,7 @@ import type { ProductInvoiceResult } from '$lib/schema/product_invoice.schema';
 export interface CreatorDashboard {
 	subscriberCount: number;
 	revenue: number;
-	rewardsUsed: number;
+	creditsUsed: number;
 	purchaseCount: number;
 	purchaseAmount: number;
 	followerCount: number;

@@ -1,6 +1,4 @@
 <script>
-	export let data;
-
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import UsersIcon from 'lucide-svelte/icons/users';
 	import CreditCardIcon from 'lucide-svelte/icons/credit-card';
@@ -9,6 +7,8 @@
 	import CurrencyIcon from 'lucide-svelte/icons/currency';
 	import Following from 'lucide-svelte/icons/square-user';
 	import MarketCard from '$lib/components/base/MarketCard.svelte';
+
+	export let data;
 </script>
 
 <PageWrapper>
@@ -47,7 +47,7 @@
 				<CreditCardIcon class="h-4 w-4 text-muted-foreground" />
 			</Card.Header>
 			<Card.Content>
-				<div class="text-2xl font-bold text-primary">12 Rewards</div>
+				<div class="text-2xl font-bold text-primary">12 Credits</div>
 			</Card.Content>
 		</Card.Root>
 	</div>

@@ -50,7 +50,7 @@
 						<Card.Root>
 							<Card.Header>
 								<Card.Title>Earn It Pro</Card.Title>
-								<Card.Description>Want to unlock more rewards?</Card.Description>
+								<Card.Description>Want to unlock more credits?</Card.Description>
 							</Card.Header>
 							<Card.Content>
 								<Button size="sm" class="w-full">Upgrade</Button>

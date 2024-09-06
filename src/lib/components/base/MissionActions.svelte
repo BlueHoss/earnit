@@ -83,7 +83,7 @@
 		<!-- <Drawer.Trigger>Open</Drawer.Trigger> -->
 		<Drawer.Content>
 			<Drawer.Header>
-				<Drawer.Title>Edit {currentAction.name} Rewards</Drawer.Title>
+				<Drawer.Title>Edit {currentAction.name} Credits</Drawer.Title>
 				<Drawer.Description>
 					<p>Change how much your followers earn for {currentAction.name}.</p>
 					<Label for="value">Merit Mission Value</Label>

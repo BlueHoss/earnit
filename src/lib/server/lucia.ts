@@ -40,7 +40,8 @@ export const lucia = new Lucia(adapter, {
 			profile_pic: attributes.profile_pic,
 			initials: makeInitials(attributes.first_name, attributes.last_name),
 			title: attributes.title,
-			tag_line: attributes.tag_line
+			tag_line: attributes.tag_line,
+			store_name: attributes.store_name
 		};
 	}
 });
@@ -72,6 +73,7 @@ interface DatabaseUserAttributes {
 	initials: string;
 	title: string;
 	tag_line: string;
+	store_name: string;
 }
 
 function makeInitials(firstName: string, lastName: string) {

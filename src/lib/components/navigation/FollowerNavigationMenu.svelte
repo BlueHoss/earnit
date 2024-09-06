@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { derived } from 'svelte/store';
-	import Missions from 'lucide-svelte/icons/orbit';
-	import Profile from 'lucide-svelte/icons/user';
-	import Home from 'lucide-svelte/icons/house';
-	import Marketplace from 'lucide-svelte/icons/store';
+	import MissionsIcon from 'lucide-svelte/icons/orbit';
+	import ProfileIcon from 'lucide-svelte/icons/user';
+	import DashboardIcon from 'lucide-svelte/icons/house';
+	import PurchaseIcon from 'lucide-svelte/icons/library-big';
 
 	const navItems = [
-		{ name: 'Dashboard', path: '/follower', icon: Home },
-		{ name: 'Missions', path: '/follower/missions', icon: Missions },
-		{ name: 'Profile', path: '/follower/profile', icon: Profile }
+		{ name: 'Dashboard', path: '/follower', icon: DashboardIcon },
+		{ name: 'Purchases', path: '/follower/purchase', icon: PurchaseIcon },
+		{ name: 'Missions', path: '/follower/missions', icon: MissionsIcon },
+		{ name: 'Profile', path: '/follower/profile', icon: ProfileIcon }
 	];
 
 	// Get the current path

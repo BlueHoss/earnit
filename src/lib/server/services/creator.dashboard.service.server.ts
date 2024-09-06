@@ -71,14 +71,14 @@ async function getMonthlyRevenue(userid: number) {
 }
 
 /**
- * Retrieves the rewards used for a given Creator.
+ * Retrieves the credits used for a given Creator.
  *
  * @param {number} userid - The ID of the user.
  * @param {Date} startDate - The start date.
  * @param {Date} endDate - The end date.
- * @returns {Promise<number>} - The rewards used.
+ * @returns {Promise<number>} - The credits used.
  */
-async function getRewardsUsed(userid: number, startDate: Date, endDate: Date) {
+async function getCreditsUsed(userid: number, startDate: Date, endDate: Date) {
 	let whereClause: SQL<unknown> | undefined = eq(reward_earned_table.creator_user_id, userid);
 
 	if (startDate !== null && endDate !== null) {
@@ -318,7 +318,7 @@ async function loadDashboardData(creatorUserId: number): Promise<CreatorDashboar
 	const startDate = new Date();
 	startDate.setDate(startDate.getDate() - 30);
 
-	const rewardsUsed = await getRewardsUsed(creatorUserId, startDate, endDate);
+	const creditsUsed = await getCreditsUsed(creatorUserId, startDate, endDate);
 	const purchaseCount = await getProductsPurchasedCount(creatorUserId, startDate, endDate);
 	const purchaseAmount = await getProductsPurchasedAmount(creatorUserId, startDate, endDate);
 	const productPurchaseList = await getProductsPurchasedList(creatorUserId, startDate, endDate);
@@ -328,7 +328,7 @@ async function loadDashboardData(creatorUserId: number): Promise<CreatorDashboar
 	return (await {
 		subscriberCount,
 		revenue,
-		rewardsUsed,
+		creditsUsed,
 		purchaseCount,
 		purchaseAmount,
 		followerCount,

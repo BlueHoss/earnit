@@ -5,10 +5,10 @@ export const productSchema = z.object({
 	name: z.string().min(1, { message: 'Product name is required' }),
 	description: z.string().nullable(),
 	creator_user_id: z.number().int(),
-	//cover_image: z.string().url({ message: 'Invalid URL for cover image' }).nullable(),
 	cover_image: z.string().nullable(),
-	cost: z.coerce.number().positive(),
+	cost: z.number().default(0),
 	enabled: z.boolean().default(true),
+	buyitnow_link: z.string().nullable(),
 	productItems: z.array(z.lazy(() => productItemNewUpdateSchema)).optional()
 });
 
@@ -37,8 +37,25 @@ export type ProductItemSchema = z.infer<typeof productItemSchema>;
 export const productItemNewUpdateSchema = productItemSchema.partial();
 export type ProductItemNewUpdateType = z.infer<typeof productItemNewUpdateSchema>;
 
-export const fullProductSchema = productSchema.extend({
-	productItems: z.array(productItemSchema).optional()
+export const productWithItemCountSchema = productSchema.partial().extend({
+	item_count: z.number()
 });
 
-export type FullProduct = z.infer<typeof fullProductSchema>;
+export type ProductWithItemCount = z.infer<typeof productWithItemCountSchema>;
+
+export const ProductQueryResultSchema = z.object({
+	id: z.number(),
+	creator_user_id: z.number(),
+	name: z.string(),
+	description: z.string().nullable(),
+	cover_image: z.string().nullable(),
+	cost: z.union([z.number(), z.string().transform((val) => parseFloat(val))]),
+	date_purchased: z.date(),
+	creator_handle: z.string(),
+	store_name: z.string(),
+	reward_name: z.string(),
+	item_count: z.string().optional(),
+	productItems: z.array(z.lazy(() => productItemNewUpdateSchema)).optional()
+});
+
+export type ProductQueryResult = z.infer<typeof ProductQueryResultSchema>;

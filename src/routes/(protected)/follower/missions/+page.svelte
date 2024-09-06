@@ -17,7 +17,7 @@
 			<Card.Header>
 				<Card.Title>Instagram Merit Missions</Card.Title>
 				<Card.Description
-					>Complete the following missions to earn Merit Rewards. For specific reward values please
+					>Complete the following missions to earn Merit Credits. For specific reward values please
 					navigate to a Creator Profile.</Card.Description
 				>
 			</Card.Header>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import AuthLayout from '$lib/components/navigation/AuthLayout.svelte';
 	import PublicLayout from '$lib/components/navigation/PublicLayout.svelte';
-	import type { UserPageData } from './types';
+	import type { UserPageData } from './creator/types';
 
 	export let data: UserPageData;
 </script>

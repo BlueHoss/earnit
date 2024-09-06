@@ -1,19 +1,21 @@
 import { error } from '@sveltejs/kit';
-import type { PageServerLoad } from '../$types';
+import type { PageServerLoad } from './$types';
 import { ProductService } from '$lib/server/services/product.service.server';
 import { UserService } from '$lib/server/services/user.service.server';
 
-export const load: PageServerLoad = async (event) => {
-	if (!event.params.id) {
+export const load: PageServerLoad = async ({ params }) => {
+	const { creatorId, id } = params;
+
+	if (!id) {
 		throw error(404, {
 			message: `Item not found`,
 			code: 'ITEM_NOT_FOUND'
 		});
 	}
 
-	const productId = Number(event.params.id);
+	const productId = Number(id);
 
-	const product = await ProductService.getFullProductListingById(productId);
+	const product = await ProductService.getProductListingById(productId);
 
 	if (!product) {
 		throw error(404, {
@@ -22,7 +24,7 @@ export const load: PageServerLoad = async (event) => {
 		});
 	}
 
-	const creator = await UserService.getUserByUserId(product.creator_user_id);
+	const creator = await UserService.getUserByUserId(Number(creatorId));
 
 	return {
 		product,

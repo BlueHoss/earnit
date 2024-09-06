@@ -13,12 +13,12 @@
 	<div class="flex items-center space-x-4">
 		<a href="/creator/profile/">
 			<Avatar style="height: 6rem; width: 6rem;">
-				<AvatarImage src={user.profile_pic} alt="Suzy's Profile Picture" />
+				<AvatarImage src={user.profile_pic} alt="Profile Pic" />
 				<AvatarFallback>{user.initials}</AvatarFallback>
 			</Avatar>
 		</a>
 		<div class="flex flex-col justify-center">
-			<h1 class="text-2xl font-semibold">{user.first_name}'s {Title}</h1>
+			<h1 class="text-2xl font-semibold">{user.store_name}</h1>
 			<Handle handle={user.handle} />
 			<p class="text-sm">{user.title}</p>
 			<p><Number amount={user.follower_count} /> social media followers</p>

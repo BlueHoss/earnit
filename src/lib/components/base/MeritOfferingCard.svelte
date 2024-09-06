@@ -20,7 +20,7 @@
 </script>
 
 {#if product}
-	<Card class="overflow-hidden rounded-lg bg-gray-900 shadow-lg">
+	<Card class="overflow-hidden rounded-lg bg-border shadow-lg">
 		<div class="relative">
 			<img src={product.cover_image} alt={product.name} class="h-48 w-full object-cover" />
 		</div>
@@ -33,11 +33,11 @@
 					</Button>
 				{/if}
 			</CardTitle>
-			<CardDescription class="mt-2 text-gray-400">
+			<CardDescription class="mt-2 ">
 				<p class="mb-2">
 					{product.description}
 				</p>
-				<div class="mt-2 flex justify-start text-gray-200">
+				<div class="mt-2 flex justify-start">
 					<CurrencyIcon class="mr-2" />
 					{product.cost} Tokens
 				</div>
