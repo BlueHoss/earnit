@@ -1,5 +1,5 @@
 <script lang="ts">
-	import PageHeader from '$lib/components/base/PageHeader.svelte';
+	import PageHeader from '$lib/components/base/PageHeaderCreator.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import type { ProductWithItemCount } from '$lib/schema/product.schema';
 	import type { User } from 'lucia';

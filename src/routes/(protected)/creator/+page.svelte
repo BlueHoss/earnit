@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import * as Table from '$lib/components/ui/table/index.ts';
-	import PageHeader from '$lib/components/base/PageHeader.svelte';
+	import PageHeader from '$lib/components/base/PageHeaderCreator.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import EffortCreditsThisMonth from './components/EffortCreditsThisMonth.svelte';
 	import ProductsRedeemedThisMonth from './components/ProductsRedeemedThisMonth.svelte';

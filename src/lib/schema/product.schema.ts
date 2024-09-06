@@ -6,7 +6,8 @@ export const productSchema = z.object({
 	description: z.string().nullable(),
 	creator_user_id: z.number().int(),
 	cover_image: z.string().nullable(),
-	cost: z.number().default(0),
+	//cost: z.number().default(0),
+	cost: z.coerce.number().positive(),
 	enabled: z.boolean().default(true),
 	buyitnow_link: z.string().nullable(),
 	productItems: z.array(z.lazy(() => productItemNewUpdateSchema)).optional()

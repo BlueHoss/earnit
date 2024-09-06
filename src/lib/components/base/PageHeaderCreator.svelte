@@ -5,7 +5,6 @@
 	import Number from './Number.svelte';
 	import Handle from './Handle.svelte';
 
-	export let Title = 'Marketplace';
 	export let user;
 </script>
 
@@ -19,9 +18,8 @@
 		</a>
 		<div class="flex flex-col justify-center">
 			<h1 class="text-2xl font-semibold">{user.store_name}</h1>
-			<Handle handle={user.handle} />
 			<p class="text-sm">{user.title}</p>
-			<p><Number amount={user.follower_count} /> social media followers</p>
+			<p class="text-sm"><Number amount={user.follower_count} /> social media followers</p>
 		</div>
 	</div>
 </div>
