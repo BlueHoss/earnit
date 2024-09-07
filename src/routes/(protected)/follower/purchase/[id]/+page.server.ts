@@ -1,7 +1,6 @@
 import { error } from '@sveltejs/kit';
-import type { PageServerLoad } from '../[productId]/$types';
 import { ProductService } from '$lib/server/services/product.service.server';
-import { UserService } from '$lib/server/services/user.service.server';
+import type { PageServerLoad } from '../$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { id } = params;

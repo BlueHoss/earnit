@@ -9,13 +9,12 @@
 	import EarnItFollowers from './components/EarnItFollowers.svelte';
 	import RewardCurrency from '$lib/components/base/RewardCurrency.svelte';
 	import Handle from '$lib/components/base/Handle.svelte';
-	import type { UserDashboardData } from './types';
-
+	import type { UserDashboardData } from '$lib/types/creator-dashabord';
 	export let data: UserDashboardData;
 </script>
 
 <PageWrapper>
-	<PageHeader user={data.user} Title="Dashboard" />
+	<PageHeader user={data.user} />
 	<div class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
 		<!-- <EffortCreditsAvailable effortCredits={600} /> -->
 

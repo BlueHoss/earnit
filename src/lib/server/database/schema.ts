@@ -147,7 +147,7 @@ export const plan_subscription_table = pgTable('plan_subscription', {
 	id: serial('id').primaryKey().notNull(),
 	creator_user_id: integer('creator_user_id').references(() => login_table.id),
 	follower_user_id: integer('follower_user_id').references(() => login_table.id),
-	date_started: timestamp('date_started', { mode: 'string' }),
+	date_started: timestamp('date_started', { mode: 'string' }).notNull(),
 	plan_id: integer('plan_id').references(() => plan_table.id),
 	date_canceled: timestamp('date_canceled', { mode: 'string' }),
 	active: boolean('active')

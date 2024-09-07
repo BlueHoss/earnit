@@ -89,7 +89,33 @@ async function getUserByEmail(email: string): Promise<BaseUser | null> {
  * @returns BaseUser | null
  */
 async function getUserByUserId(userId: number): Promise<BaseUser | null> {
-	const user = await db.select().from(login_table).where(eq(login_table.id, userId));
+	const user = await db
+		.select({
+			id: login_table.id,
+			handle: login_table.handle,
+			first_name: login_table.first_name,
+			last_name: login_table.last_name,
+			email: login_table.email,
+			verified: login_table.verified,
+			is_creator: login_table.is_creator,
+			is_follower: login_table.is_follower,
+			provider: login_table.provider,
+			provider_id: login_table.provider_id,
+			profile_pic: login_table.profile_pic,
+			social_media_profile: login_table.social_media_profile,
+			follower_count: login_table.follower_count,
+			title: login_table.title,
+			tag_line: login_table.tag_line,
+			bio: login_table.bio,
+			terms: login_table.terms,
+			receive_email: login_table.receive_email,
+			date_created: login_table.date_created,
+			date_updated: login_table.date_updated,
+			store_name: login_table.store_name,
+			reward_name: login_table.reward_name
+		})
+		.from(login_table)
+		.where(eq(login_table.id, userId));
 	if (user.length === 0) {
 		return null;
 	} else {

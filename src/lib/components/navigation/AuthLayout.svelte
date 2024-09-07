@@ -11,21 +11,51 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
-	import CreatorNavigationMenu from '$lib/components/navigation/CreatorNavigationMenu.svelte';
+	import CreatorNavigationMenu from '$lib/components/navigation/MenuItems.svelte';
 	import FollowerNavigationMenu from '$lib/components/navigation/FollowerNavigationMenu.svelte';
 	import SignoutButton from '$lib/components/base/SignOutButton.svelte';
 	import type { User } from 'lucia';
 
+	import CartIndicator from '../base/CartIndicator.svelte';
+	import MissionsIcon from 'lucide-svelte/icons/orbit';
+	import ProfileIcon from 'lucide-svelte/icons/user';
+	import DashboardIcon from 'lucide-svelte/icons/house';
+	import PurchaseIcon from 'lucide-svelte/icons/library-big';
+	import MarketplaceIcon from 'lucide-svelte/icons/store';
+	import MenuItems from '$lib/components/navigation/MenuItems.svelte';
+
 	export let user: User;
 	let menu: any;
+	let myAccountMenu: { name: string; link: string }[] = [];
+	let mainMenu: { name: string; path: string; icon: any }[] = [];
 
-	function load() {
-		if (!user) menu = null;
-		if (user.user_type === 'follower') menu = FollowerNavigationMenu;
-		else if (user.user_type === 'creator') menu = CreatorNavigationMenu;
+	// function load() {
+	// 	// if (!user) menu = null;
+	// 	// if (user.user_type === 'follower') menu = FollowerNavigationMenu;
+	// 	// else if (user.user_type === 'creator') menu = CreatorNavigationMenu;
+	// 	buildMainMenu();
+	// 	buildMyAccountMenu();
+	// }
+
+	function buildMainMenu() {
+		if (user.is_creator) {
+			mainMenu.push({ name: 'Dashboard', path: '/creator', icon: DashboardIcon });
+			mainMenu.push({ name: 'Marketplace', path: '/creator/marketplace', icon: MarketplaceIcon });
+			mainMenu.push({ name: 'Missions', path: '/creator/missions', icon: MissionsIcon });
+			mainMenu.push({ name: 'Profile', path: '/creator/profile', icon: ProfileIcon });
+
+			myAccountMenu.push({ name: 'Settings', link: '/creator/settings' });
+			myAccountMenu.push({ name: 'Profile', link: '/creator/profile/edit' });
+		} else {
+			mainMenu.push({ name: 'Dashboard', path: '/follower', icon: DashboardIcon });
+			mainMenu.push({ name: 'Purchases', path: '/follower/purchase', icon: PurchaseIcon });
+			mainMenu.push({ name: 'Missions', path: '/follower/missions', icon: MissionsIcon });
+
+			myAccountMenu.push({ name: 'Settings', link: '/follower/settings' });
+			myAccountMenu.push({ name: 'Profile', link: '/follower/profile/edit' });
+		}
 	}
-
-	load();
+	buildMainMenu();
 </script>
 
 <ModeWatcher />
@@ -44,7 +74,8 @@
 			</div>
 			<div class="flex-1">
 				<nav class="grid items-start px-2 text-sm font-medium lg:px-4">
-					<svelte:component this={menu} />
+					<MenuItems MenuItems={mainMenu} />
+					<!-- <svelte:component this={menu} /> -->
 				</nav>
 			</div>
 		</div>
@@ -60,7 +91,8 @@
 				</Sheet.Trigger>
 				<Sheet.Content side="left" class="flex flex-col">
 					<nav class="grid gap-2 text-lg font-medium">
-						<svelte:component this={menu} />
+						<MenuItems MenuItems={mainMenu} />
+						<!-- <svelte:component this={menu} /> -->
 					</nav>
 					<!-- <div class="mt-auto">
 						<Card.Root>
@@ -86,13 +118,18 @@
 				<DropdownMenu.Content align="end">
 					<DropdownMenu.Label>My Account</DropdownMenu.Label>
 					<DropdownMenu.Separator />
-					<DropdownMenu.Item>Settings</DropdownMenu.Item>
-					<DropdownMenu.Item>Support</DropdownMenu.Item>
+					{#each myAccountMenu as { name, link }}
+						<DropdownMenu.Item><a href={link}>{name}</a></DropdownMenu.Item>
+					{/each}
+					<DropdownMenu.Item
+						><a href="https://earnitrewards.com" target="_blank">Support</a></DropdownMenu.Item
+					>
 					<DropdownMenu.Separator />
 					<DropdownMenu.Item><SignoutButton /></DropdownMenu.Item>
 				</DropdownMenu.Content>
-				<ModeSwitch />
 			</DropdownMenu.Root>
+			<CartIndicator />
+			<ModeSwitch />
 		</header>
 		<main class="flex flex-1 flex-col justify-center gap-4 p-4 lg:gap-6 lg:p-6">
 			<slot></slot>

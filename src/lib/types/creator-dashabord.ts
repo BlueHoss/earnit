@@ -1,6 +1,7 @@
 import type { MissionAction } from '$lib/schema/mission.schema';
 import type { Product } from '$lib/schema/product.schema';
 import type { ProductInvoiceResult } from '$lib/schema/product_invoice.schema';
+import type { User } from 'lucia';
 
 export interface CreatorDashboard {
 	subscriberCount: number;
@@ -11,6 +12,15 @@ export interface CreatorDashboard {
 	followerCount: number;
 	productCount: number;
 	productPurchaseList: ProductInvoiceResult[] | [];
+}
+
+export interface UserDashboardData {
+	user: User;
+	dashboard: CreatorDashboard;
+}
+
+export interface UserPageData {
+	user: User;
 }
 
 export interface CreatorMarketplaceData {

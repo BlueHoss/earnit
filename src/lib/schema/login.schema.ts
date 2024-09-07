@@ -61,10 +61,17 @@ export const baseLoginSchema = z.object({
 /**
  * Type for base user schema (login table)
  */
-export const baseUserModifedSchema = baseLoginSchema.omit({ roleError: true });
+export const baseUserModifedSchema = baseLoginSchema.partial().omit({
+	roleError: true
+});
 export type BaseUser = z.infer<typeof baseUserModifedSchema>;
 
-export const updateBaseUserSchema = baseLoginSchema.partial().omit({ roleError: true });
+export const updateBaseUserSchema = baseLoginSchema.partial().omit({
+	roleError: true,
+	terms: true,
+	token: true,
+	hashed_password: true
+});
 export type BaseUserUpdate = z.infer<typeof updateBaseUserSchema>;
 
 /**

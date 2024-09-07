@@ -13,7 +13,7 @@
 </script>
 
 <PageWrapper>
-	<PageHeaderFollower {data} Title="Dashboard" />
+	<PageHeaderFollower {data} Title="Purchase's" />
 	<Card.Root class="xl:col-span-2">
 		<Card.Header class="flex flex-row items-center">
 			<div class="grid gap-2">

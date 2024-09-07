@@ -113,7 +113,7 @@
 						<Card.Content>
 							<Form.Field name="description" {form} class="flex-1">
 								<Form.Control let:attrs>
-									<Textarea {...attrs} bind:value={$formData.description} />
+									<Textarea rows={20} {...attrs} bind:value={$formData.description} />
 								</Form.Control>
 								<Form.FieldErrors />
 							</Form.Field>

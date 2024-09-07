@@ -1,7 +1,7 @@
 <script lang="ts">
 	import PageHeaderFollower from '$lib/components/FollowerPageHeader.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
-	import type { Product } from '$lib/schema/product.schema';
+	import type { ProductQueryResult } from '$lib/schema/product.schema';
 	import type { User } from 'lucia';
 	import ErrorIcon from 'lucide-svelte/icons/circle-x';
 	import {
@@ -25,7 +25,7 @@
 
 	interface PageData {
 		user: User;
-		product: Product;
+		product: ProductQueryResult;
 	}
 
 	export let data: PageData;
@@ -39,7 +39,7 @@
 			<CardContent class="p-3 flex justify-between">
 				<div class="flex flex-col justify-between max-w-xl w-full pr-4">
 					<div class="space-y-4">
-						<CardTitle class="text-2xl font-bold">{data.product.name}</CardTitle>
+						<CardTitle class="text-3xl font-bold text-primary">{data.product.name}</CardTitle>
 						<CardDescription>{data.product.description}</CardDescription>
 					</div>
 					<div class="space-y-2 mt-auto">
@@ -48,7 +48,7 @@
 						</Badge>
 						<Badge variant="secondary">
 							Purchased: <DateFormatter date={data.product.date_purchased} format="fromNow" />
-							<i><DateFormatter date={data.product.date_purchased} format="short" /></i>
+							- <i><DateFormatter date={data.product.date_purchased} format="short" /></i>
 						</Badge>
 					</div>
 				</div>

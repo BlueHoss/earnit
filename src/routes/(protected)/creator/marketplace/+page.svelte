@@ -9,7 +9,7 @@
 	import { Button } from '$lib/components/ui/button/index.ts';
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import MeritOfferingCard from '$lib/components/base/MeritOfferingCard.svelte';
-	import PageHeader from '$lib/components/base/PageHeaderCreator.svelte';
+	import PageHeaderCreator from '$lib/components/base/PageHeaderCreator.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { PUBLIC_BASE_URL } from '$env/static/public';
@@ -57,7 +57,7 @@
 <PageWrapper>
 	<div class="flex items-center justify-between">
 		<!-- Left Section: Profile Picture and Title -->
-		<PageHeader user={data.user} Title="Marketplace" />
+		<PageHeaderCreator user={data.user} />
 
 		<!-- Right Section: Buttons stacked vertically -->
 		<div class="flex flex-col space-y-2">

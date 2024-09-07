@@ -1,7 +1,6 @@
 <!-- Page Profile -->
 <script>
 	import * as Card from '$lib/components/ui/card/index.ts';
-	import { Progress } from '$lib/components/ui/progress/index.ts';
 	import { Button } from '$lib/components/ui/button/index.ts';
 	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
 	import AvatarImage from '$lib/components/ui/avatar/avatar-image.svelte';

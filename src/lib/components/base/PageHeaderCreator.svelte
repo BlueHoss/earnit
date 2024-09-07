@@ -3,7 +3,6 @@
 	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
 	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
 	import Number from './Number.svelte';
-	import Handle from './Handle.svelte';
 
 	export let user;
 </script>

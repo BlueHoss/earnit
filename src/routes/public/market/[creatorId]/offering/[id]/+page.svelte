@@ -15,43 +15,39 @@
 </script>
 
 <PageWrapper>
-	<PageHeader user={data.creator} Title="Products" />
-	<Card class="mb-2">
-		<CardContent class="p-3">
-			<div class="flex justify-between">
-				<div class="flex flex-col justify-between max-w-xl w-full pr-4">
-					<div class="space-y-4">
-						<CardTitle class="text-2xl font-bold">{data.product.name}</CardTitle>
-						<CardDescription>{data.product.description}</CardDescription>
-						<Button variant="default">Redeem</Button>
-					</div>
-					<div class="space-y-2 mt-auto">
-						<Badge variant="secondary" class="h-16 text-lg">
-							Effort Credits: {data.product.cost}
-						</Badge>
-						<div>
-							<Badge>{data.product.item_count}</Badge> Digital Downloads included with this product.
-						</div>
-					</div>
-				</div>
-				<div class="w-64 h-64 rounded-lg overflow-hidden flex-shrink-0">
+	<PageHeader user={data.creator} />
+
+	<Card class="mb-4 overflow-hidden">
+		<CardContent class="p-0">
+			<div class="flex flex-col md:flex-row">
+				<div class="md:w-1/3 bg-gray-100 dark:bg-gray-800">
 					<img
 						src={data.product.cover_image}
 						alt={data.product.name}
 						class="w-full h-full object-cover"
 					/>
 				</div>
+				<div class="flex flex-col justify-between p-6 md:w-2/3">
+					<div class="space-y-4">
+						<CardTitle class="text-3xl font-bold text-primary">{data.product.name}</CardTitle>
+						<CardDescription class="text-sm text-gray-600 dark:text-gray-300">
+							{data.product.description}
+						</CardDescription>
+						<div class="flex items-center space-x-2">
+							<Badge variant="secondary" class="text-sm py-1">
+								{data.product.item_count} Digital Downloads
+							</Badge>
+							<span class="text-sm text-gray-500">included with this product</span>
+						</div>
+					</div>
+					<div class="mt-6 flex items-center justify-between">
+						<Badge variant="outline" class="text-xl py-2 px-4">
+							Effort Credits: {data.product.cost}
+						</Badge>
+						<Button variant="default" class="px-6 py-2">Redeem</Button>
+					</div>
+				</div>
 			</div>
 		</CardContent>
 	</Card>
 </PageWrapper>
-
-<style>
-	/* Add any additional custom styles here
-	:global(.bg-gray-800) {
-		background-color: #1f2937;
-	}
-	:global(.bg-gray-700) {
-		background-color: #374151;
-	} */
-</style>
