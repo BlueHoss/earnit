@@ -120,5 +120,6 @@ async function loadDashboardData(followerUserId: number) {
 }
 
 export const FollowersDashboardService = {
-	loadDashboardData
+	loadDashboardData,
+	availableCredits
 };

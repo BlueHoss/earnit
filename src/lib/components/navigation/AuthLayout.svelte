@@ -11,8 +11,6 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
-	import CreatorNavigationMenu from '$lib/components/navigation/MenuItems.svelte';
-	import FollowerNavigationMenu from '$lib/components/navigation/FollowerNavigationMenu.svelte';
 	import SignoutButton from '$lib/components/base/SignOutButton.svelte';
 	import type { User } from 'lucia';
 
@@ -29,19 +27,11 @@
 	let myAccountMenu: { name: string; link: string }[] = [];
 	let mainMenu: { name: string; path: string; icon: any }[] = [];
 
-	// function load() {
-	// 	// if (!user) menu = null;
-	// 	// if (user.user_type === 'follower') menu = FollowerNavigationMenu;
-	// 	// else if (user.user_type === 'creator') menu = CreatorNavigationMenu;
-	// 	buildMainMenu();
-	// 	buildMyAccountMenu();
-	// }
-
 	function buildMainMenu() {
 		if (user.is_creator) {
 			mainMenu.push({ name: 'Dashboard', path: '/creator', icon: DashboardIcon });
 			mainMenu.push({ name: 'Marketplace', path: '/creator/marketplace', icon: MarketplaceIcon });
-			mainMenu.push({ name: 'Missions', path: '/creator/missions', icon: MissionsIcon });
+			mainMenu.push({ name: 'Missions', path: '/public/missions', icon: MissionsIcon });
 			mainMenu.push({ name: 'Profile', path: '/creator/profile', icon: ProfileIcon });
 
 			myAccountMenu.push({ name: 'Settings', link: '/creator/settings' });
@@ -49,7 +39,7 @@
 		} else {
 			mainMenu.push({ name: 'Dashboard', path: '/follower', icon: DashboardIcon });
 			mainMenu.push({ name: 'Purchases', path: '/follower/purchase', icon: PurchaseIcon });
-			mainMenu.push({ name: 'Missions', path: '/follower/missions', icon: MissionsIcon });
+			mainMenu.push({ name: 'Missions', path: '/public/missions', icon: MissionsIcon });
 
 			myAccountMenu.push({ name: 'Settings', link: '/follower/settings' });
 			myAccountMenu.push({ name: 'Profile', link: '/follower/profile/edit' });

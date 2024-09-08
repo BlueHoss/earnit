@@ -67,9 +67,6 @@
 						><FollowEarnItIcon class="pr-1" />Follow</Button
 					>
 					<Button class="px-6"><PaidSubscribersIcon class="pr-1" />Subscribe</Button>
-					<a href="/profile/{data.creator.handle}">
-						<Button class="px-6"><ProfileIcon class="pr-1" /> View Profile</Button></a
-					>
 				</div>
 			</div>
 		</Card.Content>

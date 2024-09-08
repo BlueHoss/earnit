@@ -15,7 +15,6 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions: Actions = {
-	// signin: async ({ request }) => {
 	signin: async (event) => {
 		const form = await superValidate(event.request, zod(signInSchema));
 		let existingUser = null;
@@ -26,7 +25,6 @@ export const actions: Actions = {
 			});
 		}
 
-		//add user to db
 		try {
 			const email = form.data.email.toLowerCase();
 			existingUser = await UserService.getUserByEmail(email);
@@ -47,34 +45,27 @@ export const actions: Actions = {
 					const session = await lucia.createSession(existingUser.id.toString(), {
 						token: existingUser.token
 					});
+
 					const sessionCookie = lucia.createSessionCookie(session.id);
 					event.cookies.set(sessionCookie.name, sessionCookie.value, {
 						path: '.',
 						...sessionCookie.attributes
 					});
+
 					setFlash({ type: 'success', message: 'Sign in successful.' }, event);
 				}
 			}
 		} catch (e) {
-			//TODO: need to return error message to client
-			console.error(e);
-			// email already in use
-			//const { fieldErrors: errors } = e.flatten();
 			setFlash({ type: 'error', message: 'The email or password is incorrect.' }, event);
 			return setError(form, 'The email or password is incorrect.');
 		}
 
-		if (existingUser.is_creator && existingUser.is_follower) {
-			throw redirect(302, '/');
-		}
+		const formData = {
+			is_creator: existingUser.is_creator,
+			is_follower: existingUser.is_follower
+		};
 
-		if (existingUser.is_creator) {
-			throw redirect(302, '/creator');
-		}
-
-		if (existingUser.is_follower) {
-			throw redirect(302, '/follower');
-		}
+		form.data = formData;
 
 		return { form };
 	}

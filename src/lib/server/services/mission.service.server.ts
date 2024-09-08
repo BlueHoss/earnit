@@ -1,7 +1,11 @@
-import type { MissionAction } from '$lib/schema/mission.schema';
+import type { DefaultMission, MissionAction } from '$lib/schema/mission.schema';
 import { eq } from 'drizzle-orm';
 import db from '../database/drizzle';
-import { mission_action_table } from '../database/schema';
+import {
+	mission_action_table,
+	mission_default_action_table,
+	mission_table
+} from '../database/schema';
 
 async function updateMissionItemValue(
 	missionActionId: number,
@@ -24,6 +28,36 @@ async function updateMissionItemValue(
 	}
 }
 
+async function getDefaultMissions(): Promise<DefaultMission[]> {
+	const missions = await db
+		.select({
+			id: mission_table.id,
+			name: mission_table.name,
+			platform: mission_table.platform,
+			description: mission_table.description
+		})
+		.from(mission_table)
+		.where(eq(mission_table.enabled, true));
+
+	for (const mission of missions) {
+		const actions = await db
+			.select({
+				id: mission_default_action_table.id,
+				name: mission_default_action_table.name,
+				description: mission_default_action_table.description,
+				icon: mission_default_action_table.icon,
+				reward_per_day: mission_default_action_table.reward_per_day
+			})
+			.from(mission_default_action_table)
+			.where(eq(mission_default_action_table.mission_id, mission.id));
+
+		mission.actions = actions;
+	}
+
+	return missions;
+}
+
 export const MissionService = {
-	updateMissionItemValue
+	updateMissionItemValue,
+	getDefaultMissions
 };

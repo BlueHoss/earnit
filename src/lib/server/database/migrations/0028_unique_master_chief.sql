@@ -1,0 +1,1 @@
+ALTER TABLE "mission" ADD COLUMN "enabled" boolean DEFAULT true NOT NULL;

@@ -95,6 +95,5 @@ export const actions: Actions = {
 			console.error('Error in deleteProductItem action:', error);
 			return setFlash({ type: 'error', message: 'Product item was not deleted' }, event);
 		}
-		//throw redirect(303, '/creator/marketplace');
 	}
 };

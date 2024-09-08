@@ -22,6 +22,7 @@ import {
 	PUBLIC_DEFAULT_PRODUCT_IMAGE
 } from '$env/static/public';
 import { ImageService } from './image.service.server';
+import { date } from 'drizzle-orm/mysql-core';
 
 async function createProduct(newProduct: ProductNewUpdateType) {
 	if (!newProduct) {
@@ -308,6 +309,31 @@ async function getProductsPurchasedByFollower(
 	return validatedProducts;
 }
 
+async function redeemProduct(followerUserId: number, productId: number) {
+	const product = await db.select().from(product_table).where(eq(product_table.id, productId));
+
+	if (product.length === 0) {
+		console.log('No product found with the given ID');
+		return null;
+	}
+
+	const productInvoice = {
+		follower_user_id: followerUserId,
+		creator_user_id: product[0].creator_user_id,
+		product_id: productId,
+		cost: product[0].cost
+	};
+
+	const result = await db.insert(product_invoice_table).values(productInvoice).returning();
+
+	if (result.length === 0) {
+		console.log('Failed to redeem product');
+		return null;
+	}
+
+	return result[0];
+}
+
 export const ProductService = {
 	createProduct,
 	getProductById,
@@ -318,5 +344,6 @@ export const ProductService = {
 	deleteProductItemById,
 	getProductListingById,
 	getProductsPurchasedByFollower,
-	getFullProductPurchasedByFollower
+	getFullProductPurchasedByFollower,
+	redeemProduct
 };

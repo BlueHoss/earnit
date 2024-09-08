@@ -12,6 +12,7 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import { TextUtilities } from '../../utils/text-utilities';
+import { sql } from 'drizzle-orm';
 
 export const aal_level = pgEnum('aal_level', ['aal1', 'aal2', 'aal3']);
 export const code_challenge_method = pgEnum('code_challenge_method', ['s256', 'plain']);
@@ -113,7 +114,10 @@ export const product_invoice_table = pgTable('product_invoice', {
 	id: serial('id').primaryKey().notNull(),
 	product_id: integer('product_id').references(() => product_table.id),
 	cost: numeric('cost', { precision: 10, scale: 2 }).notNull().default('0.00'),
-	date_purchased: timestamp('date_purchased', { mode: 'date' }),
+	date_purchased: timestamp('date_purchased', { mode: 'date' })
+		.notNull()
+		.default(sql`CURRENT_TIMESTAMP`),
+	//date_purchased: timestamp('date_purchased', { mode: 'date' }),
 	creator_user_id: integer('creator_user_id').references(() => login_table.id),
 	follower_user_id: integer('follower_user_id').references(() => login_table.id)
 });
@@ -128,7 +132,9 @@ export const plan_table = pgTable('plan', {
 export const mission_table = pgTable('mission', {
 	id: serial('id').primaryKey().notNull(),
 	name: text('name'),
-	platform: text('platform')
+	description: text('description'),
+	platform: text('platform'),
+	enabled: boolean('enabled').notNull().default(true)
 });
 
 export const mission_action_table = pgTable('mission_action', {
@@ -137,10 +143,23 @@ export const mission_action_table = pgTable('mission_action', {
 		.references(() => mission_table.id)
 		.notNull(),
 	name: text('name').notNull(),
+	description: text('description'),
+	icon: text('icon'),
 	reward_per_day: integer('reward_per_day').notNull().default(0),
 	creator_user_id: integer('creator_user_id')
 		.references(() => login_table.id)
 		.notNull()
+});
+
+export const mission_default_action_table = pgTable('mission_default_action', {
+	id: serial('id').primaryKey().notNull(),
+	mission_id: integer('mission_id')
+		.references(() => mission_table.id)
+		.notNull(),
+	name: text('name').notNull(),
+	description: text('description'),
+	icon: text('icon'),
+	reward_per_day: integer('reward_per_day').notNull().default(0)
 });
 
 export const plan_subscription_table = pgTable('plan_subscription', {
