@@ -1,6 +1,8 @@
 <!-- Page Marketplace -->
 <script lang="ts">
 	import CopyIcon from 'lucide-svelte/icons/copy';
+	import CopyCheckIcon from 'lucide-svelte/icons/copy-check';
+	import NewTabIcon from 'lucide-svelte/icons/external-link';
 	import SendIcon from 'lucide-svelte/icons/send';
 	import TwitterIcon from '$lib/components/ui/svgIcons/TwitterIcon.svelte';
 	import FacebookIcon from '$lib/components/ui/svgIcons/FacebookIcon.svelte';
@@ -32,16 +34,18 @@
 
 	let showShareDialog = false;
 
+	let copyIcon = CopyIcon;
+
 	const profileLink = PUBLIC_BASE_URL + '/public/market/' + data.user.id;
-	let copyButtonText = 'Copy profile link';
+
 	function copyText() {
 		navigator.clipboard
 			.writeText(profileLink)
 			.then(() => {
-				copyButtonText = 'Copied!';
+				copyIcon = CopyCheckIcon;
 
 				setTimeout(() => {
-					copyButtonText = 'Copy profile link';
+					copyIcon = CopyIcon;
 				}, 1000);
 			})
 			.catch((err) => {
@@ -55,19 +59,21 @@
 </script>
 
 <PageWrapper>
-	<div class="flex items-center justify-between">
+	<!-- <div class="flex items-center justify-between"> -->
+	<div class="flex flex-col sm:flex-row items-center justify-between">
 		<!-- Left Section: Profile Picture and Title -->
 		<PageHeaderCreator user={data.user} />
 
 		<!-- Right Section: Buttons stacked vertically -->
-		<div class="flex flex-col space-y-2">
-			<Button on:click={() => copyText()} class="flex items-center justify-center px-6 py-2 w-full">
-				<CopyIcon class="mr-2" />
-				<span class="min-w-[100px] text-center">{copyButtonText}</span>
+		<div class="flex p-10 space-x-2">
+			<Button on:click={() => copyText()}>
+				<svelte:component this={copyIcon} />
 			</Button>
-			<Button class="flex items-center justify-center px-6 py-2 w-full" on:click={openShareDialog}>
-				<SendIcon class="mr-2" />
-				<span class="min-w-[100px] text-center">Share</span>
+			<Button href={profileLink} target="_blank">
+				<NewTabIcon />
+			</Button>
+			<Button on:click={openShareDialog}>
+				<SendIcon />
 			</Button>
 		</div>
 	</div>
@@ -132,8 +138,8 @@
 				Share on LinkedIn
 			</Button>
 			<Button on:click={() => copyText()}>
-				<CopyIcon class="mr-2" />
-				<span class="min-w-[100px] text-center">{copyButtonText}</span>
+				<svelte:component this={copyIcon} class="mr-2" />
+				<span class="min-w-[100px] text-center">Copy Profile Link</span>
 			</Button>
 		</div>
 		<Dialog.Footer>

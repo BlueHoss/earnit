@@ -7,7 +7,7 @@
 
 <Card.Root>
 	<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-		<Card.Title class="text-sm font-medium">Credits Distributed <br /> (last 30 days)</Card.Title>
+		<Card.Title class="text-sm font-medium">Credits Distributed</Card.Title>
 		<CurrencyIcon class="h-4 w-4 text-muted-foreground" />
 	</Card.Header>
 	<Card.Content>

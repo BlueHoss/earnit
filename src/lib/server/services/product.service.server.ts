@@ -3,6 +3,9 @@ import { ProductQueryResultSchema } from '$lib/schema/product.schema';
 import { z } from 'zod';
 
 import {
+	credit_creator_pool_table,
+	credit_follower_balance_table,
+	credit_transaction_table,
 	login_table,
 	product_invoice_table,
 	product_item_table,
@@ -22,7 +25,7 @@ import {
 	PUBLIC_DEFAULT_PRODUCT_IMAGE
 } from '$env/static/public';
 import { ImageService } from './image.service.server';
-import { date } from 'drizzle-orm/mysql-core';
+import { type ActionResult, ActionResponse } from '$lib/utils/action-result';
 
 async function createProduct(newProduct: ProductNewUpdateType) {
 	if (!newProduct) {
@@ -309,29 +312,114 @@ async function getProductsPurchasedByFollower(
 	return validatedProducts;
 }
 
-async function redeemProduct(followerUserId: number, productId: number) {
-	const product = await db.select().from(product_table).where(eq(product_table.id, productId));
+async function redeemProductFromCreator(
+	creatorId: number,
+	followerId: number,
+	productId: number
+): Promise<ActionResult> {
+	try {
+		const products = await db.select().from(product_table).where(eq(product_table.id, productId));
 
-	if (product.length === 0) {
-		console.log('No product found with the given ID');
-		return null;
+		if (products.length === 0) {
+			console.log('No product found with the given ID');
+			return ActionResponse.fail('No product found with the given ID');
+		}
+
+		const product = products[0];
+
+		// Get existing follower's credit balance for this creator
+		const followerCreditRecords = await db
+			.select()
+			.from(credit_follower_balance_table)
+			.where(
+				and(
+					eq(credit_follower_balance_table.follower_user_id, followerId),
+					eq(credit_follower_balance_table.creator_user_id, creatorId)
+				)
+			);
+
+		let followerCreditRecord = null;
+		if (followerCreditRecords.length === 1) {
+			followerCreditRecord = followerCreditRecords[0];
+		}
+
+		if (!followerCreditRecord) {
+			console.log('You do not have any credit with this creator to purchase this product');
+			return ActionResponse.fail(
+				'You do not have any credit with this creator to purchase this product'
+			);
+		}
+
+		if (Number(followerCreditRecord.credit_balance) < Number(product.cost)) {
+			console.log('You do not have enough credit to purchase this product');
+			return ActionResponse.fail('You do not have enough credit to purchase this product');
+		}
+
+		// Take credits from follower's balance (if they have enough)
+		// Add credits to creator's pool
+		// Add a credit transaction
+
+		const result = await db.transaction(async (tx) => {
+			// 1. Create product invoice
+			const productInvoice = {
+				follower_user_id: followerId,
+				creator_user_id: product.creator_user_id,
+				product_id: productId,
+				cost: product.cost
+			};
+
+			await tx.insert(product_invoice_table).values(productInvoice).returning();
+
+			// 2. Update creator's credit pool
+			const updatedCreatorPool = await tx
+				.update(credit_creator_pool_table)
+				.set({
+					available_credits: sql`${credit_creator_pool_table.available_credits} + ${product.cost}`
+				})
+				.where(eq(credit_creator_pool_table.creator_user_id, creatorId))
+				.returning();
+
+			// 3. Insert a new credit transaction
+			const newTransaction = await tx
+				.insert(credit_transaction_table)
+				.values({
+					transaction_type: 'product redemption',
+					creator_user_id: creatorId,
+					follower_user_id: followerId,
+					amount: product.cost,
+					description: `Credit purchase of ${product.cost} for product redemption`
+				})
+				.returning();
+
+			// 4. Update follower's credit balance
+			const updatedFollowerBalance = await tx
+				.update(credit_follower_balance_table)
+				.set({
+					credit_balance: sql`${credit_follower_balance_table.credit_balance} - ${product.cost}`
+				})
+				.where(
+					and(
+						eq(credit_follower_balance_table.follower_user_id, followerId),
+						eq(credit_follower_balance_table.creator_user_id, creatorId)
+					)
+				)
+				.returning();
+
+			return {
+				creatorPool: updatedCreatorPool[0],
+				transaction: newTransaction[0],
+				followerBalance: updatedFollowerBalance[0]
+			};
+		});
+
+		console.log('Transaction completed successfully:', result);
+		return ActionResponse.success('product redeemed successfully');
+	} catch (error) {
+		console.error('Transaction failed:', error);
+		return ActionResponse.fail(
+			'An error occurred while redeeming the product. Please try again later.'
+		);
 	}
-
-	const productInvoice = {
-		follower_user_id: followerUserId,
-		creator_user_id: product[0].creator_user_id,
-		product_id: productId,
-		cost: product[0].cost
-	};
-
-	const result = await db.insert(product_invoice_table).values(productInvoice).returning();
-
-	if (result.length === 0) {
-		console.log('Failed to redeem product');
-		return null;
-	}
-
-	return result[0];
 }
 
 export const ProductService = {
@@ -345,5 +433,5 @@ export const ProductService = {
 	getProductListingById,
 	getProductsPurchasedByFollower,
 	getFullProductPurchasedByFollower,
-	redeemProduct
+	redeemProductFromCreator
 };

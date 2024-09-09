@@ -46,6 +46,12 @@
 		}
 	}
 	buildMainMenu();
+
+	let isMobileOpen = false;
+
+	function handleMenuItemClick() {
+		isMobileOpen = false;
+	}
 </script>
 
 <ModeWatcher />
@@ -72,7 +78,7 @@
 	</div>
 	<div class="flex flex-col">
 		<header class="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
-			<Sheet.Root>
+			<Sheet.Root bind:open={isMobileOpen}>
 				<Sheet.Trigger asChild let:builder>
 					<Button variant="outline" size="icon" class="shrink-0 md:hidden" builders={[builder]}>
 						<Menu class="h-5 w-5" />
@@ -81,7 +87,7 @@
 				</Sheet.Trigger>
 				<Sheet.Content side="left" class="flex flex-col">
 					<nav class="grid gap-2 text-lg font-medium">
-						<MenuItems MenuItems={mainMenu} />
+						<MenuItems MenuItems={mainMenu} on:itemClick={handleMenuItemClick} />
 						<!-- <svelte:component this={menu} /> -->
 					</nav>
 					<!-- <div class="mt-auto">

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { goto } from '$app/navigation';
-	import PageHeader from '$lib/components/base/PageHeaderCreator.svelte';
+	import { goto, invalidateAll } from '$app/navigation';
+	import PageHeaderCreator from '$lib/components/base/PageHeaderCreator.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import type { ProductWithItemCount } from '$lib/schema/product.schema';
 	import type { User } from 'lucia';
@@ -15,15 +15,23 @@
 	import AlertDescription from '$lib/components/ui/alert/alert-description.svelte';
 	import CardHeader from '$lib/components/ui/card/card-header.svelte';
 	import RewardCurrency from '$lib/components/base/RewardCurrency.svelte';
-	import { userPrefersMode } from 'mode-watcher';
+	import { enhance } from '$app/forms';
+	import type { ActionResult } from '@sveltejs/kit';
+	import { Title } from '$lib/components/ui/alert';
+
 	let showLoginDialog = false;
 	let showRedeemDialog = false;
+	let isRedeeming = false;
+	let redeemSuccess = false;
+	let redeemError = '';
+	let isOwned = false;
 
 	interface PageData {
 		creator: User;
 		user: User | null;
 		product: ProductWithItemCount;
 		userCredits: number;
+		products: { id: number }[];
 	}
 
 	export let data: PageData;
@@ -37,36 +45,28 @@
 		showLoginDialog = true;
 	}
 
-	let isRedeeming = false;
-	let redeemSuccess = false;
-	let redeemError = '';
+	function handleProductOwnership() {
+		if (!data.user) isOwned = false;
 
-	async function handleRedeem() {
-		isRedeeming = true;
-		if (!data.product) {
-			redeemError = 'The product was not found.';
-			return;
+		for (const product of data.products) {
+			if (product.id === data.product.id) {
+				isOwned = true;
+			}
 		}
+	}
 
-		if (data.userCredits < Number(data.product.cost)) {
-			redeemError = 'You do not have enough credits to redeem this product.';
-			return;
-		}
-
-		const formData = new FormData();
-		formData.append('productId', data.product.id.toString());
-
-		const response = await fetch('?/redeemProduct', {
-			method: 'POST',
-			body: formData
-		});
-
-		if (response.ok) {
-			redeemSuccess = true;
-			redeemError = 'An error occurred while redeeming the product.';
+	function handleEnhance() {
+		return async ({ result }: { result: ActionResult }) => {
+			// return async ({ result }) => {
 			isRedeeming = false;
-			return;
-		}
+			if (result.type === 'success') {
+				redeemSuccess = true;
+				redeemError = '';
+				await invalidateAll();
+			} else if (result.type === 'failure') {
+				redeemError = result.data?.errors?.[0] || 'An error occurred';
+			}
+		};
 	}
 
 	function handleClose() {
@@ -75,10 +75,12 @@
 		redeemSuccess = false;
 		redeemError = '';
 	}
+
+	handleProductOwnership();
 </script>
 
 <PageWrapper>
-	<PageHeader user={data.creator} />
+	<PageHeaderCreator user={data.creator} />
 
 	<Card class="mb-4 overflow-hidden">
 		<CardContent class="p-0">
@@ -108,9 +110,15 @@
 							Effort Credits: {data.product.cost}
 						</Badge>
 						{#if data.user}
-							<Button variant="default" class="px-6 py-2" on:click={() => (showRedeemDialog = true)}
-								>Redeem</Button
-							>
+							{#if isOwned}
+								<Title>You own this product</Title>
+							{:else}
+								<Button
+									variant="default"
+									class="px-6 py-2"
+									on:click={() => (showRedeemDialog = true)}>Redeem</Button
+								>
+							{/if}
 						{:else}
 							<Button variant="default" on:click={handleSignInRedeem} class="px-6 py-2"
 								>Sign In to Redeem</Button
@@ -190,15 +198,26 @@
 
 		<Dialog.Footer class="mt-4">
 			<Button variant="outline" on:click={handleClose}>Cancel</Button>
-			<Button on:click={handleRedeem} disabled={isRedeeming || redeemSuccess}>
-				{#if isRedeeming}
-					Redeeming...
-				{:else if redeemSuccess}
-					Redeemed
-				{:else}
-					Confirm Redemption
-				{/if}
-			</Button>
+
+			<form action="?/redeemProduct" method="POST" use:enhance={handleEnhance}>
+				<input type="hidden" name="productId" value={data.product.id} />
+				<input type="hidden" name="creatorId" value={data.product.creator_user_id} />
+				<Button
+					disabled={isRedeeming || redeemSuccess}
+					variant="default"
+					type="submit"
+					class="px-6 py-2"
+					on:click={() => (showRedeemDialog = true)}
+				>
+					{#if isRedeeming}
+						Redeeming...
+					{:else if redeemSuccess}
+						Redeemed
+					{:else}
+						Confirm Redemption
+					{/if}
+				</Button>
+			</form>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

@@ -71,8 +71,8 @@
 				{/if}
 
 				{#each data.dashboard.subscriberList as subscriber}
-					<!-- <SubscribeCard subscription={subscriber} /> -->
-					<SubscribeCard2 subscription={subscriber} />
+					<SubscribeCard subscription={subscriber} />
+					<!-- <SubscribeCard2 subscription={subscriber} /> -->
 				{/each}
 			</Card.Content>
 		</Card.Root>

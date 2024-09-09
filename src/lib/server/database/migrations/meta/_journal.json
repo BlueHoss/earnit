@@ -204,6 +204,48 @@
       "when": 1725748731251,
       "tag": "0028_unique_master_chief",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1725817882839,
+      "tag": "0029_productive_mikhail_rasputin",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1725819253038,
+      "tag": "0030_yellow_vermin",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1725820188978,
+      "tag": "0031_cool_young_avengers",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1725820354207,
+      "tag": "0032_zippy_archangel",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1725820816914,
+      "tag": "0033_outgoing_puppet_master",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1725820863964,
+      "tag": "0034_broken_alex_power",
+      "breakpoints": true
     }
   ]
 }

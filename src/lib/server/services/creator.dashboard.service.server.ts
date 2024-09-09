@@ -1,14 +1,14 @@
 import { eq, and, sql, sum, between, type SQL } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import {
+	credit_creator_pool_table,
 	follower_creator_table,
 	login_table,
 	mission_action_table,
 	plan_subscription_table,
 	plan_table,
 	product_invoice_table,
-	product_table,
-	reward_earned_table
+	product_table
 } from '$lib/server/database/schema';
 import type { LoginQueryResult } from '$lib/schema/login.schema';
 import type { ProductInvoiceResult } from '$lib/schema/product_invoice.schema';
@@ -78,18 +78,16 @@ async function getMonthlyRevenue(userid: number) {
  * @param {Date} endDate - The end date.
  * @returns {Promise<number>} - The credits used.
  */
-async function getCreditsUsed(userid: number, startDate: Date, endDate: Date) {
-	let whereClause: SQL<unknown> | undefined = eq(reward_earned_table.creator_user_id, userid);
-
-	if (startDate !== null && endDate !== null) {
-		whereClause = and(whereClause, between(reward_earned_table.date_awarded, startDate, endDate));
-	}
+async function getCreditsUsed(userid: number) {
 	const count = await db
 		.select({
-			total: sum(reward_earned_table.reward_value)
+			total:
+				sql`SUM(${credit_creator_pool_table.available_credits} - ${credit_creator_pool_table.total_credits})`.as(
+					'total'
+				)
 		})
-		.from(reward_earned_table)
-		.where(whereClause);
+		.from(credit_creator_pool_table)
+		.where(eq(credit_creator_pool_table.creator_user_id, userid));
 
 	if (count.length === 0) {
 		return 0;
@@ -318,7 +316,7 @@ async function loadDashboardData(creatorUserId: number): Promise<CreatorDashboar
 	const startDate = new Date();
 	startDate.setDate(startDate.getDate() - 30);
 
-	const creditsUsed = await getCreditsUsed(creatorUserId, startDate, endDate);
+	const creditsUsed = await getCreditsUsed(creatorUserId);
 	const purchaseCount = await getProductsPurchasedCount(creatorUserId, startDate, endDate);
 	const purchaseAmount = await getProductsPurchasedAmount(creatorUserId, startDate, endDate);
 	const productPurchaseList = await getProductsPurchasedList(creatorUserId, startDate, endDate);

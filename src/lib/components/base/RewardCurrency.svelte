@@ -1,19 +1,6 @@
-<!-- <script>
-	export let amount = 0;
-	export let currency = 'USD';
-
-	const formatter = new Intl.NumberFormat('en-US', {
-		style: 'currency',
-		currency: currency
-	});
-
-	$: formattedAmount = formatter.format(amount);
-</script>
-
-<span>{formattedAmount}</span> -->
-
 <script lang="ts">
 	export let amount = 0;
+	export let name = '';
 	import CurrencyIcon from 'lucide-svelte/icons/currency';
 	$: formattedAmount = formatNumber(amount);
 
@@ -25,7 +12,8 @@
 	}
 </script>
 
-<div class="flex items-center gap-2 justify-end">
+<div class="flex items-center gap-2">
 	<CurrencyIcon size={16} />
 	{formattedAmount}
+	{name}
 </div>

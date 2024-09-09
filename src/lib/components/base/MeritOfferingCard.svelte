@@ -4,10 +4,10 @@
 	import CardTitle from '$lib/components/ui/card/card-title.svelte';
 	import Card from '$lib/components/ui/card/card.svelte';
 	import PencilIcon from 'lucide-svelte/icons/pencil';
-	import CurrencyIcon from 'lucide-svelte/icons/currency';
 	import Button from '../ui/button/button.svelte';
 	import type { Product } from '$lib/schema/product.schema';
 	import type { User } from 'lucia';
+	import RewardCurrency from './RewardCurrency.svelte';
 
 	export let product: Product;
 	export let user: User;
@@ -38,8 +38,7 @@
 					{product.description}
 				</p>
 				<div class="mt-2 flex justify-start">
-					<CurrencyIcon class="mr-2" />
-					{product.cost} Tokens
+					<RewardCurrency amount={product.cost} />
 				</div>
 			</CardDescription>
 		</CardContent>

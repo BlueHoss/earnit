@@ -40,7 +40,7 @@ async function transformSignupToUser(signupData: SignupUser): Promise<BaseUser> 
 			date_created: new Date(),
 			date_updated: new Date(),
 			store_name: `${signupData.first_name}'s Store`,
-			reward_name: `${signupData.first_name} Token`
+			reward_name: `${signupData.first_name}`
 		};
 	} else {
 		return {

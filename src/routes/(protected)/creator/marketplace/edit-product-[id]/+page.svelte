@@ -13,7 +13,7 @@
 	import Captions from 'lucide-svelte/icons/captions';
 	import FileText from 'lucide-svelte/icons/file-text';
 	import Image from 'lucide-svelte/icons/image';
-	import Currency from 'lucide-svelte/icons/currency';
+	import CurrencyIcon from 'lucide-svelte/icons/currency';
 	import MeritItem from '../components/MeritItem.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import { superForm, superValidate, type Infer, type SuperValidated } from 'sveltekit-superforms';
@@ -22,6 +22,7 @@
 	//import type { ProductNewUpdateType } from '$lib/schema/product.schema.ts';
 	import SuperDebug from 'sveltekit-superforms';
 	import ButtonConfirmAction from '$lib/components/base/ButtonConfirmAction.svelte';
+	import RewardCurrency from '$lib/components/base/RewardCurrency.svelte';
 
 	export let data;
 	export let fileUploadList: { id: number; name: string; file: File | null }[] = [];
@@ -46,6 +47,8 @@
 	});
 
 	const { form: formData, errors, enhance, delayed } = form;
+
+	console.log(data);
 </script>
 
 <PageWrapper>
@@ -79,7 +82,8 @@
 			</Card.Root>
 			<Card.Root>
 				<Card.Header>
-					<Card.Title class="flex items-center"><Currency class="mr-2" /> Effort Credits</Card.Title
+					<Card.Title class="flex items-center"
+						><CurrencyIcon class="mr-2" /> {data.user.reward_name}</Card.Title
 					>
 					<Card.Description
 						>The number of credits required for followers to redeem this Merit Offering.</Card.Description
@@ -89,7 +93,7 @@
 					<Card.Content>
 						<Form.Field name="cost" {form} class="flex-1">
 							<Form.Control let:attrs>
-								<Input {...attrs} bind:value={$formData.cost} />
+								<Input type="number" {...attrs} bind:value={$formData.cost} />
 							</Form.Control>
 							<Form.FieldErrors />
 						</Form.Field>

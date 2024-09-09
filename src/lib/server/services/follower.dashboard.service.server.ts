@@ -1,27 +1,27 @@
 import {
+	credit_follower_balance_table,
 	follower_creator_table,
 	login_table,
 	plan_subscription_table,
 	plan_table,
-	product_invoice_table,
-	reward_earned_table
+	product_invoice_table
 } from '$lib/server/database/schema';
 import { and, eq, sql } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import type { Follower, Subsciption } from '$lib/schema/follower_dashboard.schema';
 
 async function availableCredits(followerId: number) {
-	const productCount = await db
+	const followerCredits = await db
 		.select({
-			count: sql<number>`sum(reward_value)`.as('count')
+			credits: sql<number>`sum(credit_balance)`.as('credits')
 		})
-		.from(reward_earned_table)
-		.where(eq(reward_earned_table.follower_user_id, followerId));
+		.from(credit_follower_balance_table)
+		.where(eq(credit_follower_balance_table.follower_user_id, followerId));
 
-	if (productCount.length === 0) {
+	if (followerCredits.length === 0) {
 		return 0;
 	} else {
-		return Number(productCount[0].count);
+		return Number(followerCredits[0].credits);
 	}
 }
 
@@ -100,10 +100,15 @@ async function getFollowerList(followerId: number): Promise<Follower[]> {
 			store_name: login_table.store_name,
 			title: login_table.title,
 			creator_user_id: follower_creator_table.creator_user_id,
-			profile_pic: login_table.profile_pic
+			profile_pic: login_table.profile_pic,
+			credit_follower_balance_table: credit_follower_balance_table.credit_balance
 		})
 		.from(follower_creator_table)
 		.innerJoin(login_table, eq(login_table.id, follower_creator_table.creator_user_id))
+		.leftJoin(
+			credit_follower_balance_table,
+			eq(credit_follower_balance_table.creator_user_id, follower_creator_table.creator_user_id)
+		)
 		.where(eq(follower_creator_table.follower_user_id, followerId));
 	return list;
 }
@@ -119,7 +124,73 @@ async function loadDashboardData(followerUserId: number) {
 	};
 }
 
+async function getFollowerCreditsByCreator(followerId: number, creatorId: number) {
+	const followerCreditAmount = await db
+		.select({
+			count: credit_follower_balance_table.credit_balance
+		})
+		.from(credit_follower_balance_table)
+		.where(
+			and(
+				eq(credit_follower_balance_table.follower_user_id, followerId),
+				eq(credit_follower_balance_table.creator_user_id, creatorId)
+			)
+		);
+
+	if (followerCreditAmount.length === 0) {
+		return 0;
+	} else {
+		return Number(followerCreditAmount[0].count);
+	}
+}
+
+async function getFollowerProductsByCreatorList(
+	followerId: number,
+	creatorId: number
+): Promise<{ id: number | null }[]> {
+	const followerProductsByCreator = await db
+		.select({
+			id: product_invoice_table.product_id
+		})
+		.from(product_invoice_table)
+		.where(
+			and(
+				eq(product_invoice_table.follower_user_id, followerId),
+				eq(product_invoice_table.creator_user_id, creatorId)
+			)
+		);
+
+	if (followerProductsByCreator == null || followerProductsByCreator.length === 0) {
+		return [];
+	} else {
+		return followerProductsByCreator;
+	}
+}
+
+async function getFollowerProductsPurchasedFromCreator(followerId: number, creatorId: number) {
+	const productCount = await db
+		.select({
+			count: sql<number>`count(*)`.as('count')
+		})
+		.from(product_invoice_table)
+		.where(
+			and(
+				eq(product_invoice_table.follower_user_id, followerId),
+				eq(product_invoice_table.creator_user_id, creatorId)
+			)
+		);
+
+	if (productCount.length === 0) {
+		return 0;
+	} else {
+		return Number(productCount[0].count);
+	}
+}
+
 export const FollowersDashboardService = {
 	loadDashboardData,
-	availableCredits
+	availableCredits,
+	getFollowerCreditsByCreator,
+	getFollowerProductsPurchasedFromCreator,
+	getFollowerProductsByCreatorList
 };

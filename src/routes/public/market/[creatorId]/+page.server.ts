@@ -1,12 +1,13 @@
 import { CreatorDashboardService } from '$lib/server/services/creator.dashboard.service.server.js';
 import { CreatorManagmentService } from '$lib/server/services/creator.management.service.server.js';
+import { FollowersDashboardService } from '$lib/server/services/follower.dashboard.service.server.js';
 import { ProductService } from '$lib/server/services/product.service.server.js';
 import { UserService } from '$lib/server/services/user.service.server.js';
 import { error, fail, type Actions } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
 
 /** @type {import('./$types').PageLoad} */
-export async function load({ params }) {
+export async function load({ params, locals }) {
 	const creatorId = Number(params.creatorId);
 
 	if (!creatorId) {
@@ -14,10 +15,25 @@ export async function load({ params }) {
 	} else if (isNaN(creatorId)) {
 		return error(404, 'Not found');
 	}
+
 	//Get the creator and return
 	const creator = await UserService.getUserByUserId(creatorId);
 	const products = await ProductService.getProductsByUserId(creatorId);
 	const missionActions = await CreatorDashboardService.getMissionActionList(creatorId);
+
+	let followerCredits = 0;
+	let followerPurchases = 0;
+
+	if (locals.user) {
+		followerCredits = await FollowersDashboardService.getFollowerCreditsByCreator(
+			locals.user.id,
+			creatorId
+		);
+		followerPurchases = await FollowersDashboardService.getFollowerProductsPurchasedFromCreator(
+			locals.user.id,
+			creatorId
+		);
+	}
 	if (!creator) {
 		return error(404, 'Not found');
 	}
@@ -25,7 +41,9 @@ export async function load({ params }) {
 	return {
 		creator,
 		products,
-		missionActions
+		missionActions,
+		followerCredits,
+		followerPurchases
 	};
 }
 

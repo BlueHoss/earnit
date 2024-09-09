@@ -13,6 +13,7 @@ import {
 
 import { TextUtilities } from '../../utils/text-utilities';
 import { sql } from 'drizzle-orm';
+import { index } from 'drizzle-orm/pg-core';
 
 export const aal_level = pgEnum('aal_level', ['aal1', 'aal2', 'aal3']);
 export const code_challenge_method = pgEnum('code_challenge_method', ['s256', 'plain']);
@@ -209,4 +210,79 @@ export const follower_creator_table = pgTable(
 			})
 		};
 	}
+);
+
+/**
+ * Tracks the total credits a creator has purchased and how many are available to distribute.
+ * The difference between total_credits and available_credits represents credits already distributed to followers.
+ */
+export const credit_creator_pool_table = pgTable(
+	'credit_creator_pool',
+	{
+		id: serial('id').primaryKey().notNull(),
+		creator_user_id: integer('creator_user_id')
+			.references(() => login_table.id)
+			.notNull(),
+		total_credits: numeric('total_credits', { precision: 10, scale: 2 }).notNull().default('0.00'),
+		available_credits: numeric('available_credits', { precision: 10, scale: 2 })
+			.notNull()
+			.default('0.00'),
+		date_updated: timestamp('date_updated').defaultNow().notNull()
+	},
+	(table) => {
+		return {
+			nameIdx: index('idx_credit_creator_pool_creator_id').on(table.creator_user_id)
+		};
+	}
+);
+
+/**
+ * Maintains a separate balance for each follower-creator relationship.
+ * Allows followers to have different credit balances for different creators they follow.
+ */
+export const credit_follower_balance_table = pgTable(
+	'credit_follower_balance',
+	{
+		id: serial('id').primaryKey().notNull(),
+		follower_user_id: integer('follower_user_id')
+			.references(() => login_table.id)
+			.notNull(),
+		creator_user_id: integer('creator_user_id')
+			.references(() => login_table.id)
+			.notNull(),
+		credit_balance: numeric('credit_balance', { precision: 10, scale: 2 })
+			.notNull()
+			.default('0.00')
+			.notNull(),
+		date_updated: timestamp('date_updated').defaultNow().notNull()
+	},
+	(table) => ({
+		followerIdIdx: index('idx_credit_follower_balance_follower_id').on(table.follower_user_id),
+		creatorIdIdx: index('idx_credit_follower_balance_creator_id').on(table.creator_user_id)
+	})
+);
+
+/**
+ * Logs all credit-related activities for auditing and history purposes.
+ * The transaction_type field distinguishes between different types of transactions (e.g., purchases, distributions, redemptions).
+ */
+export const credit_transaction_table = pgTable(
+	'credit_transaction',
+	{
+		id: serial('id').primaryKey().notNull(),
+		transaction_type: text('transaction_type'),
+		description: text('description'),
+		follower_user_id: integer('follower_user_id')
+			.references(() => login_table.id)
+			.notNull(),
+		creator_user_id: integer('creator_user_id')
+			.references(() => login_table.id)
+			.notNull(),
+		amount: numeric('amount', { precision: 10, scale: 2 }).notNull().default('0.00'),
+		date_transaction: timestamp('date_transaction').defaultNow().notNull()
+	},
+	(table) => ({
+		creatorIdIdx: index('idx_credit_transactions_creator_id').on(table.creator_user_id),
+		followerIdIdx: index('idx_credit_transactions_follower_id').on(table.follower_user_id)
+	})
 );

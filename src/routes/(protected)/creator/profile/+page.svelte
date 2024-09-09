@@ -3,22 +3,15 @@
 	import type { PageData } from './$types';
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import { Button } from '$lib/components/ui/button/index.ts';
-	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
-	import AvatarImage from '$lib/components/ui/avatar/avatar-image.svelte';
-	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
-	import Handle from '$lib/components/base/Handle.svelte';
-	import Number from '$lib/components/base/Number.svelte';
-	import PencilIcon from 'lucide-svelte/icons/pencil';
-	import CreatorProfileHeader from '../components/CreatorProfileHeader.svelte';
+	import PageHeaderCreator from '$lib/components/base/PageHeaderCreator.svelte';
 
 	export let data: PageData;
 </script>
 
 <PageWrapper>
 	<div class="grid gap-4 p-6 md:grid-cols-1 lg:grid-cols-1">
-		<CreatorProfileHeader {data} />
-
+		<PageHeaderCreator user={data.user} />
 		<!-- Bio Card -->
 		<Card.Root>
 			<Card.Header>

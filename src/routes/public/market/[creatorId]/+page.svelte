@@ -15,6 +15,14 @@
 	import type { PageData } from './$types';
 	import { goto, invalidateAll } from '$app/navigation';
 	import MissionActions from '$lib/components/base/MissionActions.svelte';
+	import { CheckCircle2, CurrencyIcon } from 'lucide-svelte';
+	import RewardCurrency from '$lib/components/base/RewardCurrency.svelte';
+	import MarketplaceIcon from 'lucide-svelte/icons/store';
+	import { Title } from '$lib/components/ui/alert';
+	import Alert from '$lib/components/ui/alert/alert.svelte';
+	import AlertTitle from '$lib/components/ui/alert/alert-title.svelte';
+	import AlertDescription from '$lib/components/ui/alert/alert-description.svelte';
+	import PageHeaderCreator from '$lib/components/base/PageHeaderCreator.svelte';
 
 	let showDialog = false;
 
@@ -39,47 +47,63 @@
 </script>
 
 <PageWrapper>
-	<Card.Root class="h-40">
-		<!-- Adjust the height as needed -->
-		<Card.Content class="h-full">
-			<div class="flex h-full items-center justify-between">
-				<!-- Left Section: Image and Text -->
-				<div class="flex items-center space-x-4">
-					<!-- Example Profile Component with Image and Text -->
-					<Avatar class="h-24 w-24">
-						<AvatarImage
-							src={data.creator.profile_pic}
-							alt="{data.creator.handle} Profile Picture"
-						/>
-						<AvatarFallback>{data.creator.handle}</AvatarFallback>
-					</Avatar>
-					<div>
-						<h2 class="text-xl font-bold">{data.creator.store_name}</h2>
-						<p class="text-sm text-gray-400">
-							<Number amount={data.creator.follower_count} /> followers
-						</p>
-					</div>
-				</div>
+	<div class="flex h-full items-center justify-between">
+		<PageHeaderCreator user={data.creator} />
 
-				<!-- Right Section: Follow Button -->
-				<div class="flex flex-col space-y-2">
-					<Button on:click={handleFollow} class="px-6"
-						><FollowEarnItIcon class="pr-1" />Follow</Button
+		<!-- Right Section: Follow Button -->
+		<div class="flex flex-col space-y-2">
+			<Button on:click={handleFollow} class="px-6"><FollowEarnItIcon class="pr-1" />Follow</Button>
+			<Button class="px-6"><PaidSubscribersIcon class="pr-1" />Subscribe</Button>
+		</div>
+	</div>
+
+	{#if data.user}
+		<Title class="text-left">Your credit and purchase history for this creator</Title>
+		<div class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+			<Card.Root>
+				<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
+					<Card.Title class="text-sm font-medium">
+						{data.creator.reward_name} Credits Available</Card.Title
 					>
-					<Button class="px-6"><PaidSubscribersIcon class="pr-1" />Subscribe</Button>
-				</div>
-			</div>
-		</Card.Content>
-	</Card.Root>
+					<CurrencyIcon class="h-4 w-4 text-muted-foreground" />
+				</Card.Header>
+				<Card.Content>
+					<div class="text-2xl font-bold text-primary">
+						<RewardCurrency amount={data.followerCredits} />
+					</div>
+					<p class="text-xs text-muted-foreground">
+						Amount of {data.creator.reward_name} you have with {data.creator.handle}.
+					</p>
+				</Card.Content>
+			</Card.Root>
 
+			<Card.Root>
+				<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
+					<Card.Title class="text-sm font-medium">Your Redeemed Products</Card.Title>
+					<MarketplaceIcon class="h-4 w-4 text-muted-foreground" />
+				</Card.Header>
+				<Card.Content>
+					<div class="text-2xl font-bold text-primary">{data.followerPurchases}</div>
+					<p class="text-xs text-muted-foreground flex items-center gap-2">
+						Offerings you have redeemed from this creator.
+					</p>
+				</Card.Content>
+			</Card.Root>
+		</div>
+	{:else if !data.user || data.followerCredits === 0}
+		<Alert variant="default" class="mt-4">
+			<CheckCircle2 class="h-4 w-4" />
+			<AlertTitle>No Credits found</AlertTitle>
+			<AlertDescription
+				>You do not have any credit with {data.creator.handle} check out their missions below</AlertDescription
+			>
+		</Alert>
+	{/if}
 	<div>
 		<Card.Root class="xl:col-span-2">
 			<Card.Header class="flex flex-row items-center">
 				<div class="grid gap-2">
 					<Card.Title>{data.creator.handle}'s Merit Offerings</Card.Title>
-					<Card.Description
-						>All of your Merit Offerings that are displayed in your Marketplace</Card.Description
-					>
 				</div>
 			</Card.Header>
 			<Card.Content class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">

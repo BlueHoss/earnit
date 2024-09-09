@@ -3,7 +3,7 @@
 	import * as Table from '$lib/components/ui/table/index.ts';
 	import PageHeader from '$lib/components/base/PageHeaderCreator.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
-	import EffortCreditsThisMonth from './components/EffortCreditsThisMonth.svelte';
+	import CreditsDistributed from './components/CreditsDistributed.svelte';
 	import ProductsRedeemedThisMonth from './components/ProductsRedeemedThisMonth.svelte';
 	import PaidSubscribers from './components/PaidSubscribers.svelte';
 	import EarnItFollowers from './components/EarnItFollowers.svelte';
@@ -18,7 +18,7 @@
 	<div class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
 		<!-- <EffortCreditsAvailable effortCredits={600} /> -->
 
-		<EffortCreditsThisMonth effortCredits={data.dashboard.creditsUsed} />
+		<CreditsDistributed effortCredits={data.dashboard.creditsUsed} />
 		<ProductsRedeemedThisMonth
 			redeemedThisMonth={data.dashboard.purchaseCount}
 			purchaseAmount={data.dashboard.purchaseAmount}
