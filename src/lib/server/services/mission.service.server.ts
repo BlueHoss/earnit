@@ -1,8 +1,9 @@
 import type { DefaultMission, MissionAction } from '$lib/schema/mission.schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import db from '../database/drizzle';
 import {
 	mission_action_table,
+	mission_creator_table,
 	mission_default_action_table,
 	mission_table
 } from '../database/schema';
@@ -28,6 +29,19 @@ async function updateMissionItemValue(
 	}
 }
 
+async function setMissionStatusForCreator(missionId: number, creatorId: number, enabled: boolean) {
+	await db
+		.update(mission_creator_table)
+		.set({ enabled: enabled })
+		.where(
+			and(
+				eq(mission_creator_table.mission_id, missionId),
+				eq(mission_creator_table.creator_user_id, creatorId)
+			)
+		)
+		.returning();
+}
+
 async function getDefaultMissions(): Promise<DefaultMission[]> {
 	const missions = await db
 		.select({
@@ -36,8 +50,7 @@ async function getDefaultMissions(): Promise<DefaultMission[]> {
 			platform: mission_table.platform,
 			description: mission_table.description
 		})
-		.from(mission_table)
-		.where(eq(mission_table.enabled, true));
+		.from(mission_table);
 
 	for (const mission of missions) {
 		const actions = await db
@@ -59,5 +72,6 @@ async function getDefaultMissions(): Promise<DefaultMission[]> {
 
 export const MissionService = {
 	updateMissionItemValue,
-	getDefaultMissions
+	getDefaultMissions,
+	setMissionStatusForCreator
 };

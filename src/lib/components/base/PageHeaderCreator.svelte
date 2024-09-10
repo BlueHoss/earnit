@@ -3,6 +3,7 @@
 	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
 	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
 	import Number from './Number.svelte';
+	import RewardCurrency from './RewardCurrency.svelte';
 
 	export let user;
 </script>
@@ -18,7 +19,7 @@
 		<div class="flex flex-col justify-center">
 			<h1 class="text-2xl font-semibold">{user.store_name}</h1>
 			<p class="text-sm">{user.title}</p>
-			<p class="text-sm"><Number amount={user.follower_count} /> social media followers</p>
+			<p class="text-sm"><RewardCurrency amount={user.credit_balance} name={user.reward_name} /></p>
 		</div>
 	</div>
 </div>

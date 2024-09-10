@@ -30,7 +30,8 @@ export const defaultMissionActionSchema = missionActionSchema.omit({
 	mission_id: true
 });
 export const defaultMissionSchema = missionSchema.extend({
-	actions: z.array(defaultMissionActionSchema)
+	actions: z.array(defaultMissionActionSchema),
+	enabled: z.boolean()
 });
 
 export type DefaultMission = z.infer<typeof defaultMissionSchema>;

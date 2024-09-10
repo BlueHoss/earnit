@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import * as Table from '$lib/components/ui/table/index.ts';
-	import PageHeader from '$lib/components/base/PageHeaderCreator.svelte';
+	import PageHeaderCreator from '$lib/components/base/PageHeaderCreator.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import CreditsDistributed from './components/CreditsDistributed.svelte';
 	import ProductsRedeemedThisMonth from './components/ProductsRedeemedThisMonth.svelte';
@@ -14,7 +14,7 @@
 </script>
 
 <PageWrapper>
-	<PageHeader user={data.user} />
+	<PageHeaderCreator user={data.user} />
 	<div class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
 		<!-- <EffortCreditsAvailable effortCredits={600} /> -->
 

@@ -5,6 +5,8 @@ import {
 	follower_creator_table,
 	login_table,
 	mission_action_table,
+	mission_creator_table,
+	mission_table,
 	plan_subscription_table,
 	plan_table,
 	product_invoice_table,
@@ -14,7 +16,7 @@ import type { LoginQueryResult } from '$lib/schema/login.schema';
 import type { ProductInvoiceResult } from '$lib/schema/product_invoice.schema';
 import { ProductService } from './product.service.server';
 import type { CreatorDashboard, CreatorMarketplaceData } from '$lib/types';
-import type { MissionAction } from '$lib/schema/mission.schema';
+import { type DefaultMission, type MissionAction } from '$lib/schema/mission.schema';
 
 /**
  * Retrieves the number of paid subscribers for a given Creator.
@@ -256,6 +258,39 @@ async function getCreatorFollowerList(userid: number): Promise<LoginQueryResult[
 	return followers;
 }
 
+async function getCreatorMissions(userid: number): Promise<DefaultMission[]> {
+	const missions = await db
+		.select({
+			id: mission_table.id,
+			name: mission_table.name,
+			description: mission_table.description,
+			platform: mission_table.platform,
+			enabled: mission_creator_table.enabled
+		})
+		.from(mission_table)
+		.innerJoin(mission_creator_table, eq(mission_table.id, mission_creator_table.mission_id))
+		.where(
+			and(
+				eq(mission_creator_table.creator_user_id, userid),
+				eq(mission_creator_table.enabled, true)
+			)
+		);
+
+	for (const mission of missions) {
+		const actions = await db
+			.select()
+			.from(mission_action_table)
+			.where(
+				and(
+					eq(mission_action_table.mission_id, mission.id),
+					eq(mission_action_table.creator_user_id, userid)
+				)
+			);
+		mission.actions = actions;
+	}
+	return missions;
+}
+
 async function getMissionActionList(userid: number): Promise<MissionAction[]> {
 	const actions = await db
 		.select()
@@ -293,7 +328,7 @@ async function loadMarketplaceData(creatorUserId: number): Promise<CreatorMarket
 	const products = await ProductService.getProductsByUserId(creatorUserId);
 	const followerCount = await getCreatorFollowerCount(creatorUserId);
 	const productCount = await getProductCount(creatorUserId);
-	const missionActionItems = await getMissionActionList(creatorUserId);
+	const missions = await getCreatorMissions(creatorUserId);
 
 	return (await {
 		subscriberCount,
@@ -301,7 +336,7 @@ async function loadMarketplaceData(creatorUserId: number): Promise<CreatorMarket
 		followerCount,
 		productCount,
 		products,
-		missionActionItems
+		missions
 	}) as CreatorMarketplaceData;
 }
 

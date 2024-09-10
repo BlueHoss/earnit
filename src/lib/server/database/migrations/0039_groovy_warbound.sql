@@ -1,0 +1,1 @@
+ALTER TABLE "login" ADD COLUMN "credit_balance" numeric(10, 2) DEFAULT '0.00' NOT NULL;

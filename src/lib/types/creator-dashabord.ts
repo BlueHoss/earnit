@@ -1,4 +1,4 @@
-import type { MissionAction } from '$lib/schema/mission.schema';
+import type { DefaultMission } from '$lib/schema/mission.schema';
 import type { Product } from '$lib/schema/product.schema';
 import type { ProductInvoiceResult } from '$lib/schema/product_invoice.schema';
 import type { User } from 'lucia';
@@ -29,5 +29,5 @@ export interface CreatorMarketplaceData {
 	purchaseCount: number;
 	productCount: number;
 	products: Product[];
-	missionActionItems: MissionAction[];
+	missions: DefaultMission[];
 }

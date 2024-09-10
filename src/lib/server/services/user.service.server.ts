@@ -8,7 +8,13 @@ import { type BaseUser, type BaseUserUpdate, type SignupUser } from '$lib/schema
 import { Argon2id } from 'oslo/password';
 import { eq } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
-import { login_table } from '$lib/server/database/schema';
+import {
+	login_table,
+	mission_action_table,
+	mission_creator_table,
+	mission_default_action_table,
+	mission_table
+} from '$lib/server/database/schema';
 
 /**
  * Function to create a new user with default values
@@ -53,6 +59,31 @@ async function transformSignupToUser(signupData: SignupUser): Promise<BaseUser> 
 			date_created: new Date(),
 			date_updated: new Date()
 		};
+	}
+}
+
+async function addDefaultMissionToNewUser(creatorId: number) {
+	const missions = await db.select().from(mission_table);
+
+	//Give the new creator all the missions
+	for (const mission of missions) {
+		const mission_creator = {
+			mission_id: mission.id,
+			creator_user_id: creatorId
+		};
+		await db.insert(mission_creator_table).values(mission_creator);
+
+		//Give the new creator all the mission default actions
+		const defaultActions = await db
+			.select()
+			.from(mission_default_action_table)
+			.where(eq(mission_default_action_table.mission_id, mission.id));
+
+		for (const action of defaultActions) {
+			action.creator_user_id = creatorId;
+			delete action.id;
+			await db.insert(mission_action_table).values(action);
+		}
 	}
 }
 
@@ -112,7 +143,9 @@ async function getUserByUserId(userId: number): Promise<BaseUser | null> {
 			date_created: login_table.date_created,
 			date_updated: login_table.date_updated,
 			store_name: login_table.store_name,
-			reward_name: login_table.reward_name
+			reward_name: login_table.reward_name,
+			credit_balance: login_table.credit_balance,
+			category: login_table.category
 		})
 		.from(login_table)
 		.where(eq(login_table.id, userId));
@@ -170,7 +203,14 @@ async function createUser(user: BaseUser): Promise<BaseUser | null> {
 	if (result.length === 0) {
 		return null;
 	} else {
+		postNewUserTasks(result[0]);
 		return result[0];
+	}
+}
+
+function postNewUserTasks(newUser: BaseUser) {
+	if (newUser.is_creator) {
+		addDefaultMissionToNewUser(newUser.id);
 	}
 }
 

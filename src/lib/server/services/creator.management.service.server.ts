@@ -12,7 +12,6 @@ import { follower_creator_table, login_table } from '$lib/server/database/schema
 import { TextUtilities } from '$lib/utils/text-utilities';
 import { ImageService } from './image.service.server';
 import type { ProfileEditUser } from '$lib/schema/login.schema';
-import { boolean } from 'drizzle-orm/mysql-core';
 
 /**
  * Get the user bio

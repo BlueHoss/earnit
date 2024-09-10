@@ -42,7 +42,8 @@ export const lucia = new Lucia(adapter, {
 			title: attributes.title,
 			tag_line: attributes.tag_line,
 			store_name: attributes.store_name,
-			reward_name: attributes.reward_name
+			reward_name: attributes.reward_name,
+			credit_balance: attributes.credit_balance
 		};
 	}
 });
@@ -76,6 +77,7 @@ interface DatabaseUserAttributes {
 	tag_line: string;
 	store_name: string;
 	reward_name: string;
+	credit_balance: string;
 }
 
 function makeInitials(firstName: string, lastName: string) {

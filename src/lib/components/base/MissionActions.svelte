@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type MissionAction } from '$lib/schema/mission.schema';
+	import { type DefaultMissionAction } from '$lib/schema/mission.schema';
 	import HeartIcon from 'lucide-svelte/icons/heart';
 	import FilmIcon from 'lucide-svelte/icons/film';
 	import FollowIcon from 'lucide-svelte/icons/user-round-check';
@@ -13,9 +13,9 @@
 	import type { User } from 'lucia';
 
 	let isOpen = false;
-	let currentAction: MissionAction | null = null;
+	let currentAction: DefaultMissionAction | null = null;
 
-	export let missionActions: MissionAction[] = [];
+	export let missionActions: DefaultMissionAction[] = [];
 	export let user: User | null = null;
 
 	$: missionActionsReactive = missionActions;
@@ -39,7 +39,7 @@
 		isOpen = false;
 	}
 
-	function openDialog(actionItem: MissionAction) {
+	function openDialog(actionItem: DefaultMissionAction) {
 		currentAction = actionItem;
 		isOpen = true;
 	}

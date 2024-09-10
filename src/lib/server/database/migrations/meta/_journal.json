@@ -246,6 +246,48 @@
       "when": 1725820863964,
       "tag": "0034_broken_alex_power",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1725919621398,
+      "tag": "0035_dapper_zuras",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1725920657610,
+      "tag": "0036_odd_argent",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1725939193784,
+      "tag": "0037_stormy_shiva",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1725939644477,
+      "tag": "0038_groovy_prima",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1726007650304,
+      "tag": "0039_groovy_warbound",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1726009167179,
+      "tag": "0040_bumpy_emma_frost",
+      "breakpoints": true
     }
   ]
 }

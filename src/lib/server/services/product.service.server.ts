@@ -3,7 +3,6 @@ import { ProductQueryResultSchema } from '$lib/schema/product.schema';
 import { z } from 'zod';
 
 import {
-	credit_creator_pool_table,
 	credit_follower_balance_table,
 	credit_transaction_table,
 	login_table,
@@ -25,7 +24,7 @@ import {
 	PUBLIC_DEFAULT_PRODUCT_IMAGE
 } from '$env/static/public';
 import { ImageService } from './image.service.server';
-import { type ActionResult, ActionResponse } from '$lib/utils/action-result';
+import { type EarnItActionResult, ActionResponse } from '$lib/utils/action-result';
 
 async function createProduct(newProduct: ProductNewUpdateType) {
 	if (!newProduct) {
@@ -316,7 +315,7 @@ async function redeemProductFromCreator(
 	creatorId: number,
 	followerId: number,
 	productId: number
-): Promise<ActionResult> {
+): Promise<EarnItActionResult> {
 	try {
 		const products = await db.select().from(product_table).where(eq(product_table.id, productId));
 
@@ -356,10 +355,10 @@ async function redeemProductFromCreator(
 		}
 
 		// Take credits from follower's balance (if they have enough)
-		// Add credits to creator's pool
+		// Add credits to creator's pool - removed on 9/10/24
 		// Add a credit transaction
 
-		const result = await db.transaction(async (tx) => {
+		await db.transaction(async (tx) => {
 			// 1. Create product invoice
 			const productInvoice = {
 				follower_user_id: followerId,
@@ -371,13 +370,13 @@ async function redeemProductFromCreator(
 			await tx.insert(product_invoice_table).values(productInvoice).returning();
 
 			// 2. Update creator's credit pool
-			const updatedCreatorPool = await tx
-				.update(credit_creator_pool_table)
-				.set({
-					available_credits: sql`${credit_creator_pool_table.available_credits} + ${product.cost}`
-				})
-				.where(eq(credit_creator_pool_table.creator_user_id, creatorId))
-				.returning();
+			// const updatedCreatorPool = await tx
+			// 	.update(credit_creator_pool_table)
+			// 	.set({
+			// 		available_credits: sql`${credit_creator_pool_table.available_credits}`
+			// 	})
+			// 	.where(eq(credit_creator_pool_table.creator_user_id, creatorId))
+			// 	.returning();
 
 			// 3. Insert a new credit transaction
 			const newTransaction = await tx
@@ -406,13 +405,11 @@ async function redeemProductFromCreator(
 				.returning();
 
 			return {
-				creatorPool: updatedCreatorPool[0],
 				transaction: newTransaction[0],
 				followerBalance: updatedFollowerBalance[0]
 			};
 		});
 
-		console.log('Transaction completed successfully:', result);
 		return ActionResponse.success('product redeemed successfully');
 	} catch (error) {
 		console.error('Transaction failed:', error);

@@ -22,6 +22,7 @@
 	import MissionActions from '$lib/components/base/MissionActions.svelte';
 	import type { CreatorMarketplaceData } from '$lib/types';
 	import type { User } from 'lucia';
+	import CreatorMissions from '$lib/components/base/CreatorMissions.svelte';
 
 	interface PageData {
 		creatorMarketplaceData: CreatorMarketplaceData;
@@ -103,19 +104,7 @@
 			</Card.Content>
 		</Card.Root>
 	</div>
-	<div class="grid gap-4 md:gap-8 lg:grid-cols-1 xl:grid-cols-1">
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Instagram Merit Mission</Card.Title>
-				<Card.Description
-					>You can edit how many Merit Credits each Mission is worth.
-				</Card.Description>
-			</Card.Header>
-			<Card.Content class="grid gap-8">
-				<MissionActions missionActions={creatorMarketplaceData.missionActionItems} />
-			</Card.Content>
-		</Card.Root>
-	</div>
+	<CreatorMissions user={data.user} missions={data.creatorMarketplaceData.missions} />
 </PageWrapper>
 
 <Dialog.Root bind:open={showShareDialog}>

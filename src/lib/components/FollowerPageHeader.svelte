@@ -5,6 +5,7 @@
 	import AvatarImage from '$lib/components/ui/avatar/avatar-image.svelte';
 	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
 	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
+	import RewardCurrency from './base/RewardCurrency.svelte';
 </script>
 
 <div class="flex items-center justify-between space-x-4">
@@ -15,7 +16,9 @@
 		</Avatar>
 		<div>
 			<h1 class="text-2xl font-semibold">{data.user.first_name}'s {Title}</h1>
-			<!-- <p class="text-sm text-gray-400">2.9k followers</p> -->
+			<p class="text-sm text-gray-400">
+				<RewardCurrency amount={data.user.credit_balance} name="credits" />
+			</p>
 		</div>
 	</div>
 </div>

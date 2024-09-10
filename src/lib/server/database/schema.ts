@@ -71,7 +71,11 @@ export const login_table = pgTable(
 		tag_line: text('tag_line'),
 		bio: text('bio'),
 		reward_name: text('reward_name'),
-		store_name: text('store_name')
+		store_name: text('store_name'),
+		credit_balance: numeric('credit_balance', { precision: 10, scale: 2 })
+			.notNull()
+			.default('0.00'),
+		category: text('category')
 	},
 	(table) => ({
 		emailUniqueIndex: uniqueIndex('emailUniqueIndex').on(TextUtilities.lower(table.email))
@@ -89,13 +93,6 @@ export const auth_session_table = pgTable('auth_session', {
 		.references(() => login_table.id, { onDelete: 'cascade' }), // User ID associated with the session
 	expiresAt: timestamp('expires_at').notNull(), // Expiration time of the session
 	token: text('token').notNull() // Session token
-});
-
-export const reward_ledger_table = pgTable('reward_ledger', {
-	id: serial('id').primaryKey().notNull(),
-	date_earned: timestamp('date_earned', { mode: 'string' }),
-	amount: numeric('amount'),
-	creator_id: integer('creator_id').references(() => login_table.id)
 });
 
 export const product_table = pgTable('product', {
@@ -120,7 +117,9 @@ export const product_invoice_table = pgTable('product_invoice', {
 		.default(sql`CURRENT_TIMESTAMP`),
 	//date_purchased: timestamp('date_purchased', { mode: 'date' }),
 	creator_user_id: integer('creator_user_id').references(() => login_table.id),
-	follower_user_id: integer('follower_user_id').references(() => login_table.id)
+	follower_user_id: integer('follower_user_id').references(() => login_table.id, {
+		onDelete: 'cascade'
+	})
 });
 
 export const plan_table = pgTable('plan', {
@@ -134,8 +133,7 @@ export const mission_table = pgTable('mission', {
 	id: serial('id').primaryKey().notNull(),
 	name: text('name'),
 	description: text('description'),
-	platform: text('platform'),
-	enabled: boolean('enabled').notNull().default(true)
+	platform: text('platform')
 });
 
 export const mission_action_table = pgTable('mission_action', {
@@ -148,7 +146,7 @@ export const mission_action_table = pgTable('mission_action', {
 	icon: text('icon'),
 	reward_per_day: integer('reward_per_day').notNull().default(0),
 	creator_user_id: integer('creator_user_id')
-		.references(() => login_table.id)
+		.references(() => login_table.id, { onDelete: 'cascade' })
 		.notNull()
 });
 
@@ -165,8 +163,12 @@ export const mission_default_action_table = pgTable('mission_default_action', {
 
 export const plan_subscription_table = pgTable('plan_subscription', {
 	id: serial('id').primaryKey().notNull(),
-	creator_user_id: integer('creator_user_id').references(() => login_table.id),
-	follower_user_id: integer('follower_user_id').references(() => login_table.id),
+	creator_user_id: integer('creator_user_id').references(() => login_table.id, {
+		onDelete: 'cascade'
+	}),
+	follower_user_id: integer('follower_user_id').references(() => login_table.id, {
+		onDelete: 'cascade'
+	}),
 	date_started: timestamp('date_started', { mode: 'string' }).notNull(),
 	plan_id: integer('plan_id').references(() => plan_table.id),
 	date_canceled: timestamp('date_canceled', { mode: 'string' }),
@@ -183,24 +185,36 @@ export const product_item_table = pgTable('product_item', {
 		.references(() => product_table.id, { onDelete: 'cascade' })
 });
 
-export const reward_earned_table = pgTable('reward_earned', {
-	id: serial('id').primaryKey().notNull(),
-	follower_user_id: integer('follower_user_id').references(() => login_table.id),
-	date_awarded: timestamp('date_awarded', { mode: 'date' }),
-	mission_action_id: integer('reward_type_id').references(() => mission_action_table.id),
-	reward_value: numeric('reward_value'),
-	creator_user_id: integer('creator_user_id').references(() => login_table.id)
-});
+export const mission_creator_table = pgTable(
+	'mission_creator',
+	{
+		mission_id: integer('mission_id')
+			.notNull()
+			.references(() => mission_table.id),
+		creator_user_id: integer('creator_user_id')
+			.notNull()
+			.references(() => login_table.id, { onDelete: 'cascade' }),
+		enabled: boolean('enabled').notNull().default(true)
+	},
+	(table) => {
+		return {
+			follower_mission_pkey: primaryKey({
+				columns: [table.mission_id, table.creator_user_id],
+				name: 'follower_mission_pkey'
+			})
+		};
+	}
+);
 
 export const follower_creator_table = pgTable(
 	'follower_creator',
 	{
 		follower_user_id: integer('follower_user_id')
 			.notNull()
-			.references(() => login_table.id),
+			.references(() => login_table.id, { onDelete: 'cascade' }),
 		creator_user_id: integer('creator_user_id')
 			.notNull()
-			.references(() => login_table.id)
+			.references(() => login_table.id, { onDelete: 'cascade' })
 	},
 	(table) => {
 		return {
@@ -245,7 +259,7 @@ export const credit_follower_balance_table = pgTable(
 	{
 		id: serial('id').primaryKey().notNull(),
 		follower_user_id: integer('follower_user_id')
-			.references(() => login_table.id)
+			.references(() => login_table.id, { onDelete: 'cascade' })
 			.notNull(),
 		creator_user_id: integer('creator_user_id')
 			.references(() => login_table.id)
@@ -273,10 +287,10 @@ export const credit_transaction_table = pgTable(
 		transaction_type: text('transaction_type'),
 		description: text('description'),
 		follower_user_id: integer('follower_user_id')
-			.references(() => login_table.id)
+			.references(() => login_table.id, { onDelete: 'cascade' })
 			.notNull(),
 		creator_user_id: integer('creator_user_id')
-			.references(() => login_table.id)
+			.references(() => login_table.id, { onDelete: 'cascade' })
 			.notNull(),
 		amount: numeric('amount', { precision: 10, scale: 2 }).notNull().default('0.00'),
 		date_transaction: timestamp('date_transaction').defaultNow().notNull()

@@ -20,6 +20,8 @@
 	import { baseUserModifedSchema, type BaseUser } from '$lib/schema/login.schema.js';
 	import PageHeaderCreator from '$lib/components/base/PageHeaderCreator.svelte';
 	import RewardCurrency from '$lib/components/base/RewardCurrency.svelte';
+	import { Root } from '$lib/components/ui/drawer';
+	import Badge from '$lib/components/ui/badge/badge.svelte';
 
 	interface PageData {
 		form: BaseUser;
@@ -90,19 +92,6 @@
 						<Form.FieldErrors />
 					</Form.Field>
 
-					<Form.Field name="follower_count" {form} class="flex-1">
-						<Form.Control let:attrs>
-							<Form.Label>Total Social Media Follower Count</Form.Label>
-							<Input
-								type="number"
-								{...attrs}
-								bind:value={$formData.follower_count}
-								on:input={(e) => ($formData.follower_count = toNumber(e.currentTarget.value))}
-							/>
-						</Form.Control>
-						<Form.FieldErrors />
-					</Form.Field>
-
 					<!-- <Form.Field name="storeDescription" {form} class="flex-1 mt-4">
 					<Form.Control let:attrs>
 						<Form.Label>Store Description</Form.Label>
@@ -146,32 +135,68 @@
 					</div>
 				</Card.Content>
 			</Card.Root>
-			<!-- 
+
 			<Card.Root>
 				<Card.Header>
 					<Card.Title class="flex items-center"><CategoryIcon class="mr-2" /> Category</Card.Title>
-					<Card.Description>Select the category that best fits your store.</Card.Description>
+					<Card.Description>
+						<p>Select the category that best fits your store.</p>
+
+						<p>Current Category: <Badge>{$formData.category}</Badge></p>
+					</Card.Description>
 				</Card.Header>
 				<Card.Content>
 					<Form.Field name="category" {form} class="flex-1">
 						<Form.Control let:attrs>
-							<Select.Root bind:value={$formData.category}>
-								<Select.Trigger>
+							<Select.Root
+								onSelectedChange={(v) => {
+									console.log('SELECTED', v);
+									v && ($formData.category = v.value);
+								}}
+							>
+								<Select.Trigger {...attrs}>
 									<Select.Value placeholder="Select a category" />
 								</Select.Trigger>
 								<Select.Content>
-									<Select.Item value="education">Education</Select.Item>
-									<Select.Item value="fitness">Fitness</Select.Item>
-									<Select.Item value="art">Art & Creativity</Select.Item>
-									<Select.Item value="technology">Technology</Select.Item>
-									<Select.Item value="lifestyle">Lifestyle</Select.Item>
+									<Select.Item value="Digital Marketing & Social Media">
+										Digital Marketing & Social Media
+									</Select.Item>
+									<Select.Item value="Web Development & Programming">
+										Web Development & Programming
+									</Select.Item>
+									<Select.Item value="Business & Entrepreneurship">
+										Business & Entrepreneurship
+									</Select.Item>
+									<Select.Item value="Personal Finance & Investing">
+										Personal Finance & Investing
+									</Select.Item>
+									<Select.Item value="Education & Academic Subjects">
+										Education & Academic Subjects
+									</Select.Item>
+									<Select.Item value="Health & Fitness">Health & Fitness</Select.Item>
+									<Select.Item value="Nutrition & Cooking">Nutrition & Cooking</Select.Item>
+									<Select.Item value="Creative Arts & Design">Creative Arts & Design</Select.Item>
+									<Select.Item value="Photography & Videography">
+										Photography & Videography
+									</Select.Item>
+									<Select.Item value="Music & Audio Production">
+										Music & Audio Production
+									</Select.Item>
+									<Select.Item value="Writing & Publishing">Writing & Publishing</Select.Item>
+									<Select.Item value="Personal Development & Self-Help">
+										Personal Development & Self-Help
+									</Select.Item>
+									<Select.Item value="Parenting & Family">Parenting & Family</Select.Item>
+									<Select.Item value="Travel & Lifestyle">Travel & Lifestyle</Select.Item>
+									<Select.Item value="Gaming & Entertainment">Gaming & Entertainment</Select.Item>
 								</Select.Content>
 							</Select.Root>
+							<input hidden bind:value={$formData.category} name={attrs.name} />
 						</Form.Control>
 						<Form.FieldErrors />
 					</Form.Field>
 				</Card.Content>
-			</Card.Root> -->
+			</Card.Root>
 		</div>
 
 		<!-- <Card.Root>

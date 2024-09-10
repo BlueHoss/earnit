@@ -2,13 +2,24 @@
 	export let amount = 0;
 	export let name = '';
 	import CurrencyIcon from 'lucide-svelte/icons/currency';
+
+	const suffixes = ['', 'k', 'M', 'B', 'T'];
 	$: formattedAmount = formatNumber(amount);
 
 	function formatNumber(num: number): string {
-		return num.toLocaleString('en-US', {
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 2
-		});
+		if (!num) {
+			return '0';
+		}
+
+		if (amount < 1000) {
+			return amount.toString();
+		}
+
+		const exp = Math.floor(Math.log(amount) / Math.log(1000));
+		const formattedNumber = amount / Math.pow(1000, exp);
+		const roundedNumber = Math.round(formattedNumber * 10) / 10;
+
+		return `${roundedNumber}${suffixes[exp]}`;
 	}
 </script>
 

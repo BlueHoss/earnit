@@ -55,6 +55,8 @@ export const baseLoginSchema = z.object({
 	date_updated: z.date().optional(),
 	store_name: z.string().nullable(),
 	reward_name: z.string().nullable(),
+	credit_balance: z.string().nullable(),
+	category: z.string().nullable(),
 	roleError: z.string().optional() //Used for custom error messages
 });
 
