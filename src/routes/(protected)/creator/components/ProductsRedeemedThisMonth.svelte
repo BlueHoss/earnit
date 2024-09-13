@@ -14,7 +14,7 @@
 	</Card.Header>
 	<Card.Content>
 		<div class="text-2xl font-bold text-primary">{redeemedThisMonth}</div>
-		<p class="text-xs text-muted-foreground flex items-center gap-2">
+		<p class="text-xs text-muted-foreground flex gap-1 items-center">
 			<RewardCurrency amount={purchaseAmount} /> this month
 		</p>
 	</Card.Content>

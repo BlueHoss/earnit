@@ -6,7 +6,7 @@ import {
 	plan_table,
 	product_invoice_table
 } from '$lib/server/database/schema';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, isNull, sql } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import type { Follower, Subsciption } from '$lib/schema/follower_dashboard.schema';
 
@@ -80,7 +80,7 @@ async function getSubscribeList(followerId: number): Promise<Subsciption[]> {
 			profile_pic: login_table.profile_pic,
 			date_started: plan_subscription_table.date_started,
 			name: plan_table.name,
-			plan_cost: plan_table.cost
+			plan_cost: plan_table.plan_cost
 		})
 		.from(login_table)
 		.innerJoin(plan_subscription_table, eq(plan_subscription_table.creator_user_id, login_table.id))
@@ -88,7 +88,7 @@ async function getSubscribeList(followerId: number): Promise<Subsciption[]> {
 		.where(
 			and(
 				eq(plan_subscription_table.follower_user_id, followerId),
-				eq(plan_subscription_table.active, true)
+				isNull(plan_subscription_table.date_canceled)
 			)
 		);
 	return list;

@@ -27,6 +27,14 @@
 	} else if (user_type && user_type === 'follower') {
 		$formData.is_follower = true;
 	}
+
+	function handleUserTypeChange(userType: string) {
+		if (userType === 'creator') {
+			$formData.is_follower = false;
+		} else {
+			$formData.is_creator = false;
+		}
+	}
 </script>
 
 <form method="POST" use:enhance action="?/signup">
@@ -92,7 +100,12 @@
 				<Form.Control let:attrs>
 					<div class="space-y-0.5">
 						<Form.Label>Creator</Form.Label>
-						<Switch includeInput {...attrs} bind:checked={$formData.is_creator} />
+						<Switch
+							includeInput
+							{...attrs}
+							onCheckedChange={() => handleUserTypeChange('creator')}
+							bind:checked={$formData.is_creator}
+						/>
 						<Form.Description>
 							I am a creator and want to sell my products on the platform.
 						</Form.Description>
@@ -103,7 +116,12 @@
 				<Form.Control let:attrs>
 					<div class="space-y-0.5">
 						<Form.Label>Follower</Form.Label>
-						<Switch includeInput {...attrs} bind:checked={$formData.is_follower} />
+						<Switch
+							includeInput
+							{...attrs}
+							onCheckedChange={() => handleUserTypeChange('follower')}
+							bind:checked={$formData.is_follower}
+						/>
 						<Form.Description>
 							I am a follower and want to follow creators on the platform.
 						</Form.Description>

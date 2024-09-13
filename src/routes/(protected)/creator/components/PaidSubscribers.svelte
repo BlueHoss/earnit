@@ -15,7 +15,7 @@
 	</Card.Header>
 	<Card.Content>
 		<div class="text-2xl font-bold text-primary">{paidSubscribers}</div>
-		<p class="text-xs text-muted-foreground flex items-center gap-2">
+		<p class="text-xs text-muted-foreground flex items-center gap-1">
 			<Currency amount={totalMonthlyRevenue} /> this month
 		</p>
 	</Card.Content>

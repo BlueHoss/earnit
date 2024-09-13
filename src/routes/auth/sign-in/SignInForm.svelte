@@ -35,11 +35,13 @@
 				redirectWithRefresh(
 					`/public/market/${action.payload.creatorId}/offering/${action.payload.productId}`
 				);
-				//goto(`/public/market/${action.payload.creatorId}/offering/${action.payload.productId}`);
 				return;
-				//await redeemProduct(action.payload.creatorId);
 			} else if (action.type === 'FOLLOW_CREATOR') {
-				//await followCreator(action.payload.creatorId);
+				if (result.data.form.data.id != action.payload.creatorId) {
+					pendingActions.clearActions();
+					redirectWithRefresh(`/public/market/${action.payload.creatorId}`);
+					return;
+				}
 			}
 		}
 

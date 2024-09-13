@@ -3,15 +3,11 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import FollowEarnItIcon from 'lucide-svelte/icons/user-round-check';
 	import PaidSubscribersIcon from 'lucide-svelte/icons/activity';
-	import ProfileIcon from 'lucide-svelte/icons/person-standing';
+	import { pendingActions } from '$lib/stores/pending-action.store';
 	import { Button } from '$lib/components/ui/button/index.ts';
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import MeritOfferingCard from '$lib/components/base/MeritOfferingCard.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
-	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
-	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
-	import AvatarImage from '$lib/components/ui/avatar/avatar-image.svelte';
-	import Number from '$lib/components/base/Number.svelte';
 	import type { PageData } from './$types';
 	import { goto, invalidateAll } from '$app/navigation';
 	import MissionActions from '$lib/components/base/MissionActions.svelte';
@@ -23,14 +19,32 @@
 	import AlertTitle from '$lib/components/ui/alert/alert-title.svelte';
 	import AlertDescription from '$lib/components/ui/alert/alert-description.svelte';
 	import PageHeaderCreator from '$lib/components/base/PageHeaderCreator.svelte';
+	import { toast } from 'svelte-sonner';
+	import SubscribeDialog from './components/SubscribeDialog.svelte';
+	import UnsubscribeDialog from './components/UnsubscribeDialog.svelte';
 
-	let showDialog = false;
+	let showNotSignedInDialog = false;
+	let showSubscribeDialog = false;
+	let showUnsubscribeDialog = false;
 
 	export let data: PageData;
 
+	// Check if the user is following the creator
+	let following = data.creator.followers?.find((follower) => follower.id === data.user?.id)
+		? true
+		: false;
+	let subscribed = data.creator.subscribers?.find((follower) => follower.id === data.user?.id)
+		? true
+		: false;
+
 	async function handleFollow() {
 		if (!data || !data.user) {
-			showDialog = true;
+			pendingActions.addAction({
+				type: 'FOLLOW_CREATOR',
+				payload: { creatorId: data.creator.id }
+			});
+
+			showNotSignedInDialog = true;
 			return;
 		}
 
@@ -43,6 +57,57 @@
 		});
 
 		await invalidateAll();
+		following = true;
+	}
+
+	async function handleUnfollow() {
+		if (!data || !data.user) {
+			pendingActions.addAction({
+				type: 'FOLLOW_CREATOR',
+				payload: { creatorId: data.creator.id }
+			});
+
+			showNotSignedInDialog = true;
+			return;
+		}
+
+		const formData = new FormData();
+		formData.append('creatorId', data.creator.id.toString());
+
+		const response = await fetch('?/unfollowCreator', {
+			method: 'POST',
+			body: formData
+		});
+		await invalidateAll();
+		following = false;
+	}
+
+	function handleSubscribe() {
+		if (!data || !data.user) {
+			pendingActions.addAction({
+				type: 'SUBSCRIBE_CREATOR',
+				payload: { creatorId: data.creator.id }
+			});
+
+			showNotSignedInDialog = true;
+			return;
+		}
+
+		showSubscribeDialog = true;
+	}
+
+	function handleUnsubscribe() {
+		if (!data || !data.user) {
+			pendingActions.addAction({
+				type: 'SUBSCRIBE_CREATOR',
+				payload: { creatorId: data.creator.id }
+			});
+
+			showNotSignedInDialog = true;
+			return;
+		}
+
+		showUnsubscribeDialog = true;
 	}
 </script>
 
@@ -52,8 +117,24 @@
 
 		<!-- Right Section: Follow Button -->
 		<div class="flex flex-col space-y-2">
-			<Button on:click={handleFollow} class="px-6"><FollowEarnItIcon class="pr-1" />Follow</Button>
-			<Button class="px-6"><PaidSubscribersIcon class="pr-1" />Subscribe</Button>
+			{#if following}
+				<Button on:click={handleUnfollow} class="px-6"
+					><FollowEarnItIcon class="pr-1" />Following</Button
+				>
+			{:else}
+				<Button on:click={handleFollow} class="px-6"><FollowEarnItIcon class="pr-1" />Follow</Button
+				>
+			{/if}
+
+			{#if subscribed}
+				<Button on:click={handleUnsubscribe} class="px-6"
+					><PaidSubscribersIcon class="pr-1" />Subscribed</Button
+				>
+			{:else}
+				<Button on:click={() => handleSubscribe()} class="px-6"
+					><PaidSubscribersIcon class="pr-1" />Subscribe</Button
+				>
+			{/if}
 		</div>
 	</div>
 
@@ -130,12 +211,16 @@
 	</div>
 </PageWrapper>
 
-<Dialog.Root bind:open={showDialog}>
+<SubscribeDialog user={data.user} bind:showSubscribeDialog bind:creator={data.creator} />
+
+<UnsubscribeDialog user={data.user} bind:showUnsubscribeDialog bind:creator={data.creator} />
+
+<Dialog.Root bind:open={showNotSignedInDialog}>
 	<Dialog.Content>
 		<Dialog.Header>
 			<Dialog.Title>Please Sign In or Sign Up</Dialog.Title>
 			<Dialog.Description
-				>In order to follow {data.creator.handle} please sign in or sign up.</Dialog.Description
+				>In order to follow or subscribe to {data.creator.handle} please sign in or sign up.</Dialog.Description
 			>
 		</Dialog.Header>
 		<div class="grid gap-4 py-4">
@@ -145,7 +230,7 @@
 			<Button on:click={() => goto('/auth/sign-in')}>Sign In</Button>
 		</div>
 		<Dialog.Footer>
-			<Button on:click={() => (showDialog = false)}>Close</Button>
+			<Button on:click={() => (showNotSignedInDialog = false)}>Close</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

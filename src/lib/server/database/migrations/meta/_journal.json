@@ -288,6 +288,20 @@
       "when": 1726009167179,
       "tag": "0040_bumpy_emma_frost",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1726172094982,
+      "tag": "0041_melodic_night_thrasher",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1726258679777,
+      "tag": "0042_spotty_nico_minoru",
+      "breakpoints": true
     }
   ]
 }

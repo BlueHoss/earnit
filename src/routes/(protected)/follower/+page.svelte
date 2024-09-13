@@ -6,11 +6,9 @@
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import CurrencyIcon from 'lucide-svelte/icons/currency';
 	import Following from 'lucide-svelte/icons/square-user';
-	import MarketCard from '$lib/components/base/MarketCard.svelte';
 	import type { FollowerDashboardData } from '$lib/types/follower-dashboard.js';
 	import SubscribeCard from './componenets/SubscribeCard.svelte';
 	import FollowerCard from './componenets/FollowerCard.svelte';
-	import SubscribeCard2 from './componenets/SubscribeCard2.svelte';
 
 	export let data: FollowerDashboardData;
 </script>

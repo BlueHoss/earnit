@@ -6,12 +6,17 @@
  */
 
 // Libraries and modules
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
-import { follower_creator_table, login_table } from '$lib/server/database/schema';
+import {
+	follower_creator_table,
+	login_table,
+	plan_subscription_table
+} from '$lib/server/database/schema';
 import { TextUtilities } from '$lib/utils/text-utilities';
 import { ImageService } from './image.service.server';
-import type { ProfileEditUser } from '$lib/schema/login.schema';
+import { creatorScheam, type Creator, type ProfileEditUser } from '$lib/schema/login.schema';
+import {} from 'moment';
 
 /**
  * Get the user bio
@@ -40,6 +45,7 @@ async function getUserProfile(userid: number): Promise<ProfileEditUser> {
 		.select({
 			id: login_table.id,
 			handle: login_table.handle,
+			title: login_table.title,
 			email: login_table.email,
 			bio: login_table.bio,
 			first_name: login_table.first_name,
@@ -47,8 +53,13 @@ async function getUserProfile(userid: number): Promise<ProfileEditUser> {
 			receive_email: login_table.receive_email,
 			profile_pic: login_table.profile_pic,
 			social_media_profile: login_table.social_media_profile,
-			title: login_table.title,
-			tag_line: login_table.tag_line
+			tag_line: login_table.tag_line,
+			is_creator: login_table.is_creator,
+			is_follower: login_table.is_follower,
+			reward_name: login_table.reward_name,
+			store_name: login_table.store_name,
+			credit_balance: login_table.credit_balance,
+			category: login_table.category
 		})
 		.from(login_table)
 		.where(eq(login_table.id, userid));
@@ -105,7 +116,7 @@ async function removeOldProfilePic(userid: number, newProfilePic: string | null)
 	if (userProfile.profile_pic !== newProfilePic) {
 		const profilePicName = userProfile.profile_pic.split('/').pop();
 		if (profilePicName) {
-			ImageService.deleteProfileImage(profilePicName);
+			ImageService.deleteProfileImage(profilePicName, 'profile_image');
 		}
 	}
 }
@@ -138,9 +149,90 @@ async function addFollower(creatorId: number, followerId: number): Promise<boole
 	return result ? true : false;
 }
 
+async function removeFollower(creatorId: number, followerId: number): Promise<boolean> {
+	const result = await db
+		.delete(follower_creator_table)
+		.where(
+			and(
+				eq(follower_creator_table.creator_user_id, creatorId),
+				eq(follower_creator_table.follower_user_id, followerId)
+			)
+		)
+		.returning();
+
+	return !result || result.length <= 0 ? false : true;
+}
+
+async function getCreatorWithFollowers(creatorId: number): Promise<Creator | null> {
+	const creator = await db
+		.select({
+			id: login_table.id,
+			handle: login_table.handle,
+			title: login_table.title,
+			email: login_table.email,
+			bio: login_table.bio,
+			first_name: login_table.first_name,
+			last_name: login_table.last_name,
+			profile_pic: login_table.profile_pic,
+			social_media_profile: login_table.social_media_profile,
+			tag_line: login_table.tag_line,
+			is_creator: login_table.is_creator,
+			is_follower: login_table.is_follower,
+			store_name: login_table.store_name,
+			reward_name: login_table.reward_name,
+			credit_balance: login_table.credit_balance,
+			category: login_table.category
+		})
+		.from(login_table)
+		.where(eq(login_table.id, creatorId));
+
+	let parsedCreator = null;
+
+	try {
+		parsedCreator = creatorScheam.parse(creator[0]);
+	} catch (error) {
+		console.error('Error parsing creator', error);
+	}
+
+	if (parsedCreator) {
+		parsedCreator.subscribers = await getSubscribers(creatorId);
+		parsedCreator.followers = await getFollowers(creatorId);
+	}
+
+	return parsedCreator;
+}
+
+async function getFollowers(creatorId: number): Promise<{ id: number | null }[]> {
+	const followers = await db
+		.select({
+			id: follower_creator_table.follower_user_id
+		})
+		.from(follower_creator_table)
+		.where(eq(follower_creator_table.creator_user_id, creatorId));
+
+	return !followers ? [] : followers;
+}
+
+async function getSubscribers(creatorId: number): Promise<{ id: number | null }[]> {
+	const subscribers = await db
+		.select({
+			id: plan_subscription_table.follower_user_id
+		})
+		.from(plan_subscription_table)
+		.where(
+			and(
+				eq(plan_subscription_table.creator_user_id, creatorId),
+				isNull(plan_subscription_table.date_canceled)
+			)
+		);
+	return !subscribers ? [] : subscribers;
+}
+
 export const CreatorManagmentService = {
 	setUserProfile,
 	getUserBio,
 	getUserProfile,
-	addFollower
+	addFollower,
+	removeFollower,
+	getCreatorWithFollowers
 };

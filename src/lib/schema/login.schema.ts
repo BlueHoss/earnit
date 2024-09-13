@@ -110,7 +110,9 @@ export const profileEditSchema = baseLoginSchema.omit({
 	date_created: true,
 	date_updated: true,
 	follower_count: true,
-	roleError: true
+	roleError: true,
+	provider: true,
+	provider_id: true
 });
 
 /**
@@ -145,3 +147,25 @@ export type PasswordUpdate = z.infer<typeof passworUpdateSchema>;
  */
 export const loginQueryResultSchema = baseLoginSchema.partial();
 export type LoginQueryResult = z.infer<typeof loginQueryResultSchema>;
+
+export const creatorScheam = baseLoginSchema
+	.omit({
+		hashed_password: true,
+		terms: true,
+		role: true,
+		verified: true,
+		token: true,
+		date_created: true,
+		date_updated: true,
+		follower_count: true,
+		roleError: true,
+		provider: true,
+		provider_id: true,
+		receive_email: true
+	})
+	.extend({
+		subscribers: z.array(z.object({ id: z.number().nullable() })).optional(),
+		followers: z.array(z.object({ id: z.number().nullable() })).optional()
+	});
+
+export type Creator = z.infer<typeof creatorScheam>;

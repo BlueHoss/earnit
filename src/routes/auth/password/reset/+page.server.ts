@@ -31,7 +31,6 @@ export const actions = {
 					'Error resetting password. Please contact support if you need further help.'
 				);
 			}
-			console.log('reset user password');
 			const token = crypto.randomUUID();
 			await UserService.updateUser(user.id, { token: token });
 			await sendPasswordResetEmail(form.data.email, token);

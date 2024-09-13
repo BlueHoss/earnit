@@ -125,8 +125,9 @@ export const product_invoice_table = pgTable('product_invoice', {
 export const plan_table = pgTable('plan', {
 	id: serial('id').primaryKey().notNull(),
 	name: text('name').notNull(),
+	description: text('description'),
 	plan_percent: numeric('plan_percent').notNull(),
-	cost: numeric('plan_cost').notNull()
+	plan_cost: numeric('plan_cost').notNull()
 });
 
 export const mission_table = pgTable('mission', {
@@ -163,16 +164,21 @@ export const mission_default_action_table = pgTable('mission_default_action', {
 
 export const plan_subscription_table = pgTable('plan_subscription', {
 	id: serial('id').primaryKey().notNull(),
-	creator_user_id: integer('creator_user_id').references(() => login_table.id, {
-		onDelete: 'cascade'
-	}),
-	follower_user_id: integer('follower_user_id').references(() => login_table.id, {
-		onDelete: 'cascade'
-	}),
+	creator_user_id: integer('creator_user_id')
+		.references(() => login_table.id, {
+			onDelete: 'cascade'
+		})
+		.notNull(),
+	follower_user_id: integer('follower_user_id')
+		.references(() => login_table.id, {
+			onDelete: 'cascade'
+		})
+		.notNull(),
 	date_started: timestamp('date_started', { mode: 'string' }).notNull(),
-	plan_id: integer('plan_id').references(() => plan_table.id),
-	date_canceled: timestamp('date_canceled', { mode: 'string' }),
-	active: boolean('active')
+	plan_id: integer('plan_id')
+		.references(() => plan_table.id)
+		.notNull(),
+	date_canceled: timestamp('date_canceled', { mode: 'string' })
 });
 
 export const product_item_table = pgTable('product_item', {
