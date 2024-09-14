@@ -4,11 +4,10 @@
 	import { Input } from '$lib/components/ui/input';
 	import { type Infer, type SuperValidated, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { signInSchema, type SignInSchema } from '$lib/config/zod-schemas';
+	import { signInSchema, type SignInSchema } from '$lib/schema/login.schema';
 	import { pendingActions } from '$lib/stores/pending-action.store';
 	import type { ActionResult } from '@sveltejs/kit';
 	import { redirectWithRefresh } from '$lib/utils/redirect-with-refresh';
-	import { goto } from '$app/navigation';
 
 	export let data: SuperValidated<Infer<SignInSchema>>;
 

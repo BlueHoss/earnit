@@ -107,7 +107,7 @@
 					</div>
 					<div class="mt-6 flex items-center justify-between">
 						<Badge variant="outline" class="text-xl py-2 px-4">
-							Effort Credits: {data.product.cost}
+							<RewardCurrency amount={data.product.cost} name={data.creator.reward_name} />
 						</Badge>
 						{#if data.user}
 							{#if isOwned}

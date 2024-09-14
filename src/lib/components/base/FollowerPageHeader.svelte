@@ -5,7 +5,7 @@
 	import AvatarImage from '$lib/components/ui/avatar/avatar-image.svelte';
 	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
 	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
-	import RewardCurrency from './base/RewardCurrency.svelte';
+	import RewardCurrency from './RewardCurrency.svelte';
 </script>
 
 <div class="flex items-center justify-between space-x-4">

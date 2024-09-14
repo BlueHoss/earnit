@@ -1,9 +1,9 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
 import { setError, superValidate } from 'sveltekit-superforms/server';
 import { lucia } from '$lib/server/lucia';
 import { Argon2id } from 'oslo/password';
-import { signInSchema } from '$lib/config/zod-schemas';
+import { signInSchema } from '$lib/schema/login.schema';
 import { UserService } from '$lib/server/services/user.service.server';
 import { zod } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad, Actions } from './$types';
@@ -55,7 +55,7 @@ export const actions: Actions = {
 					setFlash({ type: 'success', message: 'Sign in successful.' }, event);
 				}
 			}
-		} catch (e) {
+		} catch {
 			setFlash({ type: 'error', message: 'The email or password is incorrect.' }, event);
 			return setError(form, 'The email or password is incorrect.');
 		}

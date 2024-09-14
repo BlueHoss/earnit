@@ -4,7 +4,6 @@
 	import { ModeWatcher } from 'mode-watcher';
 	import Package2 from 'lucide-svelte/icons/package-2';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import CartIndicator from '../base/CartIndicator.svelte';
 </script>
 
 <ModeWatcher />
@@ -22,7 +21,6 @@
 
 			<!-- Login or switch to my profile -->
 			<Button href="/auth/sign-in">Login</Button>
-			<CartIndicator />
 			<ModeSwitch />
 		</header>
 		<main class="flex flex-1 flex-col justify-center gap-4 p-4 lg:gap-6 lg:p-6">

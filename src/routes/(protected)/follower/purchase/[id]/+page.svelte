@@ -1,5 +1,5 @@
 <script lang="ts">
-	import PageHeaderFollower from '$lib/components/FollowerPageHeader.svelte';
+	import PageHeaderFollower from '$lib/components/base/FollowerPageHeader.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import type { ProductQueryResult } from '$lib/schema/product.schema';
 	import type { User } from 'lucia';

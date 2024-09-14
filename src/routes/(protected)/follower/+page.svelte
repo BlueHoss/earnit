@@ -2,7 +2,7 @@
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import UsersIcon from 'lucide-svelte/icons/users';
 	import CreditCardIcon from 'lucide-svelte/icons/credit-card';
-	import PageHeaderFollower from '$lib/components/FollowerPageHeader.svelte';
+	import PageHeaderFollower from '$lib/components/base/FollowerPageHeader.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import CurrencyIcon from 'lucide-svelte/icons/currency';
 	import Following from 'lucide-svelte/icons/square-user';

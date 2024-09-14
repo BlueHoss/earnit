@@ -14,7 +14,6 @@
 	import SignoutButton from '$lib/components/base/SignOutButton.svelte';
 	import type { User } from 'lucia';
 
-	import CartIndicator from '../base/CartIndicator.svelte';
 	import MissionsIcon from 'lucide-svelte/icons/orbit';
 	import ProfileIcon from 'lucide-svelte/icons/user';
 	import DashboardIcon from 'lucide-svelte/icons/house';
@@ -127,7 +126,6 @@
 					<DropdownMenu.Item><SignoutButton /></DropdownMenu.Item>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
-			<CartIndicator />
 			<ModeSwitch />
 		</header>
 		<main class="flex flex-1 flex-col justify-center gap-4 p-4 lg:gap-6 lg:p-6">

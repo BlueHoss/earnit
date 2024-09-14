@@ -1,10 +1,8 @@
 import { Axiom } from '@axiomhq/js';
 //import Analytics from '@june-so/analytics-node';
 import { AXIOM_TOKEN, AXIOM_ORG_ID, AXIOM_DATASET } from '$env/static/private';
-import getAllUrlParams from '$lib/_helpers/getAllUrlParams';
-import parseTrack from '$lib/_helpers/parseTrack';
-import parseMessage from '$lib/_helpers/parseMessage';
 import { PUBLIC_PROD_DOMAIN } from '$env/static/public';
+import { LogHelpers } from '$lib/utils/log-helpers';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
@@ -19,15 +17,15 @@ export default async function log(statusCode: number, event) {
 		const errorStackTrace = event?.locals?.errorStackTrace || undefined;
 		let urlParams = {};
 		if (event?.url?.search) {
-			urlParams = await getAllUrlParams(event?.url?.search);
+			urlParams = await LogHelpers.getAllUrlParams(event?.url?.search);
 		}
 		let messageEvents = {};
 		if (event?.locals?.message) {
-			messageEvents = await parseMessage(event?.locals?.message);
+			messageEvents = await LogHelpers.parseMessage(event?.locals?.message);
 		}
 		let trackEvents = {};
 		if (event?.locals?.track) {
-			trackEvents = await parseTrack(event?.locals?.track);
+			trackEvents = await LogHelpers.parseTrack(event?.locals?.track);
 		}
 
 		let referer = event.request.headers.get('referer');

@@ -2,7 +2,7 @@
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import type { ProductQueryResult } from '$lib/schema/product.schema';
 	import MeritOfferingCardPurchased from '$lib/components/base/MeritOfferingCardPurchased.svelte';
-	import PageHeaderFollower from '$lib/components/FollowerPageHeader.svelte';
+	import PageHeaderFollower from '$lib/components/base/FollowerPageHeader.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 
 	interface PageData {

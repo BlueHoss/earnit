@@ -116,6 +116,16 @@ export const profileEditSchema = baseLoginSchema.omit({
 });
 
 /**
+ * Sign In Schema
+ */
+export const signInSchema = z.object({
+	email: z.string().email(),
+	password: z.string().min(8)
+});
+
+export type SignInSchema = typeof signInSchema;
+
+/**
  * Profile Edit Object
  */
 export type ProfileEditUser = z.infer<typeof profileEditSchema>;
