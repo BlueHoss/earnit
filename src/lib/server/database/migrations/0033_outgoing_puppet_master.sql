@@ -1,1 +1,0 @@
-ALTER TABLE "credit_creator_pool" ADD COLUMN "available_credits" numeric(10, 2);

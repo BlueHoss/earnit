@@ -1,1 +1,0 @@
-ALTER TABLE "product" DROP COLUMN IF EXISTS "store_id";

@@ -1,1 +1,0 @@
-ALTER TABLE "login" ALTER COLUMN "social_media_profile" DROP NOT NULL;

@@ -1,1 +1,0 @@
-ALTER TABLE "plan" ALTER COLUMN "plan_cost" SET NOT NULL;

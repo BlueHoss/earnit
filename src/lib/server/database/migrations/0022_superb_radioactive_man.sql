@@ -1,1 +1,0 @@
-ALTER TABLE "product_item" ADD COLUMN "file_name" text;

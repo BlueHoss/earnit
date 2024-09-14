@@ -1,1 +1,0 @@
-ALTER TABLE "login" ADD COLUMN "follower_count" integer DEFAULT 0 NOT NULL;
