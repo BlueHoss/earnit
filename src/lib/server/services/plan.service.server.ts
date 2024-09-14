@@ -3,6 +3,7 @@ import { ActionResponse, type EarnItActionResult } from '$lib/utils/action-resul
 import { and, eq, isNull } from 'drizzle-orm';
 import db from '../database/drizzle';
 import { plan_subscription_table, plan_table } from '../database/schema';
+import { CreatorManagmentService } from './creator.management.service.server';
 
 async function getPlans(): Promise<Plan[]> {
 	const plans = await db.select().from(plan_table);
@@ -72,6 +73,9 @@ async function purchaseRecurringPlan(
 
 		// Get existing follower's credit balance for this creator
 		await db.insert(plan_subscription_table).values(subscriptionPlan);
+
+		//follow this user also if not following
+		await CreatorManagmentService.addFollower(creatorId, followerId);
 
 		return ActionResponse.success('Plan subscription success!');
 	} catch (error) {

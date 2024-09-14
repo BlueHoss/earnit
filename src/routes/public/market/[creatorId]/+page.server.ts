@@ -72,8 +72,8 @@ export const actions: Actions = {
 				Number(creatorId),
 				locals.user.id
 			);
-			if (followResult) {
-				setFlash({ type: 'success', message: 'You are now following!' }, cookies);
+			if (followResult && followResult.success) {
+				setFlash({ type: 'success', message: 'You are not following this user!' }, cookies);
 				return { success: true };
 			} else {
 				setFlash(

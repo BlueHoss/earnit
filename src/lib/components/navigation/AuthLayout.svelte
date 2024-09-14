@@ -20,6 +20,7 @@
 	import DashboardIcon from 'lucide-svelte/icons/house';
 	import PurchaseIcon from 'lucide-svelte/icons/library-big';
 	import MarketplaceIcon from 'lucide-svelte/icons/store';
+	import CreatorCatalogIcon from 'lucide-svelte/icons/album';
 	import MenuItems from '$lib/components/navigation/MenuItems.svelte';
 
 	export let user: User;
@@ -32,6 +33,7 @@
 			mainMenu.push({ name: 'Dashboard', path: '/creator', icon: DashboardIcon });
 			mainMenu.push({ name: 'Marketplace', path: '/creator/marketplace', icon: MarketplaceIcon });
 			mainMenu.push({ name: 'Missions', path: '/public/missions', icon: MissionsIcon });
+			mainMenu.push({ name: 'Creator Catalog', path: '/public/catalog', icon: CreatorCatalogIcon });
 			mainMenu.push({ name: 'Profile', path: '/creator/profile', icon: ProfileIcon });
 
 			myAccountMenu.push({ name: 'Settings', link: '/creator/settings' });
@@ -39,6 +41,7 @@
 		} else {
 			mainMenu.push({ name: 'Dashboard', path: '/follower', icon: DashboardIcon });
 			mainMenu.push({ name: 'Purchases', path: '/follower/purchase', icon: PurchaseIcon });
+			mainMenu.push({ name: 'Creator Catalog', path: '/public/catalog', icon: CreatorCatalogIcon });
 			mainMenu.push({ name: 'Missions', path: '/public/missions', icon: MissionsIcon });
 
 			myAccountMenu.push({ name: 'Settings', link: '/follower/settings' });

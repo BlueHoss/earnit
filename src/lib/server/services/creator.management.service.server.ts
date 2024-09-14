@@ -17,6 +17,7 @@ import { TextUtilities } from '$lib/utils/text-utilities';
 import { ImageService } from './image.service.server';
 import { creatorScheam, type Creator, type ProfileEditUser } from '$lib/schema/login.schema';
 import {} from 'moment';
+import { ActionResponse, type EarnItActionResult } from '$lib/utils/action-result';
 
 /**
  * Get the user bio
@@ -121,7 +122,11 @@ async function removeOldProfilePic(userid: number, newProfilePic: string | null)
 	}
 }
 
-async function addFollower(creatorId: number, followerId: number): Promise<boolean> {
+async function addFollower(creatorId: number, followerId: number): Promise<EarnItActionResult> {
+	if (creatorId === followerId) {
+		return ActionResponse.fail('You cannot follow yourself.');
+	}
+
 	//Ensure follower is not already following
 	const isFollowing = await db
 		.select({
@@ -136,7 +141,7 @@ async function addFollower(creatorId: number, followerId: number): Promise<boole
 		);
 
 	if (isFollowing.length > 0) {
-		return false;
+		return ActionResponse.fail('You are already following this user.');
 	}
 	const result = await db
 		.insert(follower_creator_table)
@@ -146,10 +151,12 @@ async function addFollower(creatorId: number, followerId: number): Promise<boole
 		})
 		.returning();
 
-	return result ? true : false;
+	return result
+		? ActionResponse.success('You are following!')
+		: ActionResponse.fail('There was an error following this user.');
 }
 
-async function removeFollower(creatorId: number, followerId: number): Promise<boolean> {
+async function removeFollower(creatorId: number, followerId: number): Promise<EarnItActionResult> {
 	const result = await db
 		.delete(follower_creator_table)
 		.where(
@@ -160,7 +167,9 @@ async function removeFollower(creatorId: number, followerId: number): Promise<bo
 		)
 		.returning();
 
-	return !result || result.length <= 0 ? false : true;
+	return !result || result.length <= 0
+		? ActionResponse.fail('Following this user failed')
+		: ActionResponse.success('Follow success!');
 }
 
 async function getCreatorWithFollowers(creatorId: number): Promise<Creator | null> {
@@ -228,11 +237,28 @@ async function getSubscribers(creatorId: number): Promise<{ id: number | null }[
 	return !subscribers ? [] : subscribers;
 }
 
+async function getAllCreators() {
+	const creators = await db
+		.select({
+			id: login_table.id,
+			profile_pic: login_table.profile_pic,
+			store_name: login_table.store_name,
+			title: login_table.title,
+			handle: login_table.handle,
+			category: login_table.category
+		})
+		.from(login_table)
+		.where(eq(login_table.is_creator, true));
+
+	return creators;
+}
+
 export const CreatorManagmentService = {
 	setUserProfile,
 	getUserBio,
 	getUserProfile,
 	addFollower,
 	removeFollower,
-	getCreatorWithFollowers
+	getCreatorWithFollowers,
+	getAllCreators
 };

@@ -1,4 +1,4 @@
-import { eq, and, sql, sum, between, type SQL } from 'drizzle-orm';
+import { eq, and, sql, sum, between, type SQL, isNull } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import {
 	credit_creator_pool_table,
@@ -33,7 +33,7 @@ async function getPaidSubscribers(userid: number) {
 		.innerJoin(plan_table, eq(plan_subscription_table.id, plan_table.id))
 		.where(
 			and(
-				eq(plan_subscription_table.active, true),
+				isNull(plan_subscription_table.date_canceled),
 				eq(plan_subscription_table.creator_user_id, userid)
 			)
 		);
@@ -54,13 +54,13 @@ async function getPaidSubscribers(userid: number) {
 async function getMonthlyRevenue(userid: number) {
 	const count = await db
 		.select({
-			total: sum(plan_table.cost)
+			total: sum(plan_table.plan_cost).as('total')
 		})
 		.from(plan_subscription_table)
 		.innerJoin(plan_table, eq(plan_subscription_table.id, plan_table.id))
 		.where(
 			and(
-				eq(plan_subscription_table.active, true),
+				isNull(plan_subscription_table.date_canceled),
 				eq(plan_subscription_table.creator_user_id, userid)
 			)
 		);
