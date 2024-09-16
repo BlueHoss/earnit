@@ -3,7 +3,7 @@ import { redirect, type Handle } from '@sveltejs/kit';
 import type { HandleServerError } from '@sveltejs/kit';
 
 import log from '$lib/server/log';
-import type { User } from '$lib/server/database/drizzle-schemas';
+import type { User } from 'lucia';
 
 export const handleError: HandleServerError = async ({ error, event }) => {
 	const errorId = crypto.randomUUID();
@@ -65,8 +65,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const usertype = getUserType(user);
 		if (usertype === 'creator') redirect(302, '/creator');
 	}
-	//protect all screens unless signed in.
-	//if (!user) redirect(302, '/auth/sign-in');
 
 	const response = await resolve(event);
 	//log(response.status, event);

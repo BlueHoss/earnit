@@ -47,7 +47,8 @@ async function transformSignupToUser(signupData: SignupUser): Promise<BaseUser> 
 			date_updated: new Date(),
 			store_name: `${signupData.first_name}'s Store`,
 			reward_name: `${signupData.first_name} Credit`,
-			category: 'General'
+			category: 'General',
+			credit_balance: '0.00'
 		};
 	} else {
 		return {
@@ -58,7 +59,8 @@ async function transformSignupToUser(signupData: SignupUser): Promise<BaseUser> 
 			profile_pic: `${PUBLIC_SUPABASE_STORAGE_URL}/${PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET}/defaultuser.png`,
 			token: crypto.randomUUID(),
 			date_created: new Date(),
-			date_updated: new Date()
+			date_updated: new Date(),
+			credit_balance: '0.00'
 		};
 	}
 }

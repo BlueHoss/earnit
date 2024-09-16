@@ -5,7 +5,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 </script>
 
-<a href="/public/market/{storeName}" class="block">
+<a href="/market/{storeName}" class="block">
 	<div
 		class="flex items-center space-x-4 rounded-lg bg-secondary p-4 shadow-md transition duration-300 hover:bg-muted"
 	>

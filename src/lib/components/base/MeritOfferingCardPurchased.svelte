@@ -15,7 +15,7 @@
 		</div>
 		<CardContent class="p-4">
 			<div>
-				<a href="/public/market/{product.creator_user_id}">
+				<a href="/market/{product.creator_user_id}">
 					{product.store_name}
 				</a>
 			</div>

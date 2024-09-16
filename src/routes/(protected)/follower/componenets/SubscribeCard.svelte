@@ -7,7 +7,7 @@
 	export let subscription: Subsciption;
 </script>
 
-<a href="/public/market/{subscription.creator_user_id}" class="block">
+<a href="/market/{subscription.creator_user_id}" class="block">
 	<div
 		class="flex items-center space-x-4 rounded-lg bg-primary-foreground p-4 shadow-md transition duration-300 hover:bg-muted"
 	>

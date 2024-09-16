@@ -2,7 +2,7 @@
 <script lang="ts">
 	import * as Input from '$lib/components/ui/input';
 	import type { PageData } from './$types';
-	import CreatorCard from './components/CreatorCard.svelte';
+	import CreatorCard from '../components/CreatorCard.svelte';
 
 	export let data: PageData;
 

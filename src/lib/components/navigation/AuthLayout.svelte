@@ -31,8 +31,8 @@
 		if (user.is_creator) {
 			mainMenu.push({ name: 'Dashboard', path: '/creator', icon: DashboardIcon });
 			mainMenu.push({ name: 'Marketplace', path: '/creator/marketplace', icon: MarketplaceIcon });
-			mainMenu.push({ name: 'Missions', path: '/public/missions', icon: MissionsIcon });
-			mainMenu.push({ name: 'Creator Catalog', path: '/public/catalog', icon: CreatorCatalogIcon });
+			mainMenu.push({ name: 'Missions', path: '/missions', icon: MissionsIcon });
+			mainMenu.push({ name: 'Creator Catalog', path: '/', icon: CreatorCatalogIcon });
 			mainMenu.push({ name: 'Profile', path: '/creator/profile', icon: ProfileIcon });
 
 			myAccountMenu.push({ name: 'Settings', link: '/creator/settings' });
@@ -40,10 +40,10 @@
 		} else {
 			mainMenu.push({ name: 'Dashboard', path: '/follower', icon: DashboardIcon });
 			mainMenu.push({ name: 'Purchases', path: '/follower/purchase', icon: PurchaseIcon });
-			mainMenu.push({ name: 'Creator Catalog', path: '/public/catalog', icon: CreatorCatalogIcon });
-			mainMenu.push({ name: 'Missions', path: '/public/missions', icon: MissionsIcon });
+			mainMenu.push({ name: 'Creator Catalog', path: '/', icon: CreatorCatalogIcon });
+			mainMenu.push({ name: 'Missions', path: '/missions', icon: MissionsIcon });
 
-			myAccountMenu.push({ name: 'Settings', link: '/follower/settings' });
+			//myAccountMenu.push({ name: 'Settings', link: '/follower/settings' });
 			myAccountMenu.push({ name: 'Profile', link: '/follower/profile/edit' });
 		}
 	}

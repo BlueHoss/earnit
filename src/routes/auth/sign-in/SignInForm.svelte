@@ -32,13 +32,13 @@
 			if (action.type === 'REDEEM_PRODUCT') {
 				pendingActions.clearActions();
 				redirectWithRefresh(
-					`/public/market/${action.payload.creatorId}/offering/${action.payload.productId}`
+					`/market/${action.payload.creatorId}/offering/${action.payload.productId}`
 				);
 				return;
 			} else if (action.type === 'FOLLOW_CREATOR') {
 				if (result.data.form.data.id != action.payload.creatorId) {
 					pendingActions.clearActions();
-					redirectWithRefresh(`/public/market/${action.payload.creatorId}`);
+					redirectWithRefresh(`/market/${action.payload.creatorId}`);
 					return;
 				}
 			}

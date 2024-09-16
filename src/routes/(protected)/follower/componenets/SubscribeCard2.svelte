@@ -8,7 +8,7 @@
 	export let subscription: Subsciption;
 </script>
 
-<a href="/public/market/{subscription.creator_user_id}" class="block">
+<a href="/market/{subscription.creator_user_id}" class="block">
 	<div class="rounded-lg bg-card shadow-lg hover:shadow-xl transition-shadow duration-300">
 		<div class="p-4 sm:p-6">
 			<div class="flex items-center justify-between mb-4">

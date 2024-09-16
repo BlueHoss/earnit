@@ -8,9 +8,9 @@ import { sendVerificationEmail } from '$lib/config/email-messages.js';
 import { lucia } from '$lib/server/lucia.js';
 
 export const load = async (event) => {
-	if (event.locals.user) {
-		redirect(302, '/auth/sign-in');
-	}
+	// if (event.locals.user) {
+	// 	redirect(302, '/auth/sign-in');
+	// }
 
 	const form = await superValidate(event, zod(signupSchema));
 	return {
@@ -23,7 +23,6 @@ export const actions = {
 		const form = await superValidate(event, zod(signupSchema));
 
 		if (!form.valid) {
-			console.log('form', form);
 			return fail(400, {
 				form
 			});
@@ -73,19 +72,5 @@ export const actions = {
 		}
 
 		throw redirect(302, '/both');
-		// //TODO: too much redirect. just go to verify email page.
-		// if (newUser.is_creator && newUser.is_follower) {
-		// 	throw redirect(302, '/both');
-		// }
-
-		// if (newUser.is_creator) {
-		// 	throw redirect(302, '/creator');
-		// }
-
-		// if (newUser.is_follower) {
-		// 	throw redirect(302, '/follower');
-		// }
-
-		//return { form };
 	}
 };

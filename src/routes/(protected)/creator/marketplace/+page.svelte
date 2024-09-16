@@ -37,7 +37,7 @@
 
 	let copyIcon = CopyIcon;
 
-	const profileLink = PUBLIC_BASE_URL + '/public/market/' + data.user.id;
+	const profileLink = PUBLIC_BASE_URL + '/market/' + data.user.id;
 
 	function copyText() {
 		navigator.clipboard
