@@ -4,11 +4,12 @@
 	import CreditCardIcon from 'lucide-svelte/icons/credit-card';
 	import PageHeaderFollower from '$lib/components/base/FollowerPageHeader.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
-	import CurrencyIcon from 'lucide-svelte/icons/currency';
+
 	import Following from 'lucide-svelte/icons/square-user';
 	import type { FollowerDashboardData } from '$lib/types/follower-dashboard.js';
-	import SubscribeCard from './componenets/SubscribeCard.svelte';
-	import FollowerCard from './componenets/FollowerCard.svelte';
+	import SubscribeCard from '../earn/components/SubscribeCard.svelte';
+	import FollowerCard from '../earn/components/FollowerCard.svelte';
+	import AvailableCredits from '../earn/components/AvailableCredits.svelte';
 
 	export let data: FollowerDashboardData;
 </script>
@@ -16,15 +17,7 @@
 <PageWrapper>
 	<PageHeaderFollower {data} Title="Dashboard" />
 	<div class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-		<Card.Root>
-			<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-				<Card.Title class="text-sm font-medium">Available Effort Credits</Card.Title>
-				<CurrencyIcon class="h-4 w-4 text-muted-foreground" />
-			</Card.Header>
-			<Card.Content>
-				<div class="text-2xl font-bold text-primary">{data.dashboard.availableCredits} Credits</div>
-			</Card.Content>
-		</Card.Root>
+		<AvailableCredits availableCredits={data.dashboard.availableCredits} user={data.user} />
 		<Card.Root>
 			<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
 				<Card.Title class="text-sm font-medium">Subscriptions</Card.Title>

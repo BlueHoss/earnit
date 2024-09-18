@@ -15,6 +15,7 @@
 	import type { User } from 'lucia';
 
 	import MissionsIcon from 'lucide-svelte/icons/orbit';
+	import CurrencyIcon from 'lucide-svelte/icons/currency';
 	import ProfileIcon from 'lucide-svelte/icons/user';
 	import DashboardIcon from 'lucide-svelte/icons/house';
 	import PurchaseIcon from 'lucide-svelte/icons/library-big';
@@ -29,18 +30,20 @@
 
 	function buildMainMenu() {
 		if (user.is_creator) {
-			mainMenu.push({ name: 'Dashboard', path: '/creator', icon: DashboardIcon });
-			mainMenu.push({ name: 'Marketplace', path: '/creator/marketplace', icon: MarketplaceIcon });
+			mainMenu.push({ name: 'Home', path: '/', icon: CreatorCatalogIcon });
+			mainMenu.push({ name: 'Create', path: '/creator', icon: MarketplaceIcon });
+			mainMenu.push({ name: 'Earn', path: '/earn', icon: CurrencyIcon });
+			mainMenu.push({ name: 'Purchases', path: '/purchase', icon: PurchaseIcon });
+			//mainMenu.push({ name: 'Marketplace', path: '/creator/marketplace', icon: MarketplaceIcon });
 			mainMenu.push({ name: 'Missions', path: '/missions', icon: MissionsIcon });
-			mainMenu.push({ name: 'Creator Catalog', path: '/', icon: CreatorCatalogIcon });
 			mainMenu.push({ name: 'Profile', path: '/creator/profile', icon: ProfileIcon });
 
 			myAccountMenu.push({ name: 'Settings', link: '/creator/settings' });
 			myAccountMenu.push({ name: 'Profile', link: '/creator/profile/edit' });
 		} else {
-			mainMenu.push({ name: 'Dashboard', path: '/follower', icon: DashboardIcon });
-			mainMenu.push({ name: 'Purchases', path: '/follower/purchase', icon: PurchaseIcon });
-			mainMenu.push({ name: 'Creator Catalog', path: '/', icon: CreatorCatalogIcon });
+			mainMenu.push({ name: 'Home', path: '/', icon: DashboardIcon });
+			mainMenu.push({ name: 'Earn', path: '/follower', icon: DashboardIcon });
+			mainMenu.push({ name: 'Purchases', path: '/purchase', icon: PurchaseIcon });
 			mainMenu.push({ name: 'Missions', path: '/missions', icon: MissionsIcon });
 
 			//myAccountMenu.push({ name: 'Settings', link: '/follower/settings' });

@@ -29,7 +29,7 @@
 				{product.name}
 				{#if canEdit}
 					<Button variant="link">
-						<a href={'/creator/marketplace/edit-product-' + product.id}><PencilIcon /></a>
+						<a href={'/creator/edit-product-' + product.id}><PencilIcon /></a>
 					</Button>
 				{/if}
 			</CardTitle>

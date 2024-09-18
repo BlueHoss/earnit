@@ -4,14 +4,16 @@ import type { ProductInvoiceResult } from '$lib/schema/product_invoice.schema';
 import type { User } from 'lucia';
 
 export interface CreatorDashboard {
-	subscriberCount: number;
+	subscribers: { handle: string }[];
+	followers: { handle: string }[];
 	revenue: number;
-	creditsUsed: number;
+	creditsDistributed: number;
 	purchaseCount: number;
 	purchaseAmount: number;
-	followerCount: number;
 	productCount: number;
 	productPurchaseList: ProductInvoiceResult[] | [];
+	products: Product[];
+	missions: DefaultMission[];
 }
 
 export interface UserDashboardData {

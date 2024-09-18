@@ -1,7 +1,7 @@
 import { eq, and, sql, sum, between, type SQL, isNull } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import {
-	credit_creator_pool_table,
+	credit_transaction_table,
 	follower_creator_table,
 	login_table,
 	mission_action_table,
@@ -80,16 +80,13 @@ async function getMonthlyRevenue(userid: number) {
  * @param {Date} endDate - The end date.
  * @returns {Promise<number>} - The credits used.
  */
-async function getCreditsUsed(userid: number) {
+async function getCreditAmountDistributed(creatorId: number) {
 	const count = await db
 		.select({
-			total:
-				sql`SUM(${credit_creator_pool_table.available_credits} - ${credit_creator_pool_table.total_credits})`.as(
-					'total'
-				)
+			total: sql`SUM(${credit_transaction_table.amount})`.as('total')
 		})
-		.from(credit_creator_pool_table)
-		.where(eq(credit_creator_pool_table.creator_user_id, userid));
+		.from(credit_transaction_table)
+		.where(eq(credit_transaction_table.creator_user_id, creatorId));
 
 	if (count.length === 0) {
 		return 0;
@@ -235,6 +232,29 @@ async function getCreatorFollowerCount(userid: number): Promise<number> {
 	}
 }
 
+async function getFollowerNameList(creatorId: number): Promise<{ handle: string }[]> {
+	const followers = await db
+		.select({
+			handle: login_table.handle
+		})
+		.from(follower_creator_table)
+		.innerJoin(login_table, eq(login_table.id, follower_creator_table.creator_user_id))
+		.where(eq(follower_creator_table.creator_user_id, creatorId));
+
+	return !followers ? [] : followers;
+}
+
+async function getSubscriberNameList(creatorId: number): Promise<{ handle: string }[]> {
+	const subscribers = await db
+		.select({
+			handle: login_table.handle
+		})
+		.from(plan_subscription_table)
+		.innerJoin(login_table, eq(login_table.id, plan_subscription_table.follower_user_id))
+		.where(eq(plan_subscription_table.creator_user_id, creatorId));
+	return !subscribers ? [] : subscribers;
+}
+
 /**
  * returns the followers (from login table) of a creator
  *
@@ -341,9 +361,6 @@ async function loadMarketplaceData(creatorUserId: number): Promise<CreatorMarket
 }
 
 async function loadDashboardData(creatorUserId: number): Promise<CreatorDashboard> {
-	const subscriberCount = await getPaidSubscribers(creatorUserId);
-	const revenue = await getMonthlyRevenue(creatorUserId);
-
 	//Sliding 30 day window
 	// Get today's date
 	const endDate = new Date();
@@ -351,22 +368,29 @@ async function loadDashboardData(creatorUserId: number): Promise<CreatorDashboar
 	const startDate = new Date();
 	startDate.setDate(startDate.getDate() - 30);
 
-	const creditsUsed = await getCreditsUsed(creatorUserId);
+	const creditsDistributed = await getCreditAmountDistributed(creatorUserId);
 	const purchaseCount = await getProductsPurchasedCount(creatorUserId, startDate, endDate);
 	const purchaseAmount = await getProductsPurchasedAmount(creatorUserId, startDate, endDate);
 	const productPurchaseList = await getProductsPurchasedList(creatorUserId, startDate, endDate);
-	const followerCount = await getCreatorFollowerCount(creatorUserId);
+	const followers = await getFollowerNameList(creatorUserId);
+	const subscribers = await getSubscriberNameList(creatorUserId);
 	const productCount = await getProductCount(creatorUserId);
+	const products = await ProductService.getProductsByUserId(creatorUserId);
+	const missions = await getCreatorMissions(creatorUserId);
+
+	const revenue = await getMonthlyRevenue(creatorUserId);
 
 	return (await {
-		subscriberCount,
+		subscribers,
+		followers,
 		revenue,
-		creditsUsed,
+		creditsDistributed,
 		purchaseCount,
 		purchaseAmount,
-		followerCount,
 		productCount,
-		productPurchaseList
+		productPurchaseList,
+		products,
+		missions
 	}) as CreatorDashboard;
 }
 

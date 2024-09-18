@@ -7,7 +7,7 @@
  */
 
 import { type EarnItActionResult, ActionResponse } from '$lib/utils/action-result';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import db from '../database/drizzle';
 import {
 	credit_creator_pool_table,
@@ -16,6 +16,7 @@ import {
 	login_table,
 	mission_action_table
 } from '../database/schema';
+import type { CreditDistributed } from '$lib/schema/credit.schema';
 
 async function setFollowerCredit(
 	credits: number,
@@ -163,7 +164,24 @@ async function setCreatorCredits(credits: number, creatorId: number): Promise<Ea
 	}
 }
 
+async function getCreditDistributionList(creatorId: number): Promise<CreditDistributed[]> {
+	const creditDistributionList = await db
+		.select({
+			date: credit_transaction_table.date_transaction,
+			amount: credit_transaction_table.amount,
+			transaction_type: credit_transaction_table.transaction_type,
+			to_user: login_table.handle
+		})
+		.from(credit_transaction_table)
+		.innerJoin(login_table, eq(credit_transaction_table.creator_user_id, login_table.id))
+		.where(eq(credit_transaction_table.creator_user_id, creatorId))
+		.orderBy(desc(credit_transaction_table.date_transaction));
+
+	return creditDistributionList;
+}
+
 export const CreditService = {
 	setFollowerCredit,
-	setCreatorCredits
+	setCreatorCredits,
+	getCreditDistributionList
 };

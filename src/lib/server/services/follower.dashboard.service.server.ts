@@ -9,6 +9,8 @@ import {
 import { and, eq, isNull, sql } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import type { Follower, Subsciption } from '$lib/schema/follower_dashboard.schema';
+import type { FollowerCreditBalanceDetail } from '$lib/schema/credit.schema';
+import { date } from 'drizzle-orm/mysql-core';
 
 async function availableCredits(followerId: number) {
 	const followerCredits = await db
@@ -187,10 +189,39 @@ async function getFollowerProductsPurchasedFromCreator(followerId: number, creat
 	}
 }
 
+async function getFollowerCreditBalanceDetails(
+	followerId: number
+): Promise<FollowerCreditBalanceDetail[]> {
+	const balance = await db
+		.select({
+			balance: sql<number>`sum(${credit_follower_balance_table.credit_balance})`.as('balance'),
+			reward_name: login_table.reward_name,
+			creator_user_id: credit_follower_balance_table.creator_user_id,
+			store_name: login_table.store_name,
+			date: credit_follower_balance_table.date_updated
+		})
+		.from(credit_follower_balance_table)
+		.innerJoin(login_table, eq(login_table.id, credit_follower_balance_table.creator_user_id))
+		.where(eq(credit_follower_balance_table.follower_user_id, followerId))
+		.groupBy(
+			login_table.reward_name,
+			login_table.store_name,
+			credit_follower_balance_table.date_updated,
+			credit_follower_balance_table.creator_user_id
+		);
+
+	if (balance.length === 0) {
+		return [];
+	} else {
+		return balance;
+	}
+}
+
 export const FollowersDashboardService = {
 	loadDashboardData,
 	availableCredits,
 	getFollowerCreditsByCreator,
 	getFollowerProductsPurchasedFromCreator,
-	getFollowerProductsByCreatorList
+	getFollowerProductsByCreatorList,
+	getFollowerCreditBalanceDetails
 };

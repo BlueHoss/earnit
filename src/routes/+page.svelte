@@ -27,6 +27,18 @@
 		const target = event.target as HTMLSelectElement;
 		selectedCategory = target.value;
 	}
+
+	function handleNavigationToApp() {
+		if (data.user) {
+			if (data.user.is_creator) {
+				window.location.href = '/creator';
+				return;
+			} else {
+				window.location.href = '/follower';
+				return;
+			}
+		}
+	}
 </script>
 
 <div class="container mx-auto py-8">
@@ -35,12 +47,16 @@
 		<h1 class="text-4xl font-bold mb-4">Welcome to Earn It!</h1>
 		<p class="text-xl mb-6">Discover amazing creators and their unique offerings!</p>
 		<div class="flex gap-4">
-			<Button variant="secondary">
-				<a href="/auth/sign-in">Sign In</a>
-			</Button>
-			<Button variant="secondary">
-				<a href="/auth/sign-up">Sign Up</a>
-			</Button>
+			{#if !data.user}
+				<Button variant="default">
+					<a href="/auth/sign-in">Sign In</a>
+				</Button>
+				<Button variant="secondary">
+					<a href="/auth/sign-up">Sign Up</a>
+				</Button>
+			{:else}
+				<Button on:click={handleNavigationToApp} variant="secondary">Go to App</Button>
+			{/if}
 		</div>
 	</div>
 

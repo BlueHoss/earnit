@@ -11,19 +11,12 @@
 
 <Card.Root class="overflow-hidden">
 	<Card.Header class="p-0">
-		<img
-			src={creator.profile_pic || '/default-profile.jpg'}
-			alt={creator.store_name || 'Creator'}
-			class="w-full h-48 object-cover"
-		/>
+		<img src={creator.profile_pic} alt={creator.store_name} class="w-full h-48 object-cover" />
 	</Card.Header>
 	<Card.Content class="p-4">
 		<div class="flex items-center mb-2">
 			<Avatar class="w-10 h-10 mr-2">
-				<AvatarImage
-					src={creator.profile_pic || '/default-profile.jpg'}
-					alt={creator.store_name || 'Creator'}
-				/>
+				<AvatarImage src={creator.profile_pic} alt={creator.store_name} />
 				<AvatarFallback>{(creator.store_name || 'C')[0]}</AvatarFallback>
 			</Avatar>
 			<div>

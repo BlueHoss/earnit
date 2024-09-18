@@ -1,12 +1,12 @@
 import type { Plan } from '$lib/schema/plan.schema';
 import { ActionResponse, type EarnItActionResult } from '$lib/utils/action-result';
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, desc, eq, isNull } from 'drizzle-orm';
 import db from '../database/drizzle';
 import { plan_subscription_table, plan_table } from '../database/schema';
 import { CreatorManagmentService } from './creator.management.service.server';
 
 async function getPlans(): Promise<Plan[]> {
-	const plans = await db.select().from(plan_table);
+	const plans = await db.select().from(plan_table).orderBy(plan_table.plan_cost);
 	return plans;
 }
 
@@ -27,7 +27,8 @@ async function getSubscribedPlans(followerId: number, creatorId: number): Promis
 				eq(plan_subscription_table.creator_user_id, creatorId),
 				isNull(plan_subscription_table.date_canceled)
 			)
-		);
+		)
+		.orderBy(desc(plan_table.plan_cost));
 	return plans;
 }
 

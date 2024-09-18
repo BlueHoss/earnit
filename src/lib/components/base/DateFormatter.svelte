@@ -8,7 +8,7 @@
 		if (format === 'fromNow') {
 			return moment(inputDate).fromNow();
 		} else if (format === 'short') {
-			return moment(inputDate).format('MMM D, YYYY');
+			return moment(inputDate).format('MMM D, YY');
 		} else {
 			return moment(inputDate).format('h:mm A - MMM D, YYYY');
 		}
