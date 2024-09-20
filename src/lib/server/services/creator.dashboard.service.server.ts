@@ -1,8 +1,7 @@
-import { eq, and, sql, sum, between, type SQL, isNull } from 'drizzle-orm';
+import { eq, and, sql, sum, between, type SQL, isNull, gt, lt, lte, ne } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import {
 	credit_transaction_table,
-	follower_creator_table,
 	login_table,
 	mission_action_table,
 	mission_creator_table,
@@ -12,7 +11,6 @@ import {
 	product_invoice_table,
 	product_table
 } from '$lib/server/database/schema';
-import type { LoginQueryResult } from '$lib/schema/login.schema';
 import type { ProductInvoiceResult } from '$lib/schema/product_invoice.schema';
 import { ProductService } from './product.service.server';
 import type { CreatorDashboard, CreatorMarketplaceData } from '$lib/types';
@@ -86,7 +84,12 @@ async function getCreditAmountDistributed(creatorId: number) {
 			total: sql`SUM(${credit_transaction_table.amount})`.as('total')
 		})
 		.from(credit_transaction_table)
-		.where(eq(credit_transaction_table.creator_user_id, creatorId));
+		.where(
+			and(
+				eq(credit_transaction_table.creator_user_id, creatorId),
+				ne(credit_transaction_table.transaction_type, 'Product_Redemption')
+			)
+		);
 
 	if (count.length === 0) {
 		return 0;
@@ -208,41 +211,41 @@ async function getProductsPurchasedList(
 	}));
 }
 
-/**
- * Retrieves the number of followers for a given Creator.
- *
- * @param {number} userid - The ID of the user.
- * @returns {Promise<number>} - The number of followers.
- */
-async function getCreatorFollowerCount(userid: number): Promise<number> {
-	const followerCount = await db
-		.select({
-			follower_count: sql<number>`count(${follower_creator_table.follower_user_id})`.as(
-				'follower_count'
-			)
-		})
-		.from(follower_creator_table)
-		.innerJoin(login_table, eq(login_table.id, follower_creator_table.creator_user_id))
-		.where(eq(follower_creator_table.creator_user_id, userid));
+// /**
+//  * Retrieves the number of followers for a given Creator.
+//  *
+//  * @param {number} userid - The ID of the user.
+//  * @returns {Promise<number>} - The number of followers.
+//  */
+// async function getCreatorFollowerCount(userid: number): Promise<number> {
+// 	const followerCount = await db
+// 		.select({
+// 			follower_count: sql<number>`count(${follower_creator_table.follower_user_id})`.as(
+// 				'follower_count'
+// 			)
+// 		})
+// 		.from(follower_creator_table)
+// 		.innerJoin(login_table, eq(login_table.id, follower_creator_table.creator_user_id))
+// 		.where(eq(follower_creator_table.creator_user_id, userid));
 
-	if (followerCount.length === 0) {
-		return 0;
-	} else {
-		return Number(followerCount[0].follower_count);
-	}
-}
+// 	if (followerCount.length === 0) {
+// 		return 0;
+// 	} else {
+// 		return Number(followerCount[0].follower_count);
+// 	}
+// }
 
-async function getFollowerNameList(creatorId: number): Promise<{ handle: string }[]> {
-	const followers = await db
-		.select({
-			handle: login_table.handle
-		})
-		.from(follower_creator_table)
-		.innerJoin(login_table, eq(login_table.id, follower_creator_table.creator_user_id))
-		.where(eq(follower_creator_table.creator_user_id, creatorId));
+// async function getFollowerNameList(creatorId: number): Promise<{ handle: string }[]> {
+// 	const followers = await db
+// 		.select({
+// 			handle: login_table.handle
+// 		})
+// 		.from(follower_creator_table)
+// 		.innerJoin(login_table, eq(login_table.id, follower_creator_table.creator_user_id))
+// 		.where(eq(follower_creator_table.creator_user_id, creatorId));
 
-	return !followers ? [] : followers;
-}
+// 	return !followers ? [] : followers;
+// }
 
 async function getSubscriberNameList(creatorId: number): Promise<{ handle: string }[]> {
 	const subscribers = await db
@@ -251,32 +254,49 @@ async function getSubscriberNameList(creatorId: number): Promise<{ handle: strin
 		})
 		.from(plan_subscription_table)
 		.innerJoin(login_table, eq(login_table.id, plan_subscription_table.follower_user_id))
-		.where(eq(plan_subscription_table.creator_user_id, creatorId));
+		.innerJoin(plan_table, eq(plan_subscription_table.plan_id, plan_table.id))
+		.where(
+			and(eq(plan_subscription_table.creator_user_id, creatorId), gt(plan_table.plan_cost, '0.00'))
+		);
 	return !subscribers ? [] : subscribers;
 }
 
-/**
- * returns the followers (from login table) of a creator
- *
- * @param userid
- *  @returns LoginQueryResult[]
- */
-async function getCreatorFollowerList(userid: number): Promise<LoginQueryResult[]> {
-	const followers = await db
+async function getFreeSubscriberNameList(creatorId: number): Promise<{ handle: string }[]> {
+	const subscribers = await db
 		.select({
-			id: login_table.id,
-			handle: login_table.handle,
-			email: login_table.email,
-			firstName: login_table.first_name,
-			lastName: login_table.last_name,
-			profilePic: login_table.profile_pic
+			handle: login_table.handle
 		})
-		.from(login_table)
-		.innerJoin(follower_creator_table, eq(login_table.id, follower_creator_table.follower_user_id))
-		.where(eq(follower_creator_table.creator_user_id, userid));
-
-	return followers;
+		.from(plan_subscription_table)
+		.innerJoin(login_table, eq(login_table.id, plan_subscription_table.follower_user_id))
+		.innerJoin(plan_table, eq(plan_subscription_table.plan_id, plan_table.id))
+		.where(
+			and(eq(plan_subscription_table.creator_user_id, creatorId), eq(plan_table.plan_cost, '0.00'))
+		);
+	return !subscribers ? [] : subscribers;
 }
+
+// /**
+//  * returns the followers (from login table) of a creator
+//  *
+//  * @param userid
+//  *  @returns LoginQueryResult[]
+//  */
+// async function getCreatorFollowerList(userid: number): Promise<LoginQueryResult[]> {
+// 	const followers = await db
+// 		.select({
+// 			id: login_table.id,
+// 			handle: login_table.handle,
+// 			email: login_table.email,
+// 			firstName: login_table.first_name,
+// 			lastName: login_table.last_name,
+// 			profilePic: login_table.profile_pic
+// 		})
+// 		.from(login_table)
+// 		.innerJoin(follower_creator_table, eq(login_table.id, follower_creator_table.follower_user_id))
+// 		.where(eq(follower_creator_table.creator_user_id, userid));
+
+// 	return followers;
+// }
 
 async function getCreatorMissions(userid: number): Promise<DefaultMission[]> {
 	const missions = await db
@@ -372,7 +392,7 @@ async function loadDashboardData(creatorUserId: number): Promise<CreatorDashboar
 	const purchaseCount = await getProductsPurchasedCount(creatorUserId, startDate, endDate);
 	const purchaseAmount = await getProductsPurchasedAmount(creatorUserId, startDate, endDate);
 	const productPurchaseList = await getProductsPurchasedList(creatorUserId, startDate, endDate);
-	const followers = await getFollowerNameList(creatorUserId);
+	const freeSubscribers = await getFreeSubscriberNameList(creatorUserId);
 	const subscribers = await getSubscriberNameList(creatorUserId);
 	const productCount = await getProductCount(creatorUserId);
 	const products = await ProductService.getProductsByUserId(creatorUserId);
@@ -382,7 +402,7 @@ async function loadDashboardData(creatorUserId: number): Promise<CreatorDashboar
 
 	return (await {
 		subscribers,
-		followers,
+		freeSubscribers,
 		revenue,
 		creditsDistributed,
 		purchaseCount,

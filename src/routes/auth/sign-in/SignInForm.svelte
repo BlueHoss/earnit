@@ -50,7 +50,7 @@
 		}
 
 		if (result.data.form.data.is_follower) {
-			redirectWithRefresh('/follower');
+			redirectWithRefresh('/earn');
 		}
 	}
 </script>

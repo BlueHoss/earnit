@@ -4,6 +4,7 @@ import type { HandleServerError } from '@sveltejs/kit';
 
 import log from '$lib/server/log';
 import type { User } from 'lucia';
+import { UserService } from '$lib/server/services/user.service.server';
 
 export const handleError: HandleServerError = async ({ error, event }) => {
 	const errorId = crypto.randomUUID();
@@ -27,6 +28,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.startTimer = startTimer;
 
 	const sessionId = event.cookies.get(lucia.sessionCookieName);
+
 	const { session, user } = sessionId
 		? await lucia.validateSession(sessionId)
 		: { session: null, user: null };
@@ -45,8 +47,17 @@ export const handle: Handle = async ({ event, resolve }) => {
 			...sessionCookie.attributes
 		});
 	}
-	event.locals.user = user;
+
 	event.locals.session = session;
+	//event.locals.user = user;
+
+	//Build the getUserWithProfile function to load a joined user and account balance.
+	if (user) {
+		const fullUser = await UserService.getSessioUser(Number(user.id));
+		event.locals.user = fullUser;
+	} else {
+		event.locals.user = null;
+	}
 
 	if (event.route.id?.startsWith('/(protected)')) {
 		if (!user) redirect(302, '/auth/sign-in');
@@ -58,7 +69,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	if (event.route.id?.startsWith('/(protected)/creator')) {
 		const usertype = getUserType(user);
-		if (usertype === 'follower') redirect(302, '/follower');
+		if (usertype === 'follower') redirect(302, '/earn');
 	}
 
 	if (event.route.id?.startsWith('/(protected)/follower')) {

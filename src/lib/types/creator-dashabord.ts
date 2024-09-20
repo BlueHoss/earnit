@@ -5,7 +5,7 @@ import type { User } from 'lucia';
 
 export interface CreatorDashboard {
 	subscribers: { handle: string }[];
-	followers: { handle: string }[];
+	freeSubscribers: { handle: string }[];
 	revenue: number;
 	creditsDistributed: number;
 	purchaseCount: number;

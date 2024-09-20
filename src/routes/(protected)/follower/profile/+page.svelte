@@ -30,7 +30,7 @@
 
 				<!-- Right Section: Dashboard Button -->
 				<div class="flex items-center">
-					<a href="/follower/">
+					<a href="/earn/">
 						<Button>Dashboard</Button>
 					</a>
 				</div>

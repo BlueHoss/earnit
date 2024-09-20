@@ -93,7 +93,7 @@
 					<Card.Content>
 						<Form.Field name="cost" {form} class="flex-1">
 							<Form.Control let:attrs>
-								<Input type="number" {...attrs} bind:value={$formData.cost} />
+								<Input type="number" step=".01" {...attrs} bind:value={$formData.cost} />
 							</Form.Control>
 							<Form.FieldErrors />
 						</Form.Field>

@@ -189,7 +189,6 @@ async function getCreatorWithFollowers(creatorId: number): Promise<Creator | nul
 			is_follower: login_table.is_follower,
 			store_name: login_table.store_name,
 			reward_name: login_table.reward_name,
-			credit_balance: login_table.credit_balance,
 			category: login_table.category
 		})
 		.from(login_table)

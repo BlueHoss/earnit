@@ -18,7 +18,6 @@
 	import CreatorProductCount from '../components/CreatorProductCount.svelte';
 	import ProductsRedeemed from '../components/ProductsRedeemed.svelte';
 	import Subscribers from '../components/Subscribers.svelte';
-	import EarnItFollowers from '../components/EarnItFollowers.svelte';
 	import MissionActions from '$lib/components/base/MissionActions.svelte';
 	import type { CreatorMarketplaceData } from '$lib/types';
 	import type { User } from 'lucia';
@@ -83,7 +82,6 @@
 		<CreatorProductCount productCount={creatorMarketplaceData.productCount} />
 		<ProductsRedeemed totalRedeemed={creatorMarketplaceData.purchaseCount} />
 		<Subscribers subscriberCount={creatorMarketplaceData.subscriberCount} />
-		<EarnItFollowers followers={creatorMarketplaceData.followerCount} />
 	</div>
 	<div>
 		<Card.Root class="xl:col-span-2">

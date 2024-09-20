@@ -16,9 +16,6 @@
 		</Avatar>
 		<div>
 			<h1 class="text-2xl font-semibold">{data.user.first_name}'s {Title}</h1>
-			<p class="text-sm text-gray-400">
-				<RewardCurrency amount={data.user.credit_balance} name="credits" />
-			</p>
 		</div>
 	</div>
 </div>

@@ -264,9 +264,6 @@ async function deleteProduct(productId: number) {
 			return null;
 		}
 
-		console.log('Product deleted successfully');
-
-		console.log("Remove the product's cover image from storage");
 		if (deletedProduct[0].cover_image) {
 			if (!deletedProduct[0].cover_image.includes(PUBLIC_DEFAULT_PRODUCT_IMAGE)) {
 				ImageService.deleteProfileImage(deletedProduct[0].cover_image, 'product_image');
@@ -371,22 +368,22 @@ async function redeemProductFromCreator(
 
 			// 2. Update creator's credit pool
 			// const updatedCreatorPool = await tx
-			// 	.update(credit_creator_pool_table)
+			// 	.update(credit_creator_balance_table)
 			// 	.set({
-			// 		available_credits: sql`${credit_creator_pool_table.available_credits}`
+			// 		available_credits: sql`${credit_creator_balance_table.available_credits}`
 			// 	})
-			// 	.where(eq(credit_creator_pool_table.creator_user_id, creatorId))
+			// 	.where(eq(credit_creator_balance_table.creator_user_id, creatorId))
 			// 	.returning();
 
 			// 3. Insert a new credit transaction
 			const newTransaction = await tx
 				.insert(credit_transaction_table)
 				.values({
-					transaction_type: 'product redemption',
+					transaction_type: 'Product_Redemption',
 					creator_user_id: creatorId,
 					follower_user_id: followerId,
 					amount: product.cost,
-					description: `Credit purchase of ${product.cost} for product redemption`
+					description: `Credit purchase of ${product.name} for ${product.cost} credits`
 				})
 				.returning();
 

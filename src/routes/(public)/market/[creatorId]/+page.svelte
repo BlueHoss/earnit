@@ -29,58 +29,9 @@
 
 	export let data: PageData;
 
-	// Check if the user is following the creator
-	let following = data.creator.followers?.find((follower) => follower.id === data.user?.id)
-		? true
-		: false;
 	let subscribed = data.creator.subscribers?.find((follower) => follower.id === data.user?.id)
 		? true
 		: false;
-
-	async function handleFollow() {
-		if (!data || !data.user) {
-			pendingActions.addAction({
-				type: 'FOLLOW_CREATOR',
-				payload: { creatorId: data.creator.id }
-			});
-
-			showNotSignedInDialog = true;
-			return;
-		}
-
-		const formData = new FormData();
-		formData.append('creatorId', data.creator.id.toString());
-
-		const response = await fetch('?/followCreator', {
-			method: 'POST',
-			body: formData
-		});
-
-		await invalidateAll();
-		following = true;
-	}
-
-	async function handleUnfollow() {
-		if (!data || !data.user) {
-			pendingActions.addAction({
-				type: 'FOLLOW_CREATOR',
-				payload: { creatorId: data.creator.id }
-			});
-
-			showNotSignedInDialog = true;
-			return;
-		}
-
-		const formData = new FormData();
-		formData.append('creatorId', data.creator.id.toString());
-
-		const response = await fetch('?/unfollowCreator', {
-			method: 'POST',
-			body: formData
-		});
-		await invalidateAll();
-		following = false;
-	}
 
 	function handleSubscribe() {
 		if (!data || !data.user) {
@@ -117,22 +68,13 @@
 
 		<!-- Right Section: Follow Button -->
 		<div class="flex flex-col space-y-2">
-			{#if following}
-				<Button on:click={handleUnfollow} class="px-6"
-					><FollowEarnItIcon class="pr-1" />Following</Button
-				>
-			{:else}
-				<Button on:click={handleFollow} class="px-6"><FollowEarnItIcon class="pr-1" />Follow</Button
-				>
-			{/if}
-
 			{#if subscribed}
 				<Button on:click={handleUnsubscribe} class="px-6"
-					><PaidSubscribersIcon class="pr-1" />Subscribed</Button
+					><PaidSubscribersIcon class="pr-1" />Become an Top Earner</Button
 				>
 			{:else}
 				<Button on:click={() => handleSubscribe()} class="px-6"
-					><PaidSubscribersIcon class="pr-1" />Subscribe</Button
+					><PaidSubscribersIcon class="pr-1" />Become an Earner</Button
 				>
 			{/if}
 		</div>
@@ -153,7 +95,7 @@
 						<RewardCurrency amount={data.followerCredits} />
 					</div>
 					<p class="text-xs text-muted-foreground">
-						Amount of {data.creator.reward_name} you have with {data.creator.handle}.
+						Amount of {data.creator.reward_name} you have with {data.creator.store_name}.
 					</p>
 				</Card.Content>
 			</Card.Root>
@@ -176,7 +118,7 @@
 			<CheckCircle2 class="h-4 w-4" />
 			<AlertTitle>No Credits found</AlertTitle>
 			<AlertDescription
-				>You do not have any credit with {data.creator.handle} check out their missions below</AlertDescription
+				>You do not have any credit with {data.creator.store_name} check out their missions below</AlertDescription
 			>
 		</Alert>
 	{/if}
@@ -184,7 +126,7 @@
 		<Card.Root class="xl:col-span-2">
 			<Card.Header class="flex flex-row items-center">
 				<div class="grid gap-2">
-					<Card.Title>{data.creator.handle}'s Merit Offerings</Card.Title>
+					<Card.Title>{data.creator.store_name}'s Merit Offerings</Card.Title>
 				</div>
 			</Card.Header>
 			<Card.Content class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
@@ -199,9 +141,9 @@
 	<div class="grid gap-4 md:gap-8">
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>{data.creator.handle}'s Instagram Merit Mission</Card.Title>
+				<Card.Title>{data.creator.store_name}'s Instagram Merit Mission</Card.Title>
 				<Card.Description
-					>{data.creator.handle} has created a mission for you to complete on Instagram
+					>{data.creator.store_name} has created a mission for you to complete on Instagram
 				</Card.Description>
 			</Card.Header>
 			<Card.Content class="grid gap-8">
@@ -220,7 +162,7 @@
 		<Dialog.Header>
 			<Dialog.Title>Please Sign In or Sign Up</Dialog.Title>
 			<Dialog.Description
-				>In order to follow or subscribe to {data.creator.handle} please sign in or sign up.</Dialog.Description
+				>In order to become an Earner of {data.creator.store_name} please sign in or sign up.</Dialog.Description
 			>
 		</Dialog.Header>
 		<div class="grid gap-4 py-4">

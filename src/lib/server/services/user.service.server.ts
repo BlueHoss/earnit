@@ -6,15 +6,18 @@ import {
 } from '$env/static/public';
 import { type BaseUser, type BaseUserUpdate, type SignupUser } from '$lib/schema/login.schema';
 import { Argon2id } from 'oslo/password';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import {
+	credit_creator_balance_table,
+	credit_follower_balance_table,
 	login_table,
 	mission_action_table,
 	mission_creator_table,
 	mission_default_action_table,
 	mission_table
 } from '$lib/server/database/schema';
+import type { User } from 'lucia';
 
 /**
  * Function to create a new user with default values
@@ -147,7 +150,6 @@ async function getUserByUserId(userId: number): Promise<BaseUser | null> {
 			date_updated: login_table.date_updated,
 			store_name: login_table.store_name,
 			reward_name: login_table.reward_name,
-			credit_balance: login_table.credit_balance,
 			category: login_table.category
 		})
 		.from(login_table)
@@ -217,10 +219,72 @@ function postNewUserTasks(newUser: BaseUser) {
 	}
 }
 
+async function getSessioUser(userId: number): Promise<User | null> {
+	const user = await db
+		.select({
+			userId: login_table.id,
+			id: login_table.id,
+			provider: login_table.provider,
+			email: login_table.email,
+			handle: login_table.handle,
+			first_name: login_table.first_name,
+			last_name: login_table.last_name,
+			role: login_table.role,
+			verified: login_table.verified,
+			token: login_table.token,
+			is_creator: login_table.is_creator,
+			is_follower: login_table.is_follower,
+			follower_count: login_table.follower_count,
+			profile_pic: login_table.profile_pic,
+			title: login_table.title,
+			tag_line: login_table.tag_line,
+			store_name: login_table.store_name,
+			reward_name: login_table.reward_name,
+			credit_balance: sql<number>`
+					CASE
+					WHEN ${login_table.is_creator} THEN (
+						SELECT SUM(${credit_creator_balance_table.credit_balance})
+						FROM ${credit_creator_balance_table}
+						WHERE ${credit_creator_balance_table.creator_user_id} = ${userId}
+					)
+					WHEN ${login_table.is_follower} THEN (
+						SELECT SUM(${credit_follower_balance_table.credit_balance})
+						FROM ${credit_follower_balance_table}
+						WHERE ${credit_follower_balance_table.follower_user_id} = ${userId}
+					)
+					ELSE 0
+					END
+				`.as('credit_balance'),
+
+			user_type: sql<string>`
+				CASE
+				WHEN ${login_table.is_creator} AND ${login_table.is_follower} THEN 'creator'
+				WHEN ${login_table.is_creator} THEN 'creator'
+				WHEN ${login_table.is_follower} THEN 'follower'
+				ELSE 'public'
+				END
+			`.as('user_type'),
+			initials: sql<string>`
+				CONCAT(
+					UPPER(LEFT(${login_table.first_name}, 1)),
+					UPPER(LEFT(COALESCE(${login_table.last_name}, ''), 1))
+				)
+			`.as('initials')
+		})
+		.from(login_table)
+		.where(eq(login_table.id, userId));
+	if (user.length === 0) {
+		return null;
+	} else {
+		return user[0];
+	}
+}
+
 export const UserService = {
 	createNewUser,
 	updateUser,
 	getUserByToken,
 	getUserByEmail,
-	getUserByUserId
+	getUserByUserId,
+	getSessioUser
 };

@@ -1,0 +1,2 @@
+ALTER TABLE "credit_creator_balance" RENAME COLUMN "total_credits" TO "credits_awarded";--> statement-breakpoint
+ALTER TABLE "credit_creator_balance" RENAME COLUMN "available_credits" TO "credits_received";

@@ -6,9 +6,10 @@
 	import SimpleDialog from '../../../components/SimpleDialog.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import type { User } from 'lucia';
+	import SubscribeCard from './SubscribeCard.svelte';
 
 	export let subscriptionCount = 0;
-	export let user: User;
+	export let subscriberList;
 
 	let showDialog = false;
 </script>
@@ -27,40 +28,17 @@
 	</Card.Content>
 </Card.Root>
 
-<SimpleDialog bind:showDialog title="Follower List" description="See your list of followers below">
-	<!-- {#if creditDetailList}
-		<div>
-			<Card.Root class="xl:col-span-2">
-				<Card.Content>
-					<Table.Root>
-						<Table.Header>
-							<Table.Row>
-								<Table.Head>Date</Table.Head>
-								<Table.Head>Amount</Table.Head>
-								<Table.Head>Creator</Table.Head>
-							</Table.Row>
-						</Table.Header>
+<SimpleDialog
+	bind:showDialog
+	title="Subscription List"
+	description="See your list creators you are Earning credits below"
+>
+	{#if subscriberList.length === 0}
+		<div class="text-center text-gray-400">No subscriptions yet</div>
+	{/if}
 
-						<Table.Body>
-							{#each creditDetailList as credit}
-								<Table.Row>
-									<Table.Cell>
-										<DateFormatter date={credit.date} />
-									</Table.Cell>
-									<Table.Cell>
-										<RewardCurrency amount={credit.balance} name={credit.reward_name} />
-									</Table.Cell>
-									<Table.Cell>
-										<a href="/market/{credit.creator_user_id}"> {credit.store_name}</a>
-									</Table.Cell>
-								</Table.Row>
-							{/each}
-						</Table.Body>
-					</Table.Root>
-				</Card.Content>
-			</Card.Root>
-		</div>
-	{:else}
-		<Alert variant="default">No credits distributed</Alert>
-	{/if} -->
+	{#each subscriberList as subscriber}
+		<SubscribeCard subscription={subscriber} />
+		<!-- <SubscribeCard2 subscription={subscriber} /> -->
+	{/each}
 </SimpleDialog>

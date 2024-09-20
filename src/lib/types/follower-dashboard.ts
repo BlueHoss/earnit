@@ -1,13 +1,13 @@
-import type { Follower, Subsciption } from '$lib/schema/follower_dashboard.schema';
+import type { Subsciption } from '$lib/schema/follower_dashboard.schema';
+import type { ProductQueryResult } from '$lib/schema/product.schema';
 import type { User } from 'lucia';
 
 export interface FollowerDashboard {
 	availableCredits: number;
 	subscriptionCount: number;
-	followingCount: number;
 	creditsRedeemed: number;
 	subscriberList: Subsciption[];
-	followerList: Follower[];
+	productsPurchased: ProductQueryResult[];
 }
 export interface FollowerDashboardData {
 	user: User;

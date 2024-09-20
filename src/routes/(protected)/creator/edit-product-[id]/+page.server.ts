@@ -13,7 +13,7 @@ export const load: PageServerLoad = async (event) => {
 	const product = await ProductService.getProductById(userId, productId);
 
 	if (!product) {
-		throw redirect(303, '/creator/marketplace');
+		throw redirect(303, '/creator');
 	}
 
 	//Get file uploads associated to this product.
@@ -44,7 +44,7 @@ export const actions: Actions = {
 				await ProductService.updateProduct(form.data);
 			}
 
-			throw redirect(303, '/creator/marketplace');
+			throw redirect(303, '/creator');
 		} catch (error) {
 			if ((error as Error & { status: number }).status === 303) {
 				throw error; // Re-throw the redirect
@@ -73,7 +73,7 @@ export const actions: Actions = {
 			console.error('Error in delete action:', error);
 			setFlash({ type: 'error', message: 'Product was not deleted' }, event);
 		}
-		throw redirect(303, '/creator/marketplace');
+		throw redirect(303, '/creator');
 	},
 
 	deleteProductItem: async (event) => {

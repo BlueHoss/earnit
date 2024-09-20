@@ -18,7 +18,7 @@
 			<a href="/creator">
 				<Button class="w-full"><CreatorIcon class="pr-1" /> Continue as Creator</Button>
 			</a>
-			<a href="/follower">
+			<a href="/earn">
 				<Button variant="secondary" class="w-full"
 					><FollowerIcon class="pr-1" /> Continue as Follower</Button
 				>

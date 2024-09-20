@@ -72,9 +72,6 @@ export const login_table = pgTable(
 		bio: text('bio'),
 		reward_name: text('reward_name'),
 		store_name: text('store_name'),
-		credit_balance: numeric('credit_balance', { precision: 10, scale: 2 })
-			.notNull()
-			.default('0.00'),
 		category: text('category')
 	},
 	(table) => ({
@@ -106,6 +103,16 @@ export const product_table = pgTable('product', {
 	cost: numeric('cost', { precision: 10, scale: 2 }).notNull().default('0.00'),
 	buyitnow_link: text('buyitnow_link'),
 	enabled: boolean('enabled').notNull().default(true)
+});
+
+export const product_item_table = pgTable('product_item', {
+	id: serial('id').primaryKey().notNull(),
+	name: text('name'),
+	file_name: text('file_name'),
+	download_url: text('download_url'),
+	product_id: integer('product_id')
+		.notNull()
+		.references(() => product_table.id, { onDelete: 'cascade' })
 });
 
 export const product_invoice_table = pgTable('product_invoice', {
@@ -181,16 +188,6 @@ export const plan_subscription_table = pgTable('plan_subscription', {
 	date_canceled: timestamp('date_canceled', { mode: 'string' })
 });
 
-export const product_item_table = pgTable('product_item', {
-	id: serial('id').primaryKey().notNull(),
-	name: text('name'),
-	file_name: text('file_name'),
-	download_url: text('download_url'),
-	product_id: integer('product_id')
-		.notNull()
-		.references(() => product_table.id, { onDelete: 'cascade' })
-});
-
 export const mission_creator_table = pgTable(
 	'mission_creator',
 	{
@@ -236,22 +233,27 @@ export const follower_creator_table = pgTable(
  * Tracks the total credits a creator has purchased and how many are available to distribute.
  * The difference between total_credits and available_credits represents credits already distributed to followers.
  */
-export const credit_creator_pool_table = pgTable(
-	'credit_creator_pool',
+export const credit_creator_balance_table = pgTable(
+	'credit_creator_balance',
 	{
 		id: serial('id').primaryKey().notNull(),
 		creator_user_id: integer('creator_user_id')
 			.references(() => login_table.id)
 			.notNull(),
-		total_credits: numeric('total_credits', { precision: 10, scale: 2 }).notNull().default('0.00'),
-		available_credits: numeric('available_credits', { precision: 10, scale: 2 })
+		credits_awarded: numeric('credits_awarded', { precision: 10, scale: 2 })
+			.notNull()
+			.default('0.00'),
+		credits_received: numeric('credits_received', { precision: 10, scale: 2 })
+			.notNull()
+			.default('0.00'),
+		credit_balance: numeric('credit_balance', { precision: 10, scale: 2 })
 			.notNull()
 			.default('0.00'),
 		date_updated: timestamp('date_updated').defaultNow().notNull()
 	},
 	(table) => {
 		return {
-			nameIdx: index('idx_credit_creator_pool_creator_id').on(table.creator_user_id)
+			nameIdx: index('idx_credit_creator_balance_creator_id').on(table.creator_user_id)
 		};
 	}
 );
@@ -306,3 +308,18 @@ export const credit_transaction_table = pgTable(
 		followerIdIdx: index('idx_credit_transactions_follower_id').on(table.follower_user_id)
 	})
 );
+
+/**
+ * this table tracks all of the distributions from Earn It to the creators
+ */
+export const credit_distribution_table = pgTable('credit_distribution', {
+	id: serial('id').primaryKey().notNull(),
+	earnit_creator_user_id: integer('earnit_creator_user_id')
+		.references(() => login_table.id)
+		.notNull(),
+	creator_user_id: integer('creator_user_id')
+		.references(() => login_table.id)
+		.notNull(),
+	amount: numeric('amount', { precision: 10, scale: 2 }).notNull().default('0.00'),
+	date_transaction: timestamp('date_transaction').defaultNow().notNull()
+});

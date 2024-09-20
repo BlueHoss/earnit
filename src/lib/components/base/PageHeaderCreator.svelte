@@ -10,12 +10,10 @@
 
 <div class="flex items-center justify-between space-x-4">
 	<div class="flex items-center space-x-4">
-		<a href="/creator/profile/">
-			<Avatar style="height: 6rem; width: 6rem;">
-				<AvatarImage src={user.profile_pic} alt="Profile Pic" />
-				<AvatarFallback>{user.initials}</AvatarFallback>
-			</Avatar>
-		</a>
+		<Avatar style="height: 6rem; width: 6rem;">
+			<AvatarImage src={user.profile_pic} alt="Profile Pic" />
+			<AvatarFallback>{user.initials}</AvatarFallback>
+		</Avatar>
 		<div class="flex flex-col justify-center">
 			<h1 class="text-2xl font-semibold">{user.store_name}</h1>
 			<p class="text-sm">{user.title}</p>

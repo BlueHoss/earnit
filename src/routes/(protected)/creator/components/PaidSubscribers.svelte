@@ -15,7 +15,7 @@
 
 <Card.Root>
 	<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-		<Card.Title class="text-sm font-medium">Paid Subscribers</Card.Title>
+		<Card.Title class="text-sm font-medium">Paid Earners</Card.Title>
 		<PaidSubscribersIcon class="h-4 w-4 text-muted-foreground" />
 	</Card.Header>
 	<Card.Content>

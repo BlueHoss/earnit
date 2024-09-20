@@ -64,14 +64,11 @@
 <Dialog.Root bind:open={showSubscribeDialog}>
 	<Dialog.Content class="sm:max-w-[425px]">
 		<Dialog.Header>
-			<Dialog.Title>Subscribe to {creator.store_name}?</Dialog.Title>
+			<Dialog.Title>Become an Earner to {creator.store_name}!</Dialog.Title>
 			<Dialog.Description>
-				<p>
-					Are you sure you want to subscrbe to {creator.store_name}
-				</p>
-				<p>Each plan unlocks more rewards from {creator.handle}?</p>
-
-				<p>Subscriptions are billed monthly. You can cancel anytime.</p>
+				<p>Each Plan below unlocks more rewards from {creator.store_name}.</p>
+				<br />
+				<p>Top Earners are billed monthly. You can cancel anytime.</p>
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -112,7 +109,9 @@
 			<Alert variant="default" class="mt-4">
 				<CheckCircle2 class="h-4 w-4" />
 				<AlertTitle>Success</AlertTitle>
-				<AlertDescription>You have successfully redeemed the product!</AlertDescription>
+				<AlertDescription
+					>You have successfully become an Earner for {creator.store_name}!</AlertDescription
+				>
 			</Alert>
 		{/if}
 
@@ -131,11 +130,11 @@
 						class="px-6 py-2"
 					>
 						{#if isPurchasing}
-							Purchasing...
+							Joining...
 						{:else if purchaseSuccess}
-							Purchased!
+							Joined!
 						{:else}
-							Confirm Purchase
+							Join Now
 						{/if}
 					</Button>
 				</form>

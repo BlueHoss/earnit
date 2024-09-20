@@ -7,10 +7,11 @@
  */
 
 import { type EarnItActionResult, ActionResponse } from '$lib/utils/action-result';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, ne, sql } from 'drizzle-orm';
 import db from '../database/drizzle';
 import {
-	credit_creator_pool_table,
+	credit_creator_balance_table,
+	credit_distribution_table,
 	credit_follower_balance_table,
 	credit_transaction_table,
 	login_table,
@@ -18,16 +19,17 @@ import {
 } from '../database/schema';
 import type { CreditDistributed } from '$lib/schema/credit.schema';
 
-async function setFollowerCredit(
-	credits: number,
-	followerId: number,
+async function makeFollowerDeposit(
 	creatorId: number,
+	followerId: number,
+	credits: number,
 	missionActionId: number
 ): Promise<EarnItActionResult> {
+	const TRANSACTION_TYPE = 'Follower_Deposit';
 	try {
 		// Add Credit Transaction
-		// Update Follower Credit Balance
-		// Update Creator Credit Pool
+		// Update Follower Balance
+		// Update Creator Balance
 
 		const missionActions = await db
 			.select()
@@ -43,19 +45,19 @@ async function setFollowerCredit(
 		//Get creator balance and make sure they can afford this transaction
 		const creatorBalances = await db
 			.select({
-				available_credits: credit_creator_pool_table.available_credits
+				available_credits: credit_creator_balance_table.credit_balance
 			})
-			.from(credit_creator_pool_table)
-			.where(eq(credit_creator_pool_table.creator_user_id, creatorId));
+			.from(credit_creator_balance_table)
+			.where(eq(credit_creator_balance_table.creator_user_id, creatorId));
 
 		if (creatorBalances.length === 0) {
-			return ActionResponse.fail('Creator not found');
+			return ActionResponse.fail('Creator does not have enough credits.');
 		}
 
 		const creatorBalance = creatorBalances[0];
 
 		if (credits > Number(creatorBalance.available_credits)) {
-			return ActionResponse.fail('Creator does not have enough credits');
+			return ActionResponse.fail('Creator does not have enough credits.');
 		}
 
 		await db.transaction(async (tx) => {
@@ -63,16 +65,16 @@ async function setFollowerCredit(
 			await tx
 				.insert(credit_transaction_table)
 				.values({
-					transaction_type: missionAction.name,
+					transaction_type: TRANSACTION_TYPE,
 					creator_user_id: creatorId,
 					follower_user_id: followerId,
 					amount: credits,
-					description: `Follower Action: ${missionAction.description}`
+					description: `${missionAction.name}: ${missionAction.description}`
 				})
 				.returning();
 
 			// 2. Update follower's credit balance
-			await tx
+			const followerUpdate = await tx
 				.update(credit_follower_balance_table)
 				.set({
 					credit_balance: sql`${credit_follower_balance_table.credit_balance} + ${credits}`
@@ -85,42 +87,23 @@ async function setFollowerCredit(
 				)
 				.returning();
 
-			// 3. Update creators's credit balance
-			await tx
-				.update(credit_creator_pool_table)
-				.set({
-					total_credits: sql`${credit_creator_pool_table.total_credits} + ${credits}`,
-					available_credits: sql`${credit_creator_pool_table.available_credits} - ${credits}`
-				})
-				.where(eq(credit_creator_pool_table.creator_user_id, creatorId))
-				.returning();
-
-			//4. Update creators credit balance on the login table
-			await tx
-				.update(login_table)
-				.set({
-					credit_balance: sql`${login_table.credit_balance} - ${credits}`
-				})
-				.where(eq(login_table.id, creatorId))
-				.returning();
+			if (followerUpdate.length === 0) {
+				await tx.insert(credit_follower_balance_table).values({
+					follower_user_id: followerId,
+					creator_user_id: creatorId,
+					credit_balance: credits,
+					date_updated: new Date()
+				});
+			}
 
 			// 3. Update creators's credit balance
 			await tx
-				.update(credit_creator_pool_table)
+				.update(credit_creator_balance_table)
 				.set({
-					total_credits: sql`${credit_creator_pool_table.total_credits} + ${credits}`,
-					available_credits: sql`${credit_creator_pool_table.available_credits} - ${credits}`
+					credits_awarded: sql`${credit_creator_balance_table.credits_awarded} + ${credits}`,
+					credit_balance: sql`${credit_creator_balance_table.credit_balance} - ${credits}`
 				})
-				.where(eq(credit_creator_pool_table.creator_user_id, creatorId))
-				.returning();
-
-			//4. Update followers credit balance on the login table
-			await tx
-				.update(login_table)
-				.set({
-					credit_balance: sql`${login_table.credit_balance} + ${credits}`
-				})
-				.where(eq(login_table.id, followerId))
+				.where(eq(credit_creator_balance_table.creator_user_id, creatorId))
 				.returning();
 		});
 
@@ -133,38 +116,73 @@ async function setFollowerCredit(
 	}
 }
 
-async function setCreatorCredits(credits: number, creatorId: number): Promise<EarnItActionResult> {
+async function makeCreatorDeposit(
+	earnItCreatorId: number,
+	creatorId: number,
+	amount: number
+): Promise<EarnItActionResult> {
 	try {
+		//This is the Earn It creators account (at least at the time of writing this 9/20/24)
+		const creatorBalances = await db
+			.select({
+				available_credits: credit_creator_balance_table.credit_balance
+			})
+			.from(credit_creator_balance_table)
+			.where(eq(credit_creator_balance_table.creator_user_id, earnItCreatorId));
+
+		if (creatorBalances.length === 0) {
+			return ActionResponse.fail('Earn It Creator does not have enough credits (Wrong creator?).');
+		}
+
+		const creatorBalance = creatorBalances[0];
+
+		if (amount > Number(creatorBalance.available_credits)) {
+			return ActionResponse.fail('Creator does not have enough credits.');
+		}
+
 		await db.transaction(async (tx) => {
-			// 1. Update creators's credit balance
+			// 1. record the credit distribution
 			await tx
-				.update(credit_creator_pool_table)
-				.set({
-					available_credits: credits.toString()
+				.insert(credit_distribution_table)
+				.values({
+					earnit_creator_user_id: earnItCreatorId,
+					creator_user_id: creatorId,
+					amount: amount,
+					date_transaction: new Date()
 				})
-				.where(eq(credit_creator_pool_table.creator_user_id, creatorId))
 				.returning();
 
-			//2. Update creators credit balance on the login table
+			// 1. Update Earn It creators's credit balance
 			await tx
-				.update(login_table)
+				.update(credit_creator_balance_table)
 				.set({
-					credit_balance: credits.toString()
+					credits_awarded: amount.toString()
 				})
-				.where(eq(login_table.id, creatorId))
+				.where(eq(credit_creator_balance_table.creator_user_id, earnItCreatorId))
+				.returning();
+
+			// 3. Update creators's credit balance
+			await tx
+				.update(credit_creator_balance_table)
+				.set({
+					credits_awarded: sql`${credit_creator_balance_table.credits_received} + ${amount}`,
+					credit_balance: sql`${credit_creator_balance_table.credit_balance} + ${amount}`
+				})
+				.where(eq(credit_creator_balance_table.creator_user_id, creatorId))
 				.returning();
 		});
 
-		return ActionResponse.success('Credits applied successfully');
+		return ActionResponse.success('Credits applied to Creator successfully');
 	} catch (error) {
 		console.error('Transaction failed:', error);
 		return ActionResponse.fail(
-			'An error occurred while rewarding the follower with points. Please try again later.'
+			'An error occurred while running a Creator Distribution Please try again later.'
 		);
 	}
 }
 
 async function getCreditDistributionList(creatorId: number): Promise<CreditDistributed[]> {
+	//We do not include Product Redemption in this list
 	const creditDistributionList = await db
 		.select({
 			date: credit_transaction_table.date_transaction,
@@ -174,14 +192,19 @@ async function getCreditDistributionList(creatorId: number): Promise<CreditDistr
 		})
 		.from(credit_transaction_table)
 		.innerJoin(login_table, eq(credit_transaction_table.creator_user_id, login_table.id))
-		.where(eq(credit_transaction_table.creator_user_id, creatorId))
+		.where(
+			and(
+				eq(credit_transaction_table.creator_user_id, creatorId),
+				ne(credit_transaction_table.transaction_type, 'Product_Redemption')
+			)
+		)
 		.orderBy(desc(credit_transaction_table.date_transaction));
 
 	return creditDistributionList;
 }
 
 export const CreditService = {
-	setFollowerCredit,
-	setCreatorCredits,
+	makeFollowerDeposit,
+	makeCreatorDeposit,
 	getCreditDistributionList
 };

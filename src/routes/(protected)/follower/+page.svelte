@@ -68,7 +68,7 @@
 			</Card.Content>
 		</Card.Root>
 	</div>
-	<div>
+	<!-- <div>
 		<Card.Root>
 			<Card.Header class="flex flex-row items-center">
 				<div class="grid gap-2">
@@ -86,5 +86,5 @@
 				{/each}
 			</Card.Content>
 		</Card.Root>
-	</div>
+	</div> -->
 </PageWrapper>
