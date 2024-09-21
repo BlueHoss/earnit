@@ -16,7 +16,6 @@
 	import CreatorCatalogIcon from 'lucide-svelte/icons/album';
 	import MenuItems from '$lib/components/navigation/MenuItems.svelte';
 
-	export let user: User;
 	let menu: any;
 	let myAccountMenu: { name: string; link: string }[] = [];
 	let mainMenu: { name: string; path: string; icon: any }[] = [];

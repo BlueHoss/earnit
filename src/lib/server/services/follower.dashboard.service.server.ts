@@ -1,6 +1,5 @@
 import {
 	credit_follower_balance_table,
-	follower_creator_table,
 	login_table,
 	plan_subscription_table,
 	plan_table,
@@ -8,9 +7,8 @@ import {
 } from '$lib/server/database/schema';
 import { and, eq, isNull, sql } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
-import type { Follower, Subsciption } from '$lib/schema/follower_dashboard.schema';
+import type { Subsciption } from '$lib/schema/follower_dashboard.schema';
 import type { FollowerCreditBalanceDetail } from '$lib/schema/credit.schema';
-import { date } from 'drizzle-orm/mysql-core';
 import { ProductService } from './product.service.server';
 
 async function availableCredits(followerId: number) {
