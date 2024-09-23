@@ -74,6 +74,30 @@
 		</Card.Root>
 		<Card.Root>
 			<Card.Header>
+				<Card.Title class="flex items-center"
+					><TitleIcon class="mr-2" />Your Instagram Handle</Card.Title
+				>
+				<Card.Description
+					>Your unique identifier on Instagram, which appears at the top of your profile and is
+					preceded by an "@" symbol.</Card.Description
+				>
+			</Card.Header>
+			<Card.Content>
+				<Form.Field name="social_media_profile" {form} class="flex-1">
+					<Form.Control let:attrs>
+						<Form.Label>Your Instagram Handle</Form.Label>
+						<Input {...attrs} bind:value={$formData.social_media_profile} />
+					</Form.Control>
+					<Form.FieldErrors />
+				</Form.Field>
+				<p>
+					This must match your Instagram handle exactally in order for Earn It to award your
+					followers with credits for performing actions.
+				</p>
+			</Card.Content>
+		</Card.Root>
+		<Card.Root>
+			<Card.Header>
 				<Card.Title class="flex items-center">Primary Profile Image</Card.Title>
 				<Card.Description>
 					Your primary profile image. This is the public image used for your profile everywhere in

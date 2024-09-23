@@ -40,10 +40,10 @@
 			myAccountMenu.push({ name: 'Settings', link: '/creator/settings' });
 			myAccountMenu.push({ name: 'Profile', link: '/creator/profile/edit' });
 		} else {
-			mainMenu.push({ name: 'Home', path: '/', icon: DashboardIcon });
-			mainMenu.push({ name: 'Earn', path: '/earn', icon: DashboardIcon });
+			mainMenu.push({ name: 'Home', path: '/', icon: CreatorCatalogIcon });
+			mainMenu.push({ name: 'Earn', path: '/earn', icon: CurrencyIcon });
 			mainMenu.push({ name: 'Missions', path: '/missions', icon: MissionsIcon });
-			mainMenu.push({ name: 'Socials', path: '/follower/profile', icon: MissionsIcon });
+			//mainMenu.push({ name: 'Socials', path: '/follower/profile', icon: ProfileIcon });
 
 			//myAccountMenu.push({ name: 'Settings', link: '/follower/settings' });
 			myAccountMenu.push({ name: 'Profile', link: '/follower/profile/edit' });
