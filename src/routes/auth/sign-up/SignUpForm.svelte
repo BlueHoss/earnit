@@ -53,6 +53,43 @@
 					{/each}
 				</div>
 			{/if}
+
+			<h2>Are you a digital Creator or here to Earn Effort Credits from digital creators?</h2>
+			{#if $errors.roleError}<span class="error">{$errors.roleError}</span>{/if}
+			<div class="flex flex-wrap gap-2">
+				<Form.Field {form} name="is_creator">
+					<Form.Control let:attrs>
+						<div class="space-y-0.5">
+							<Form.Label>Creator</Form.Label>
+							<Switch
+								includeInput
+								{...attrs}
+								onCheckedChange={() => handleUserTypeChange('creator')}
+								bind:checked={$formData.is_creator}
+							/>
+							<Form.Description>
+								I am a creator and want to sell my products on the platform.
+							</Form.Description>
+						</div>
+					</Form.Control>
+				</Form.Field>
+				<Form.Field {form} name="is_follower">
+					<Form.Control let:attrs>
+						<div class="space-y-0.5">
+							<Form.Label>Earner</Form.Label>
+							<Switch
+								includeInput
+								{...attrs}
+								onCheckedChange={() => handleUserTypeChange('follower')}
+								bind:checked={$formData.is_follower}
+							/>
+							<Form.Description>
+								I want to Earn Effort Credits from creators on the platform.
+							</Form.Description>
+						</div>
+					</Form.Control>
+				</Form.Field>
+			</div>
 			<div class="flex flex-wrap gap-2">
 				<Form.Field name="first_name" {form} class="flex-1">
 					<Form.Control let:attrs>
@@ -70,6 +107,18 @@
 					<Form.FieldErrors />
 				</Form.Field>
 			</div>
+			<Form.Field {form} name="social_media_profile">
+				<Form.Control let:attrs>
+					<Form.Label>Instagram Username</Form.Label>
+					<p class="text-muted-foreground text-sm">
+						Your unique identifier on Instagram, which appears at the top of your profile and is
+						preceded by an "@" symbol.
+						<Input {...attrs} bind:value={$formData.social_media_profile} />
+					</p></Form.Control
+				>
+				<Form.FieldErrors />
+			</Form.Field>
+
 			<Form.Field {form} name="email">
 				<Form.Control let:attrs>
 					<Form.Label>Email</Form.Label>
@@ -94,48 +143,23 @@
 				{#if $errors.confirmPassword}<span class="error">{$errors.confirmPassword}</span>{/if}
 				<Form.FieldErrors />
 			</Form.Field>
-			<h2>Are you a digital Creator or here to Follow a digital creator?</h2>
-			{#if $errors.roleError}<span class="error">{$errors.roleError}</span>{/if}
-			<Form.Field {form} name="is_creator">
-				<Form.Control let:attrs>
-					<div class="space-y-0.5">
-						<Form.Label>Creator</Form.Label>
-						<Switch
-							includeInput
-							{...attrs}
-							onCheckedChange={() => handleUserTypeChange('creator')}
-							bind:checked={$formData.is_creator}
-						/>
-						<Form.Description>
-							I am a creator and want to sell my products on the platform.
-						</Form.Description>
-					</div>
-				</Form.Control>
-			</Form.Field>
-			<Form.Field {form} name="is_follower">
-				<Form.Control let:attrs>
-					<div class="space-y-0.5">
-						<Form.Label>Follower</Form.Label>
-						<Switch
-							includeInput
-							{...attrs}
-							onCheckedChange={() => handleUserTypeChange('follower')}
-							bind:checked={$formData.is_follower}
-						/>
-						<Form.Description>
-							I am a follower and want to follow creators on the platform.
-						</Form.Description>
-					</div>
-				</Form.Control>
-			</Form.Field>
 
 			<Form.Field {form} name="terms">
 				<Form.Control let:attrs>
 					<Checkbox {...attrs} bind:checked={$formData.terms} />
 					<Form.Label>I Accept the terms and privacy policy. Password</Form.Label>
 					<Form.Description>
-						You agree to the <a href="/terms" class="text-primaryHover underline">terms</a> and
-						<a href="/privacy" class="text-primaryHover underline">privacy policy</a>.
+						You agree to the <a
+							href="https://www.earnitrewards.com/termsandconditions"
+							target="_blank"
+							class="text-primaryHover underline">terms</a
+						>
+						and
+						<a
+							href="https://www.earnitrewards.com/privacy"
+							target="_blank"
+							class="text-primaryHover underline">privacy policy</a
+						>.
 					</Form.Description>
 				</Form.Control>
 				<Form.FieldErrors />

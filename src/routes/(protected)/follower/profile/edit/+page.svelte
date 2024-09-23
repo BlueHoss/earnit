@@ -15,7 +15,6 @@
 	import Currency from 'lucide-svelte/icons/currency';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import Profile from 'lucide-svelte/icons/user';
-	import ProfileImageUpload from './components/ProfileImageUpload.svelte';
 	import { updateBaseUserSchema } from '$lib/schema/login.schema';
 	import SuperDebug, { superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';

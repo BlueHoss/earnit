@@ -240,6 +240,7 @@ async function getSessioUser(userId: number): Promise<User | null> {
 			tag_line: login_table.tag_line,
 			store_name: login_table.store_name,
 			reward_name: login_table.reward_name,
+			social_media_profile: login_table.social_media_profile,
 			credit_balance: sql<number>`
 					CASE
 					WHEN ${login_table.is_creator} THEN (

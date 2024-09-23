@@ -5,6 +5,7 @@
 	import { Button } from '$lib/components/ui/button/index.ts';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import PageHeaderCreator from '$lib/components/base/PageHeaderCreator.svelte';
+	import Label from '$lib/components/ui/label/label.svelte';
 
 	export let data: PageData;
 </script>
@@ -12,17 +13,18 @@
 <PageWrapper>
 	<div class="grid gap-4 p-6 md:grid-cols-1 lg:grid-cols-1">
 		<PageHeaderCreator user={data.user} />
-		<!-- Bio Card -->
 		<Card.Root>
 			<Card.Header>
 				<Card.Title
-					><h1 class="text-2xl font-semibold">{data.user?.first_name}'s Bio</h1></Card.Title
+					><h1 class="text-2xl font-semibold">{data.user?.first_name}'s Profile</h1></Card.Title
 				>
 			</Card.Header>
 			<Card.Content>
-				<p>
-					{data.bio.bio}
-				</p>
+				<Label>First Name: {data.user?.first_name}</Label>
+				<p></p>
+				<Label>Last Name: {data.user?.last_name}</Label>
+				<p></p>
+				<Label>Instagram Handle: {data.user?.social_media_profile}</Label>
 			</Card.Content>
 		</Card.Root>
 

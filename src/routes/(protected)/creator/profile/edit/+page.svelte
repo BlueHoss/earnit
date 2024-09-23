@@ -7,11 +7,10 @@
 	import Input from '$lib/components/ui/input/input.svelte';
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import NameIcon from 'lucide-svelte/icons/circle-user';
+	import ProfileIcon from 'lucide-svelte/icons/user';
 	import TitleIcon from 'lucide-svelte/icons/award';
 	import BioIcon from 'lucide-svelte/icons/book-user';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
-	import Profile from 'lucide-svelte/icons/user';
-	import ProfileImageUpload from './components/ProfileImageUpload.svelte';
 	import SuperDebug, { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
@@ -44,7 +43,7 @@
 			</Avatar>
 			Edit your Earn It Profile
 		</Label>
-		<p class="text-md text-gray-400">Use this page modify your public Earn It profile.</p>
+		<p class="text-md text-gray-400">Use this page modify your Earn It profile.</p>
 		{#if $errors._errors}
 			<div class="error">
 				{#each $errors._errors as error}
@@ -55,19 +54,9 @@
 		<Card.Root>
 			<Card.Header>
 				<Card.Title class="flex items-center"><NameIcon class="mr-2" /> Your name</Card.Title>
-				<Card.Description>These are the public names listed in the Marketplace.</Card.Description>
+				<Card.Description>Edit your name</Card.Description>
 			</Card.Header>
 			<Card.Content>
-				<Form.Field name="handle" {form} class="flex-1">
-					<Form.Control let:attrs>
-						<Form.Label>Handle</Form.Label>
-						<div class="text-gray-400">This is the only public value shared on your profile.</div>
-						<Input {...attrs} bind:value={$formData.handle} />
-					</Form.Control>
-					<Form.FieldErrors />
-				</Form.Field>
-
-				<div class="text-gray-400">Earn It followers can see your name.</div>
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 					<div>
 						<Form.Field name="first_name" {form} class="flex-1">
@@ -90,71 +79,30 @@
 				</div>
 			</Card.Content>
 		</Card.Root>
-		<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-			<Card.Root>
-				<Card.Header>
-					<Card.Title class="flex items-center"><TitleIcon class="mr-2" /> Title</Card.Title>
-					<Card.Description>Your Title shown on your Profile Page</Card.Description>
-				</Card.Header>
-				<Card.Content>
-					<Form.Field name="title" {form} class="flex-1">
-						<Form.Control let:attrs>
-							<Form.Label>Your professional title</Form.Label>
-							<Input {...attrs} bind:value={$formData.title} />
-						</Form.Control>
-						<Form.FieldErrors />
-					</Form.Field>
-				</Card.Content>
-			</Card.Root>
 
-			<Card.Root>
-				<Card.Header>
-					<Card.Title class="flex items-center"><NameIcon class="mr-2" /> Tag Line</Card.Title>
-					<Card.Description>This is your tagline shown on your profile page.</Card.Description>
-				</Card.Header>
-				<Card.Content>
-					<Form.Field name="tag_line" {form} class="flex-1">
-						<Form.Control let:attrs>
-							<Form.Label>Your marketplace tag line</Form.Label>
-							<Input {...attrs} bind:value={$formData.tag_line} />
-						</Form.Control>
-						<Form.FieldErrors />
-					</Form.Field>
-				</Card.Content>
-			</Card.Root>
-		</div>
 		<Card.Root>
 			<Card.Header>
-				<Card.Title class="flex items-center"><BioIcon class="mr-2" />Bio</Card.Title>
-				<Card.Description>
-					Your bio is a short description of yourself. It is shown on your profile page.
-				</Card.Description>
+				<Card.Title class="flex items-center"
+					><TitleIcon class="mr-2" />Your Instagram Handle</Card.Title
+				>
+				<Card.Description
+					>Your unique identifier on Instagram, which appears at the top of your profile and is
+					preceded by an "@" symbol.</Card.Description
+				>
 			</Card.Header>
 			<Card.Content>
-				<Form.Field name="bio" {form} class="flex-1">
+				<Form.Field name="social_media_profile" {form} class="flex-1">
 					<Form.Control let:attrs>
-						<Form.Label>Your bio</Form.Label>
-						<Textarea placeholder="Your bio here..." {...attrs} bind:value={$formData.bio} />
+						<Form.Label>Your Instagram Handle</Form.Label>
+						<Input {...attrs} bind:value={$formData.social_media_profile} />
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
+				<p>
+					This must match your Instagram handle exactally in order for Earn It to award your
+					followers with credits for performing actions.
+				</p>
 			</Card.Content>
-		</Card.Root>
-		<Card.Root>
-			<Card.Header>
-				<Card.Title class="flex items-center">Primary Profile Image</Card.Title>
-				<Card.Description>
-					Your primary profile image. This is the public image used for your profile everywhere in
-					Earn It.
-				</Card.Description>
-			</Card.Header>
-			<Card.Content
-				><ImageUpload
-					title="Upload your profile pic!"
-					uploadType="profile_image"
-					bind:imageUrl={$formData.profile_pic}
-				/></Card.Content
-			>
 		</Card.Root>
 
 		<div class="mt-8 flex justify-end space-x-4">

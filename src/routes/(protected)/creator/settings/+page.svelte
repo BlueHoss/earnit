@@ -92,17 +92,11 @@
 						<Form.FieldErrors />
 					</Form.Field>
 
-					<!-- <Form.Field name="storeDescription" {form} class="flex-1 mt-4">
-					<Form.Control let:attrs>
-						<Form.Label>Store Description</Form.Label>
-						<Textarea
-							placeholder="Describe your store..."
-							{...attrs}
-							bind:value={$formData.storeDescription}
-						/>
-					</Form.Control>
-					<Form.FieldErrors />
-				</Form.Field> -->
+					<ImageUpload
+						title="Upload your profile pic!"
+						uploadType="profile_image"
+						bind:imageUrl={$formData.profile_pic}
+					/>
 
 					<PageHeaderCreator bind:user />
 				</Card.Content>

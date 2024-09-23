@@ -59,7 +59,6 @@ async function getUserProfile(userid: number): Promise<ProfileEditUser> {
 			is_follower: login_table.is_follower,
 			reward_name: login_table.reward_name,
 			store_name: login_table.store_name,
-			credit_balance: login_table.credit_balance,
 			category: login_table.category
 		})
 		.from(login_table)
@@ -89,7 +88,8 @@ async function setUserProfile(userid: number, data: ProfileEditUser) {
 			tag_line: data.tag_line,
 			handle: TextUtilities.removeAllSpaces(data.handle),
 			receive_email: data.receive_email,
-			profile_pic: data.profile_pic
+			profile_pic: data.profile_pic,
+			social_media_profile: data.social_media_profile
 		})
 		.where(eq(login_table.id, userid));
 

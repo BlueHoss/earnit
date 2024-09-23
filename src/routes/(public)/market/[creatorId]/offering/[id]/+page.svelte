@@ -197,27 +197,32 @@
 		{/if}
 
 		<Dialog.Footer class="mt-4">
-			<Button variant="outline" on:click={handleClose}>Cancel</Button>
+			{#if !redeemSuccess}
+				<Button variant="outline" on:click={handleClose}>Cancel</Button>
 
-			<form action="?/redeemProduct" method="POST" use:enhance={handleEnhance}>
-				<input type="hidden" name="productId" value={data.product.id} />
-				<input type="hidden" name="creatorId" value={data.product.creator_user_id} />
-				<Button
-					disabled={isRedeeming || redeemSuccess}
-					variant="default"
-					type="submit"
-					class="px-6 py-2"
-					on:click={() => (showRedeemDialog = true)}
-				>
-					{#if isRedeeming}
-						Redeeming...
-					{:else if redeemSuccess}
-						Redeemed
-					{:else}
-						Confirm Redemption
-					{/if}
-				</Button>
-			</form>
+				<form action="?/redeemProduct" method="POST" use:enhance={handleEnhance}>
+					<input type="hidden" name="productId" value={data.product.id} />
+					<input type="hidden" name="creatorId" value={data.product.creator_user_id} />
+					<Button
+						disabled={isRedeeming || redeemSuccess}
+						variant="default"
+						type="submit"
+						class="px-6 py-2"
+						on:click={() => (showRedeemDialog = true)}
+					>
+						{#if isRedeeming}
+							Redeeming...
+						{:else if redeemSuccess}
+							Redeemed
+						{:else}
+							Confirm Redemption
+						{/if}
+					</Button>
+				</form>
+			{/if}
+			{#if redeemSuccess}
+				<Button variant="default" on:click={() => window.location.reload()}>Close</Button>
+			{/if}
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
