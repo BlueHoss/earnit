@@ -1,0 +1,2 @@
+ALTER TABLE "credit_creator_balance" DROP COLUMN IF EXISTS "credit_balance";
+ALTER TABLE "credit_creator_balance" ADD COLUMN "credit_balance" numeric GENERATED ALWAYS AS (CAST((credits_received - credits_awarded) AS numeric)) STORED;

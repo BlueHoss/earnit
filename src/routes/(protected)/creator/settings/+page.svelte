@@ -40,11 +40,6 @@
 	$: user = $formData;
 	$: reward_name = $formData.reward_name;
 
-	function toNumber(value: string): number {
-		const num = Number(value);
-		return isNaN(num) ? 0 : num;
-	}
-
 	function goBack() {
 		window.history.back();
 	}
@@ -144,7 +139,6 @@
 						<Form.Control let:attrs>
 							<Select.Root
 								onSelectedChange={(v) => {
-									console.log('SELECTED', v);
 									v && ($formData.category = v.value);
 								}}
 							>

@@ -48,7 +48,7 @@
 
 	const { form: formData, errors, enhance, delayed } = form;
 
-	console.log(data);
+	//console.log(data);
 </script>
 
 <PageWrapper>

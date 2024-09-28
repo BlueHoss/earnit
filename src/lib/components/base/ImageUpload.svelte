@@ -9,26 +9,22 @@
 	let fileInput: HTMLInputElement;
 
 	async function handleFileChange(event: Event) {
-		try {
-			const target = event.target as HTMLInputElement;
-			const file = target.files?.[0];
-			if (file) {
-				const fileUrl = await uploadProfilePic(file);
+		const target = event.target as HTMLInputElement;
+		const file = target.files?.[0];
+		if (file) {
+			const fileUrl = await uploadProfilePic(file);
 
-				if (!fileUrl) {
-					throw new Error('Failed to upload image');
-				}
-				imageUrl = fileUrl;
-
-				// Create image preview
-				const reader = new FileReader();
-				reader.onload = (e) => {
-					imagePreview = e.target?.result as string;
-				};
-				reader.readAsDataURL(file);
+			if (!fileUrl) {
+				throw new Error('Failed to upload image');
 			}
-		} catch (error) {
-			console.error('Error in handleFileChange:', error);
+			imageUrl = fileUrl;
+
+			// Create image preview
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				imagePreview = e.target?.result as string;
+			};
+			reader.readAsDataURL(file);
 		}
 	}
 

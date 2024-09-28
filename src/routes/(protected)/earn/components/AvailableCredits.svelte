@@ -28,7 +28,7 @@
 			var result = await response.json();
 			creditDetailList = result.credit;
 		} catch (e) {
-			console.log(e);
+			//console.log(e);
 		}
 	}
 

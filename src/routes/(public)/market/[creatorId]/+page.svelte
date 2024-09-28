@@ -22,6 +22,7 @@
 	import { toast } from 'svelte-sonner';
 	import SubscribeDialog from './components/SubscribeDialog.svelte';
 	import UnsubscribeDialog from './components/UnsubscribeDialog.svelte';
+	import Badge from '$lib/components/ui/badge/badge.svelte';
 
 	let showNotSignedInDialog = false;
 	let showSubscribeDialog = false;
@@ -70,7 +71,7 @@
 		<div class="flex flex-col space-y-2">
 			{#if subscribed}
 				<Button on:click={handleUnsubscribe} class="px-6"
-					><PaidSubscribersIcon class="pr-1" />Become an Top Earner</Button
+					><PaidSubscribersIcon class="pr-1" />Modify your Earning Level</Button
 				>
 			{:else}
 				<Button on:click={() => handleSubscribe()} class="px-6"
@@ -78,6 +79,7 @@
 				>
 			{/if}
 		</div>
+		<!-- <Badge class="bg-primary text-white">Earn It</Badge> -->
 	</div>
 
 	{#if data.user}

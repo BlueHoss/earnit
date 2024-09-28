@@ -68,30 +68,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	if (event.route.id?.startsWith('/(protected)/creator')) {
-		const usertype = getUserType(user);
-		if (usertype === 'follower') redirect(302, '/earn');
+		if (user?.user_type === 'follower') redirect(302, '/earn');
 	}
 
 	if (event.route.id?.startsWith('/(protected)/follower')) {
-		const usertype = getUserType(user);
-		if (usertype === 'creator') redirect(302, '/creator');
+		if (user?.user_type === 'creator') redirect(302, '/creator');
 	}
 
 	const response = await resolve(event);
 	//log(response.status, event);
 	return response;
 };
-
-function getUserType(user: User | null) {
-	if (!user) return 'none';
-	if (user.is_creator && user.is_follower) {
-		return 'both';
-	}
-	if (user.is_creator) {
-		return 'creator';
-	}
-	if (user.is_follower) {
-		return 'follower';
-	}
-	return 'none';
-}

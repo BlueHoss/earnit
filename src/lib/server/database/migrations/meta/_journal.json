@@ -50,6 +50,20 @@
       "when": 1726870729750,
       "tag": "0006_freezing_mentallo",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1727232939775,
+      "tag": "0007_loud_susan_delgado",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1727233035221,
+      "tag": "0008_oval_hex",
+      "breakpoints": true
     }
   ]
 }

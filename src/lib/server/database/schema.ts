@@ -246,9 +246,12 @@ export const credit_creator_balance_table = pgTable(
 		credits_received: numeric('credits_received', { precision: 10, scale: 2 })
 			.notNull()
 			.default('0.00'),
-		credit_balance: numeric('credit_balance', { precision: 10, scale: 2 })
+		// credit_balance: numeric('credit_balance', { precision: 10, scale: 2 })
+		// 	.notNull()
+		// 	.default('0.00'),
+		credit_balance: numeric('credit_balance')
 			.notNull()
-			.default('0.00'),
+			.generatedAlwaysAs(sql`CAST((credits_received - credits_awarded) AS numeric)`),
 		date_updated: timestamp('date_updated').defaultNow().notNull()
 	},
 	(table) => {
