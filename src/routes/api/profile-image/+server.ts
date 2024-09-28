@@ -9,6 +9,7 @@ export async function POST({ request }: RequestEvent) {
 	const uploadType = formData.get('uploadType-22') as string;
 
 	try {
+		LoggerService.info('Uploading profile image');
 		const url = await ImageService.uploadProfileImage(file, uploadType);
 		return json({ url });
 	} catch (error) {

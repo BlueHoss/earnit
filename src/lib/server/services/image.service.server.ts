@@ -30,12 +30,19 @@ import { LoggerService } from './logger.service.server';
  */
 async function uploadProfileImage(file: File, uploadType: string): Promise<string | undefined> {
 	const suffix = getImageSuffix(file.type);
+	LoggerService.info('Uploading profile image of type: ' + file.type);
 
 	if (suffix) {
 		switch (uploadType) {
 			case 'profile_image':
+				LoggerService.info(
+					'Uploading profile image of type: ' + file.type + ' to profile_image bucket'
+				);
 				return await addToBucket(file, suffix, PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET);
 			case 'product_image':
+				LoggerService.info(
+					'Uploading profile image of type: ' + file.type + ' to product_image bucket'
+				);
 				return await addToBucket(file, suffix, PUBLIC_SUPABASE_PRODUCT_IMAGE_BUCKET);
 		}
 	}
@@ -63,6 +70,7 @@ async function addToBucket(
 		});
 
 	if (data) {
+		LoggerService.info(`Image uploaded to ${bucket} successfully`);
 		return PUBLIC_SUPABASE_STORAGE_URL + '/' + data.fullPath;
 	} else {
 		LoggerService.error(`Error uploading image to ${bucket}`, '', 'image.service.server.ts');

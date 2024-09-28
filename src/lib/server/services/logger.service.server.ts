@@ -47,9 +47,17 @@ async function error(
 	ingestLog(log, 'error');
 }
 
-async function info(message: EarnItError) {
-	console.info(message);
-	ingestLog(message, 'info');
+async function info(message: string) {
+	const log = {
+		message: message ? message : 'Unknown info log',
+		description: '',
+		method: '',
+		user: null,
+		stackTrace: '',
+		error: message ? message : 'Unknown info log'
+	};
+	console.log(log);
+	ingestLog(log, 'info');
 }
 
 function ingestLog(log: EarnItError, level: string): object {
