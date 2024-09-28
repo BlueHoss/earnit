@@ -18,6 +18,7 @@ import {
 	PUBLIC_SUPABASE_PRODUCT_IMAGE_BUCKET,
 	PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET
 } from '$env/static/public';
+import { LoggerService } from './logger.service.server';
 
 /**
  * Given a File type it checks the suffix to ensure it's a valid image type.
@@ -64,6 +65,7 @@ async function addToBucket(
 	if (data) {
 		return PUBLIC_SUPABASE_STORAGE_URL + '/' + data.fullPath;
 	} else {
+		LoggerService.error(`Error uploading image to ${bucket}`, '', 'image.service.server.ts');
 		console.error('Error uploading the image:', error);
 		return '';
 	}

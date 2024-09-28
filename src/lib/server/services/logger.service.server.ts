@@ -18,17 +18,31 @@ async function handleError(
 	user: User | null = null
 ) {
 	const stack = error instanceof Error ? error.stack : 'Unknown stack';
-	LoggerService.error({
+	const log = {
 		message: error instanceof Error ? error.message : 'Unknown error',
 		description: description ? description : '',
 		method: method ? method : '',
 		user: user ? user : null,
 		stackTrace: stack ? stack : 'Unknown stack',
 		error: error instanceof Error ? error.toString() : null
-	});
+	};
+	ingestLog(log, 'error');
 }
 
-async function error(log: EarnItError) {
+async function error(
+	message: string,
+	description: string = '',
+	method: string = '',
+	user: User | null = null
+) {
+	const log = {
+		message: message ? message : 'Unknown error',
+		description: description,
+		method: method,
+		user: user ? user : null,
+		stackTrace: '',
+		error: message ? message : 'Unknown error'
+	};
 	console.error(log);
 	ingestLog(log, 'error');
 }

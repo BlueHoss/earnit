@@ -31,8 +31,8 @@
 	function buildMainMenu() {
 		if (user.is_creator) {
 			mainMenu.push({ name: 'Home', path: '/', icon: CreatorCatalogIcon });
-			mainMenu.push({ name: 'Create', path: '/creator', icon: MarketplaceIcon });
-			mainMenu.push({ name: 'Earn', path: '/earn', icon: CurrencyIcon });
+			mainMenu.push({ name: 'Creator', path: '/creator', icon: MarketplaceIcon });
+			mainMenu.push({ name: 'Earner', path: '/earn', icon: CurrencyIcon });
 			//mainMenu.push({ name: 'Marketplace', path: '/creator/marketplace', icon: MarketplaceIcon });
 			mainMenu.push({ name: 'Missions', path: '/missions', icon: MissionsIcon });
 			mainMenu.push({ name: 'Socials', path: '/creator/profile', icon: ProfileIcon });
@@ -41,7 +41,7 @@
 			myAccountMenu.push({ name: 'Profile', link: '/creator/profile/edit' });
 		} else {
 			mainMenu.push({ name: 'Home', path: '/', icon: CreatorCatalogIcon });
-			mainMenu.push({ name: 'Earn', path: '/earn', icon: CurrencyIcon });
+			mainMenu.push({ name: 'Earner', path: '/earn', icon: CurrencyIcon });
 			mainMenu.push({ name: 'Missions', path: '/missions', icon: MissionsIcon });
 			//mainMenu.push({ name: 'Socials', path: '/follower/profile', icon: ProfileIcon });
 

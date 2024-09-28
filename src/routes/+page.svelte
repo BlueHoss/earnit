@@ -62,8 +62,9 @@
 
 	<div class="hero-section rounded-lg p-8 mb-12 text-white">
 		<div class="hero-content">
-			<h1 class="text-4xl font-bold mb-4">Welcome to Earn It!</h1>
-			<p class="text-xl mb-6">Discover amazing creators and their unique offerings!</p>
+			<br /><br /><br /><br />
+			<!-- <h1 class="text-4xl font-bold mb-4">Welcome to Earn It!</h1>
+			<p class="text-xl mb-6">Discover amazing creators and their unique offerings!</p> -->
 			<div class="flex gap-4">
 				{#if !data.user}
 					<Button variant="default">
@@ -118,7 +119,7 @@
 
 <style>
 	.hero-section {
-		background-image: url('/img/login-page.webp');
+		background-image: url('/img/banner.png');
 		background-size: cover;
 		background-position: center;
 		background-repeat: no-repeat;
