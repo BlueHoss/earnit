@@ -6,7 +6,7 @@ import { LoggerService } from '$lib/server/services/logger.service.server';
 export async function POST({ request }: RequestEvent) {
 	const formData = await request.formData();
 	const file = formData.get('file') as File;
-	const uploadType = formData.get('uploadType-22') as string;
+	const uploadType = formData.get('uploadType') as string;
 
 	try {
 		LoggerService.info('Uploading profile image');

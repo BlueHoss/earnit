@@ -30,7 +30,9 @@ import { LoggerService } from './logger.service.server';
  */
 async function uploadProfileImage(file: File, uploadType: string): Promise<string | undefined> {
 	const suffix = getImageSuffix(file.type);
-	LoggerService.info('Uploading profile image of type: ' + file.type);
+	LoggerService.info(
+		`Uploading profile image to to bucket: ${uploadType} of type: ${file.type} with suffix: ${suffix}`
+	);
 
 	if (suffix) {
 		switch (uploadType) {
