@@ -7,13 +7,15 @@
 	import AvailableCredits from './components/AvailableCredits.svelte';
 	import Subscriptions from './components/Subscriptions.svelte';
 	import MeritOfferingCardPurchased from '$lib/components/base/MeritOfferingCardPurchased.svelte';
+	import CreditBalanceDetails from './components/CreditBalanceDetails.svelte';
 
 	export let data: FollowerDashboardData;
 </script>
 
 <PageWrapper>
 	<PageHeaderFollower {data} Title="Dashboard" />
-	<div class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+	<CreditBalanceDetails creditBalanceDetails={data.dashboard.creditBalanceDetails} />
+	<!-- <div class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
 		<AvailableCredits availableCredits={data.dashboard.availableCredits} user={data.user} />
 		<Subscriptions
 			subscriptionCount={data.dashboard.subscriptionCount}
@@ -29,7 +31,7 @@
 				<div class="text-2xl font-bold text-primary">{data.dashboard.creditsRedeemed} Credits</div>
 			</Card.Content>
 		</Card.Root>
-	</div>
+	</div> -->
 	<div>
 		<Card.Root class="xl:col-span-2">
 			<Card.Header class="flex flex-row items-center">

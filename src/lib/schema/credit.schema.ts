@@ -10,11 +10,13 @@ export const creditDistributed = z.object({
 export type CreditDistributed = z.infer<typeof creditDistributed>;
 
 export const followerCreditBalanceDetail = z.object({
-	date: z.date(),
-	balance: z.number(),
-	store_name: z.string(),
 	creator_user_id: z.number(),
-	reward_name: z.string()
+	reward_name: z.string().nullable(),
+	profile_pic: z.string().nullable(),
+	store_name: z.string().nullable(),
+	total_credits: z.number(),
+	date: z.date().nullable(),
+	plan_name: z.string().nullable()
 });
 
 export type FollowerCreditBalanceDetail = z.infer<typeof followerCreditBalanceDetail>;
