@@ -11,6 +11,16 @@ export const planSchema = z.object({
 
 export type Plan = z.infer<typeof planSchema>;
 
+export const planWithSubscription = planSchema.partial().extend({
+	creator_user_id: z.number().int().nullable(),
+	follower_user_id: z.number().int().nullable(),
+	date_started: z.string().datetime().nullable(),
+	features: z.array(z.string()),
+	currentPlan: z.boolean().nullable()
+});
+
+export type PlanWithSubscription = z.infer<typeof planWithSubscription>;
+
 export const planSubscriptionSchema = z.object({
 	id: z.number().int().positive(),
 	plan_id: z.number().int().positive(),

@@ -1,7 +1,6 @@
 <!-- Page Marketplace -->
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
-	import FollowEarnItIcon from 'lucide-svelte/icons/user-round-check';
 	import PaidSubscribersIcon from 'lucide-svelte/icons/activity';
 	import { pendingActions } from '$lib/stores/pending-action.store';
 	import { Button } from '$lib/components/ui/button/index.ts';
@@ -19,20 +18,20 @@
 	import AlertTitle from '$lib/components/ui/alert/alert-title.svelte';
 	import AlertDescription from '$lib/components/ui/alert/alert-description.svelte';
 	import PageHeaderCreator from '$lib/components/base/PageHeaderCreator.svelte';
-	import { toast } from 'svelte-sonner';
 	import SubscribeDialog from './components/SubscribeDialog.svelte';
 	import UnsubscribeDialog from './components/UnsubscribeDialog.svelte';
+	import { page } from '$app/stores';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
+	import Currency from '$lib/components/base/Currency.svelte';
+
+	$: currentPath = $page.url.pathname;
+	$: subscribeUrl = `${currentPath}/subscribe`;
 
 	let showNotSignedInDialog = false;
 	let showSubscribeDialog = false;
 	let showUnsubscribeDialog = false;
 
 	export let data: PageData;
-
-	let subscribed = data.creator.subscribers?.find((follower) => follower.id === data.user?.id)
-		? true
-		: false;
 
 	function handleSubscribe() {
 		if (!data || !data.user) {
@@ -45,21 +44,7 @@
 			return;
 		}
 
-		showSubscribeDialog = true;
-	}
-
-	function handleUnsubscribe() {
-		if (!data || !data.user) {
-			pendingActions.addAction({
-				type: 'SUBSCRIBE_CREATOR',
-				payload: { creatorId: data.creator.id }
-			});
-
-			showNotSignedInDialog = true;
-			return;
-		}
-
-		showUnsubscribeDialog = true;
+		goto(subscribeUrl);
 	}
 </script>
 
@@ -69,17 +54,22 @@
 
 		<!-- Right Section: Follow Button -->
 		<div class="flex flex-col space-y-2">
-			{#if subscribed}
-				<Button on:click={handleUnsubscribe} class="px-6"
+			{#if data.followerPlan}
+				<div class="flex justify-between gap-3 items-center">
+					Current Level: <Badge class="bg-primary"
+						>{data.followerPlan.name}
+						<Currency amount={Number(data.followerPlan.plan_cost)} /> /Month</Badge
+					>
+				</div>
+				<Button href={subscribeUrl} class="px-6"
 					><PaidSubscribersIcon class="pr-1" />Modify your Earning Level</Button
 				>
 			{:else}
-				<Button on:click={() => handleSubscribe()} class="px-6"
+				<Button on:click={handleSubscribe} class="px-6"
 					><PaidSubscribersIcon class="pr-1" />Become an Earner</Button
 				>
 			{/if}
 		</div>
-		<!-- <Badge class="bg-primary text-white">Earn It</Badge> -->
 	</div>
 
 	{#if data.user}
@@ -168,8 +158,10 @@
 			>
 		</Dialog.Header>
 		<div class="grid gap-4 py-4">
-			<Button on:click={() => goto('/auth/sign-up?user_type=follower')} class="w-full"
-				>Sign Up</Button
+			<Button
+				variant="secondary"
+				on:click={() => goto('/auth/sign-up?user_type=follower')}
+				class="w-full">Sign Up</Button
 			>
 			<Button on:click={() => goto('/auth/sign-in')}>Sign In</Button>
 		</div>

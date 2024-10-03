@@ -1,8 +1,10 @@
+import type { PlanWithSubscription } from '$lib/schema/plan.schema.js';
 import { CreatorDashboardService } from '$lib/server/services/creator.dashboard.service.server.js';
 import { CreatorManagmentService } from '$lib/server/services/creator.management.service.server.js';
 import { FollowersDashboardService } from '$lib/server/services/follower.dashboard.service.server.js';
 import { PlanService } from '$lib/server/services/plan.service.server.js';
 import { ProductService } from '$lib/server/services/product.service.server.js';
+import { UserService } from '$lib/server/services/user.service.server.js';
 import type { EarnItActionResult } from '$lib/utils/action-result.js';
 import { error, fail, type Actions } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
@@ -18,12 +20,13 @@ export async function load({ params, locals }) {
 	}
 
 	//Get the creator and return
-	const creator = await CreatorManagmentService.getCreatorWithFollowers(creatorId);
+	const creator = await UserService.getSessioUser(creatorId);
 	const products = await ProductService.getProductsByUserId(creatorId);
 	const missionActions = await CreatorDashboardService.getMissionActionList(creatorId);
 
 	let followerCredits = 0;
 	let followerPurchases = 0;
+	let followerPlan = null;
 
 	if (locals.user) {
 		followerCredits = await FollowersDashboardService.getFollowerCreditsByCreator(
@@ -34,6 +37,7 @@ export async function load({ params, locals }) {
 			locals.user.id,
 			creatorId
 		);
+		followerPlan = await PlanService.getSubscriberPlan(locals.user.id, creatorId);
 	}
 	if (!creator) {
 		return error(404, 'Not found');
@@ -44,7 +48,8 @@ export async function load({ params, locals }) {
 		products,
 		missionActions,
 		followerCredits,
-		followerPurchases
+		followerPurchases,
+		followerPlan
 	};
 }
 

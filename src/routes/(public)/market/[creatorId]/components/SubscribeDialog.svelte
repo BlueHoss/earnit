@@ -1,7 +1,6 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Card, CardContent, CardTitle, CardDescription } from '$lib/components/ui/card';
-	import CardHeader from '$lib/components/ui/card/card-header.svelte';
 	import Alert from '$lib/components/ui/alert/alert.svelte';
 	import { AlertCircle, CheckCircle2 } from 'lucide-svelte';
 	import AlertTitle from '$lib/components/ui/alert/alert-title.svelte';
@@ -9,11 +8,9 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import type { Creator } from '$lib/schema/login.schema';
 	import type { Plan } from '$lib/schema/plan.schema';
-	import RewardCurrency from '$lib/components/base/RewardCurrency.svelte';
 	import Currency from '$lib/components/base/Currency.svelte';
 	import { enhance } from '$app/forms';
 	import type { ActionResult } from '@sveltejs/kit';
-	import AuthLayout from '$lib/components/navigation/AuthLayout.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import type { User } from 'lucia';
 
@@ -62,7 +59,7 @@
 </script>
 
 <Dialog.Root bind:open={showSubscribeDialog}>
-	<Dialog.Content class="sm:max-w-[425px]">
+	<Dialog.Content>
 		<Dialog.Header>
 			<Dialog.Title>Become an Earner to {creator.store_name}!</Dialog.Title>
 			<Dialog.Description>

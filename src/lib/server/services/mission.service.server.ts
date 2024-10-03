@@ -1,5 +1,5 @@
 import type { DefaultMission, MissionAction } from '$lib/schema/mission.schema';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sum } from 'drizzle-orm';
 import db from '../database/drizzle';
 import {
 	mission_action_table,
@@ -70,8 +70,24 @@ async function getDefaultMissions(): Promise<DefaultMission[]> {
 	return missions;
 }
 
+async function getDailyTotalMissionCredits(creatorId: number): Promise<number> {
+	const total = await db
+		.select({
+			total: sum(mission_action_table.reward_per_day).as('total')
+		})
+		.from(mission_action_table)
+		.where(eq(mission_action_table.creator_user_id, creatorId));
+
+	if (total.length === 0) {
+		return 0;
+	} else {
+		return Number(total[0].total);
+	}
+}
+
 export const MissionService = {
 	updateMissionItemValue,
 	getDefaultMissions,
-	setMissionStatusForCreator
+	setMissionStatusForCreator,
+	getDailyTotalMissionCredits
 };

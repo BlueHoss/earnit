@@ -3,7 +3,6 @@ import { redirect, type Handle } from '@sveltejs/kit';
 import type { HandleServerError } from '@sveltejs/kit';
 
 import log from '$lib/server/log';
-import type { User } from 'lucia';
 import { UserService } from '$lib/server/services/user.service.server';
 
 export const handleError: HandleServerError = async ({ error, event }) => {

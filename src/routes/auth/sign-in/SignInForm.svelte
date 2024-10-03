@@ -35,7 +35,7 @@
 					`/market/${action.payload.creatorId}/offering/${action.payload.productId}`
 				);
 				return;
-			} else if (action.type === 'FOLLOW_CREATOR') {
+			} else if (action.type === 'SUBSCRIBE_CREATOR') {
 				if (result.data.form.data.id != action.payload.creatorId) {
 					pendingActions.clearActions();
 					redirectWithRefresh(`/market/${action.payload.creatorId}`);
@@ -78,7 +78,10 @@
 				<Form.FieldErrors />
 			</Form.Field>
 		</div>
-		<Button type="submit" class="w-full">Login</Button>
+		<div class="flex justify-between gap-3 items-center">
+			<Button variant="secondary" href="/" class="w-full">Home</Button>
+			<Button type="submit" class="w-full">Login</Button>
+		</div>
 		<!-- <Button variant="outline" class="w-full">Login with Google</Button> -->
 	</div>
 </form>

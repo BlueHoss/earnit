@@ -7,7 +7,7 @@
 	import AlertDescription from '$lib/components/ui/alert/alert-description.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import type { Creator } from '$lib/schema/login.schema';
-	import type { Plan } from '$lib/schema/plan.schema';
+	import type { PlanWithSubscription } from '$lib/schema/plan.schema';
 	import Currency from '$lib/components/base/Currency.svelte';
 	import { enhance } from '$app/forms';
 	import type { ActionResult } from '@sveltejs/kit';
@@ -15,23 +15,28 @@
 	import type { User } from 'lucia';
 
 	let unsubscribeError: string = '';
-	let planData: Plan[] = [];
+	let planData: PlanWithSubscription[] = [];
 	let isUnsubscribing: boolean = false;
 	let unsubscribeSuccess: boolean = false;
-	let selectedPlan: Plan | null = null;
+	let selectedPlan: PlanWithSubscription | null = null;
 
 	export let showUnsubscribeDialog = false;
 	export let creator: Creator;
 	export let user: User | null;
 
-	function handlePlanChange(plan: Plan) {
+	function handlePlanChange(plan: PlanWithSubscription) {
 		selectedPlan = plan;
 	}
 
 	async function loadPlanData() {
 		try {
+			if (!user) {
+				planData = [];
+				return;
+			}
+
 			const formData = new FormData();
-			if (!user) return;
+
 			formData.append('followerId', user.id.toString());
 			formData.append('creatorId', creator.id.toString());
 
@@ -40,9 +45,13 @@
 				body: formData
 			});
 
-			if (!response.ok) throw new Error('Failed to fetch data');
-			var result = await response.json();
-			planData = result.plans;
+			if (response.ok) {
+				var result = await response.json();
+				planData = result.plans;
+				console.log(planData);
+			} else {
+				planData = [];
+			}
 
 			if (planData.length > 0) {
 				selectedPlan = planData[0];
@@ -72,12 +81,11 @@
 </script>
 
 <Dialog.Root bind:open={showUnsubscribeDialog}>
-	<Dialog.Content class="sm:max-w-[425px]">
+	<Dialog.Content>
 		<Dialog.Header>
-			<Dialog.Title>Unsubscribe from {creator.store_name}?</Dialog.Title>
+			<Dialog.Title>Change your {creator.store_name} plan</Dialog.Title>
 			<Dialog.Description>
-				Your subscription will remain active until 30 days from your last payment. After this date,
-				your subscription will end, and your card will not be charged again.
+				Select your desired plan to change your earning level.
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -86,9 +94,9 @@
 				{#each planData as plan}
 					<div class="flex justify-between items-center">
 						<input
-							type="checkbox"
+							type="radio"
 							on:change={() => handlePlanChange(plan)}
-							checked={true}
+							checked={plan.follower_user_id != null}
 							name="plan"
 							value={plan.id}
 						/>

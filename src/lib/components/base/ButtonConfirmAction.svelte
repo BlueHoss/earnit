@@ -3,6 +3,7 @@
 	export let icon = null;
 	export let warningText = 'Are you sure?';
 	export let callBack: CallbackFunction;
+	export let variant = 'outline';
 
 	import * as Popover from '$lib/components/ui/popover';
 	import Button from '../ui/button/button.svelte';
@@ -25,7 +26,7 @@
 
 <Popover.Root bind:open={isOpen} closeOnOutsideClick={false}>
 	<Popover.Trigger asChild let:builder>
-		<Button builders={[builder]} variant="outline">
+		<Button builders={[builder]} {variant}>
 			{#if icon}
 				<svelte:component this={icon} />
 			{/if}

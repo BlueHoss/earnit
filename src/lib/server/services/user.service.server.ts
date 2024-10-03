@@ -50,20 +50,18 @@ async function transformSignupToUser(signupData: SignupUser): Promise<BaseUser> 
 			date_updated: new Date(),
 			store_name: `${signupData.first_name}'s Store`,
 			reward_name: `${signupData.first_name} Credit`,
-			category: 'General',
-			credit_balance: '0.00'
+			category: 'General'
 		};
 	} else {
 		return {
 			...userData,
 			handle: createHandle(signupData.first_name, signupData.last_name),
 			hashed_password: await new Argon2id().hash(signupData.password),
-			title: "Earn It's Newest Follower",
+			title: "Earn It's Newest Earner",
 			profile_pic: `${PUBLIC_SUPABASE_STORAGE_URL}/${PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET}/defaultuser.png`,
 			token: crypto.randomUUID(),
 			date_created: new Date(),
-			date_updated: new Date(),
-			credit_balance: '0.00'
+			date_updated: new Date()
 		};
 	}
 }
@@ -225,6 +223,7 @@ async function getSessioUser(userId: number): Promise<User | null> {
 			userId: login_table.id,
 			id: login_table.id,
 			provider: login_table.provider,
+			providerId: login_table.provider_id,
 			email: login_table.email,
 			handle: login_table.handle,
 			first_name: login_table.first_name,

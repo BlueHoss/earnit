@@ -32,7 +32,6 @@ export const lucia = new Lucia(adapter, {
 			last_name: attributes.last_name,
 			role: attributes.role,
 			verified: attributes.verified,
-			receiveEmail: attributes.receiveEmail,
 			token: attributes.token,
 			is_creator: attributes.is_creator,
 			is_follower: attributes.is_follower,
@@ -67,7 +66,6 @@ interface DatabaseUserAttributes {
 	last_name: string;
 	role: string;
 	verified: boolean;
-	receiveEmail: boolean;
 	token: string;
 	is_creator: boolean;
 	is_follower: boolean;

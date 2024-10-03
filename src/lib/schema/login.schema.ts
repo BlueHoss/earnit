@@ -170,11 +170,12 @@ export const creatorScheam = baseLoginSchema
 		roleError: true,
 		provider: true,
 		provider_id: true,
-		receive_email: true
+		receive_email: true,
+		bio: true,
+		category: true
 	})
 	.extend({
-		subscribers: z.array(z.object({ id: z.number().nullable() })).optional(),
-		followers: z.array(z.object({ id: z.number().nullable() })).optional()
+		subscribers: z.array(z.object({ id: z.number().nullable() })).optional()
 	});
 
 export type Creator = z.infer<typeof creatorScheam>;
