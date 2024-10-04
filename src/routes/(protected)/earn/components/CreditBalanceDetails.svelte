@@ -10,12 +10,14 @@
 </script>
 
 <Card.Root>
-	<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-		<Card.Title>Credits & Creators</Card.Title>
-		<UsersIcon class="h-4 w-4 text-muted-foreground" />
+	<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-6">
+		<div class="grid gap-2">
+			<Card.Title>Credits & Creators</Card.Title>
+			<Card.Description>Creators you are Earning from and your Effort Credits</Card.Description>
+		</div>
 	</Card.Header>
 	<Card.Content>
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+		<div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4">
 			{#each creditBalanceDetails as detail}
 				<CreatorSubscriptionCard creator={detail} />
 			{/each}
