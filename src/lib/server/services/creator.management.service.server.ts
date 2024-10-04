@@ -5,19 +5,12 @@
  *
  */
 
-import { and, eq, isNull } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
-import {
-	follower_creator_table,
-	login_table,
-	plan_subscription_table
-} from '$lib/server/database/schema';
+import { login_table } from '$lib/server/database/schema';
 import { TextUtilities } from '$lib/utils/text-utilities';
 import { ImageService } from './image.service.server';
-import { creatorScheam, type Creator, type ProfileEditUser } from '$lib/schema/login.schema';
-import {} from 'moment';
-import { ActionResponse, type EarnItActionResult } from '$lib/utils/action-result';
-import { UserService } from './user.service.server';
+import { type ProfileEditUser } from '$lib/schema/login.schema';
 
 /**
  * Get the user bio
@@ -122,89 +115,6 @@ async function removeOldProfilePic(userid: number, newProfilePic: string | null)
 	}
 }
 
-// async function addFollower(creatorId: number, followerId: number): Promise<EarnItActionResult> {
-// 	if (creatorId === followerId) {
-// 		return ActionResponse.fail('You cannot follow yourself.');
-// 	}
-
-// 	//Ensure follower is not already following
-// 	const isFollowing = await db
-// 		.select({
-// 			id: follower_creator_table.follower_user_id
-// 		})
-// 		.from(follower_creator_table)
-// 		.where(
-// 			and(
-// 				eq(follower_creator_table.creator_user_id, creatorId),
-// 				eq(follower_creator_table.follower_user_id, followerId)
-// 			)
-// 		);
-
-// 	if (isFollowing.length > 0) {
-// 		return ActionResponse.fail('You are already following this user.');
-// 	}
-// 	const result = await db
-// 		.insert(follower_creator_table)
-// 		.values({
-// 			creator_user_id: creatorId,
-// 			follower_user_id: followerId
-// 		})
-// 		.returning();
-
-// 	return result
-// 		? ActionResponse.success('You are following!')
-// 		: ActionResponse.fail('There was an error following this user.');
-// }
-
-async function removeFollower(creatorId: number, followerId: number): Promise<EarnItActionResult> {
-	const result = await db
-		.delete(follower_creator_table)
-		.where(
-			and(
-				eq(follower_creator_table.creator_user_id, creatorId),
-				eq(follower_creator_table.follower_user_id, followerId)
-			)
-		)
-		.returning();
-
-	return !result || result.length <= 0
-		? ActionResponse.fail('Following this user failed')
-		: ActionResponse.success('Follow success!');
-}
-
-async function getCreatorWithFollowers(creatorId: number): Promise<Creator | null> {
-	let parsedCreator = null;
-
-	const creator = await UserService.getSessioUser(creatorId);
-
-	try {
-		parsedCreator = creatorScheam.parse(creator);
-	} catch (error) {
-		console.error('Error parsing creator', error);
-	}
-
-	if (parsedCreator) {
-		parsedCreator.subscribers = await getSubscribers(creatorId);
-	}
-
-	return parsedCreator;
-}
-
-async function getSubscribers(creatorId: number): Promise<{ id: number | null }[]> {
-	const subscribers = await db
-		.select({
-			id: plan_subscription_table.follower_user_id
-		})
-		.from(plan_subscription_table)
-		.where(
-			and(
-				eq(plan_subscription_table.creator_user_id, creatorId),
-				isNull(plan_subscription_table.date_canceled)
-			)
-		);
-	return !subscribers ? [] : subscribers;
-}
-
 async function getAllCreators() {
 	const creators = await db
 		.select({
@@ -225,7 +135,5 @@ export const CreatorManagmentService = {
 	setUserProfile,
 	getUserBio,
 	getUserProfile,
-	removeFollower,
-	getCreatorWithFollowers,
 	getAllCreators
 };

@@ -18,8 +18,6 @@
 	import AlertTitle from '$lib/components/ui/alert/alert-title.svelte';
 	import AlertDescription from '$lib/components/ui/alert/alert-description.svelte';
 	import PageHeaderCreator from '$lib/components/base/PageHeaderCreator.svelte';
-	import SubscribeDialog from './components/SubscribeDialog.svelte';
-	import UnsubscribeDialog from './components/UnsubscribeDialog.svelte';
 	import { page } from '$app/stores';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import Currency from '$lib/components/base/Currency.svelte';
@@ -28,8 +26,6 @@
 	$: subscribeUrl = `${currentPath}/subscribe`;
 
 	let showNotSignedInDialog = false;
-	let showSubscribeDialog = false;
-	let showUnsubscribeDialog = false;
 
 	export let data: PageData;
 
@@ -144,10 +140,6 @@
 		</Card.Root>
 	</div>
 </PageWrapper>
-
-<SubscribeDialog user={data.user} bind:showSubscribeDialog bind:creator={data.creator} />
-
-<UnsubscribeDialog user={data.user} bind:showUnsubscribeDialog bind:creator={data.creator} />
 
 <Dialog.Root bind:open={showNotSignedInDialog}>
 	<Dialog.Content>

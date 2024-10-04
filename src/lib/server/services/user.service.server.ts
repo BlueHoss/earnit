@@ -211,9 +211,34 @@ async function createUser(user: BaseUser): Promise<BaseUser | null> {
 	}
 }
 
+async function addInitialCreditstoCreator(creatorId: number, initialCredit: number) {
+	const existingCreditRecord = await db
+		.select()
+		.from(credit_creator_balance_table)
+		.where(eq(credit_creator_balance_table.creator_user_id, creatorId));
+	if (existingCreditRecord.length > 0) {
+		const creditRecord = existingCreditRecord[0];
+		creditRecord.credits_received += initialCredit;
+		creditRecord.date_updated = new Date();
+		await db
+			.update(credit_creator_balance_table)
+			.set(creditRecord)
+			.where(eq(credit_creator_balance_table.id, creditRecord.id));
+	} else {
+		const credit = {
+			creator_user_id: creatorId,
+			date_updated: new Date(),
+			credits_received: initialCredit.toString(),
+			credits_awarded: '0.00'
+		};
+		await db.insert(credit_creator_balance_table).values(credit);
+	}
+}
+
 function postNewUserTasks(newUser: BaseUser) {
 	if (newUser.is_creator) {
-		addDefaultMissionToNewUser(newUser.id);
+		addDefaultMissionToNewUser(Number(newUser.id));
+		addInitialCreditstoCreator(Number(newUser.id), 50000);
 	}
 }
 

@@ -36,15 +36,6 @@
 		<!-- Right Section: Vertically Stacked Buttons -->
 		<div class="flex flex-col space-y-2">
 			<h1 class="text-2xl font-semibold">{data.user?.first_name} {data.user?.last_name}</h1>
-			<!-- {#if data.user?.is_follower}
-				<Button href="/creator/">Dashboard</Button>
-
-				{#if data.user?.is_following}
-					<span class="italic">Following</span>
-				{:else}
-					<Button href="/follower/followcreator">Follow</Button>
-				{/if}
-			{/if} -->
 		</div>
 	</Card.Content>
 </Card.Root>

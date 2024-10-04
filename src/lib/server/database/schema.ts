@@ -209,26 +209,6 @@ export const mission_creator_table = pgTable(
 	}
 );
 
-export const follower_creator_table = pgTable(
-	'follower_creator',
-	{
-		follower_user_id: integer('follower_user_id')
-			.notNull()
-			.references(() => login_table.id, { onDelete: 'cascade' }),
-		creator_user_id: integer('creator_user_id')
-			.notNull()
-			.references(() => login_table.id, { onDelete: 'cascade' })
-	},
-	(table) => {
-		return {
-			follower_creator_pkey: primaryKey({
-				columns: [table.follower_user_id, table.creator_user_id],
-				name: 'follower_creator_pkey'
-			})
-		};
-	}
-);
-
 /**
  * Tracks the total credits a creator has purchased and how many are available to distribute.
  * The difference between total_credits and available_credits represents credits already distributed to followers.
