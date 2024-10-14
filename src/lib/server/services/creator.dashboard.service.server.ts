@@ -1,15 +1,15 @@
 import { eq, and, sql, sum, between, type SQL, isNull, gt, lt, lte, ne } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import {
-	credit_transaction_table,
-	login_table,
-	mission_action_table,
-	mission_creator_table,
-	mission_table,
-	plan_subscription_table,
-	plan_table,
-	product_invoice_table,
-	product_table
+	credit_transaction,
+	login,
+	mission_action,
+	mission_creator,
+	mission,
+	plan_subscription,
+	plan,
+	product_invoice,
+	product
 } from '$lib/server/database/schema';
 import type { ProductInvoiceResult } from '$lib/schema/product_invoice.schema';
 import { ProductService } from './product.service.server';
@@ -27,13 +27,10 @@ async function getPaidSubscribers(userid: number) {
 		.select({
 			count: sql<number>`count(*) as integer`
 		})
-		.from(plan_subscription_table)
-		.innerJoin(plan_table, eq(plan_subscription_table.id, plan_table.id))
+		.from(plan_subscription)
+		.innerJoin(plan, eq(plan_subscription.id, plan.id))
 		.where(
-			and(
-				isNull(plan_subscription_table.date_canceled),
-				eq(plan_subscription_table.creator_user_id, userid)
-			)
+			and(isNull(plan_subscription.date_canceled), eq(plan_subscription.creator_user_id, userid))
 		);
 
 	if (count.length === 0) {
@@ -52,15 +49,12 @@ async function getPaidSubscribers(userid: number) {
 async function getMonthlyRevenue(userid: number) {
 	const count = await db
 		.select({
-			total: sum(plan_table.plan_cost).as('total')
+			total: sum(plan.plan_cost).as('total')
 		})
-		.from(plan_subscription_table)
-		.innerJoin(plan_table, eq(plan_subscription_table.id, plan_table.id))
+		.from(plan_subscription)
+		.innerJoin(plan, eq(plan_subscription.id, plan.id))
 		.where(
-			and(
-				isNull(plan_subscription_table.date_canceled),
-				eq(plan_subscription_table.creator_user_id, userid)
-			)
+			and(isNull(plan_subscription.date_canceled), eq(plan_subscription.creator_user_id, userid))
 		);
 
 	if (count.length === 0) {
@@ -81,13 +75,13 @@ async function getMonthlyRevenue(userid: number) {
 async function getCreditAmountDistributed(creatorId: number) {
 	const count = await db
 		.select({
-			total: sql`SUM(${credit_transaction_table.amount})`.as('total')
+			total: sql`SUM(${credit_transaction.amount})`.as('total')
 		})
-		.from(credit_transaction_table)
+		.from(credit_transaction)
 		.where(
 			and(
-				eq(credit_transaction_table.creator_user_id, creatorId),
-				ne(credit_transaction_table.transaction_type, 'Product_Redemption')
+				eq(credit_transaction.creator_user_id, creatorId),
+				ne(credit_transaction.transaction_type, 'Product_Redemption')
 			)
 		);
 
@@ -112,20 +106,17 @@ async function getProductsPurchasedCount(
 	startDate: Date | null,
 	endDate: Date | null
 ) {
-	let whereClause: SQL<unknown> | undefined = eq(product_invoice_table.creator_user_id, userid);
+	let whereClause: SQL<unknown> | undefined = eq(product_invoice.creator_user_id, userid);
 
 	if (startDate !== null && endDate !== null) {
-		whereClause = and(
-			whereClause,
-			between(product_invoice_table.date_purchased, startDate, endDate)
-		);
+		whereClause = and(whereClause, between(product_invoice.date_purchased, startDate, endDate));
 	}
 
 	const count = await db
 		.select({
 			count: sql<number>`count(*) as integer`
 		})
-		.from(product_invoice_table)
+		.from(product_invoice)
 		.where(whereClause);
 
 	if (count.length === 0) {
@@ -144,20 +135,17 @@ async function getProductsPurchasedCount(
  * @returns {Promise<number>} - The amount of products purchased.
  */
 async function getProductsPurchasedAmount(userid: number, startDate: Date, endDate: Date) {
-	let whereClause: SQL<unknown> | undefined = eq(product_invoice_table.creator_user_id, userid);
+	let whereClause: SQL<unknown> | undefined = eq(product_invoice.creator_user_id, userid);
 
 	if (startDate !== null && endDate !== null) {
-		whereClause = and(
-			whereClause,
-			between(product_invoice_table.date_purchased, startDate, endDate)
-		);
+		whereClause = and(whereClause, between(product_invoice.date_purchased, startDate, endDate));
 	}
 
 	const count = await db
 		.select({
-			total: sum(product_invoice_table.cost)
+			total: sum(product_invoice.cost)
 		})
-		.from(product_invoice_table)
+		.from(product_invoice)
 		.where(whereClause);
 
 	if (count.length === 0) {
@@ -180,26 +168,23 @@ async function getProductsPurchasedList(
 	startDate: Date,
 	endDate: Date
 ): Promise<ProductInvoiceResult[]> {
-	let whereClause: SQL<unknown> | undefined = eq(product_invoice_table.creator_user_id, userid);
+	let whereClause: SQL<unknown> | undefined = eq(product_invoice.creator_user_id, userid);
 
 	if (startDate !== null && endDate !== null) {
-		whereClause = and(
-			whereClause,
-			between(product_invoice_table.date_purchased, startDate, endDate)
-		);
+		whereClause = and(whereClause, between(product_invoice.date_purchased, startDate, endDate));
 	}
 
 	const list = await db
 		.select({
-			id: product_table.id,
-			product_name: product_table.name,
-			follower: sql`${login_table.first_name} || ' ' || ${login_table.last_name}`.as('follower'),
-			handle: login_table.handle,
-			cost: product_invoice_table.cost
+			id: product.id,
+			product_name: product.name,
+			follower: sql`${login.first_name} || ' ' || ${login.last_name}`.as('follower'),
+			handle: login.handle,
+			cost: product_invoice.cost
 		})
-		.from(product_table)
-		.innerJoin(product_invoice_table, eq(product_table.id, product_invoice_table.product_id))
-		.innerJoin(login_table, eq(product_invoice_table.follower_user_id, login_table.id))
+		.from(product)
+		.innerJoin(product_invoice, eq(product.id, product_invoice.product_id))
+		.innerJoin(login, eq(product_invoice.follower_user_id, login.id))
 		.where(whereClause);
 
 	return list.map((item) => ({
@@ -220,13 +205,13 @@ async function getProductsPurchasedList(
 // async function getCreatorFollowerCount(userid: number): Promise<number> {
 // 	const followerCount = await db
 // 		.select({
-// 			follower_count: sql<number>`count(${follower_creator_table.follower_user_id})`.as(
+// 			follower_count: sql<number>`count(${follower_creator.follower_user_id})`.as(
 // 				'follower_count'
 // 			)
 // 		})
-// 		.from(follower_creator_table)
-// 		.innerJoin(login_table, eq(login_table.id, follower_creator_table.creator_user_id))
-// 		.where(eq(follower_creator_table.creator_user_id, userid));
+// 		.from(follower_creator)
+// 		.innerJoin(login, eq(login.id, follower_creator.creator_user_id))
+// 		.where(eq(follower_creator.creator_user_id, userid));
 
 // 	if (followerCount.length === 0) {
 // 		return 0;
@@ -238,11 +223,11 @@ async function getProductsPurchasedList(
 // async function getFollowerNameList(creatorId: number): Promise<{ handle: string }[]> {
 // 	const followers = await db
 // 		.select({
-// 			handle: login_table.handle
+// 			handle: login.handle
 // 		})
-// 		.from(follower_creator_table)
-// 		.innerJoin(login_table, eq(login_table.id, follower_creator_table.creator_user_id))
-// 		.where(eq(follower_creator_table.creator_user_id, creatorId));
+// 		.from(follower_creator)
+// 		.innerJoin(login, eq(login.id, follower_creator.creator_user_id))
+// 		.where(eq(follower_creator.creator_user_id, creatorId));
 
 // 	return !followers ? [] : followers;
 // }
@@ -250,28 +235,24 @@ async function getProductsPurchasedList(
 async function getSubscriberNameList(creatorId: number): Promise<{ handle: string }[]> {
 	const subscribers = await db
 		.select({
-			handle: login_table.handle
+			handle: login.handle
 		})
-		.from(plan_subscription_table)
-		.innerJoin(login_table, eq(login_table.id, plan_subscription_table.follower_user_id))
-		.innerJoin(plan_table, eq(plan_subscription_table.plan_id, plan_table.id))
-		.where(
-			and(eq(plan_subscription_table.creator_user_id, creatorId), gt(plan_table.plan_cost, '0.00'))
-		);
+		.from(plan_subscription)
+		.innerJoin(login, eq(login.id, plan_subscription.follower_user_id))
+		.innerJoin(plan, eq(plan_subscription.plan_id, plan.id))
+		.where(and(eq(plan_subscription.creator_user_id, creatorId), gt(plan.plan_cost, '0.00')));
 	return !subscribers ? [] : subscribers;
 }
 
 async function getFreeSubscriberNameList(creatorId: number): Promise<{ handle: string }[]> {
 	const subscribers = await db
 		.select({
-			handle: login_table.handle
+			handle: login.handle
 		})
-		.from(plan_subscription_table)
-		.innerJoin(login_table, eq(login_table.id, plan_subscription_table.follower_user_id))
-		.innerJoin(plan_table, eq(plan_subscription_table.plan_id, plan_table.id))
-		.where(
-			and(eq(plan_subscription_table.creator_user_id, creatorId), eq(plan_table.plan_cost, '0.00'))
-		);
+		.from(plan_subscription)
+		.innerJoin(login, eq(login.id, plan_subscription.follower_user_id))
+		.innerJoin(plan, eq(plan_subscription.plan_id, plan.id))
+		.where(and(eq(plan_subscription.creator_user_id, creatorId), eq(plan.plan_cost, '0.00')));
 	return !subscribers ? [] : subscribers;
 }
 
@@ -284,16 +265,16 @@ async function getFreeSubscriberNameList(creatorId: number): Promise<{ handle: s
 // async function getCreatorFollowerList(userid: number): Promise<LoginQueryResult[]> {
 // 	const followers = await db
 // 		.select({
-// 			id: login_table.id,
-// 			handle: login_table.handle,
-// 			email: login_table.email,
-// 			firstName: login_table.first_name,
-// 			lastName: login_table.last_name,
-// 			profilePic: login_table.profile_pic
+// 			id: login.id,
+// 			handle: login.handle,
+// 			email: login.email,
+// 			firstName: login.first_name,
+// 			lastName: login.last_name,
+// 			profilePic: login.profile_pic
 // 		})
-// 		.from(login_table)
-// 		.innerJoin(follower_creator_table, eq(login_table.id, follower_creator_table.follower_user_id))
-// 		.where(eq(follower_creator_table.creator_user_id, userid));
+// 		.from(login)
+// 		.innerJoin(follower_creator, eq(login.id, follower_creator.follower_user_id))
+// 		.where(eq(follower_creator.creator_user_id, userid));
 
 // 	return followers;
 // }
@@ -301,30 +282,22 @@ async function getFreeSubscriberNameList(creatorId: number): Promise<{ handle: s
 async function getCreatorMissions(userid: number): Promise<DefaultMission[]> {
 	const missions = await db
 		.select({
-			id: mission_table.id,
-			name: mission_table.name,
-			description: mission_table.description,
-			platform: mission_table.platform,
-			enabled: mission_creator_table.enabled
+			id: mission.id,
+			name: mission.name,
+			description: mission.description,
+			platform: mission.platform,
+			enabled: mission_creator.enabled
 		})
-		.from(mission_table)
-		.innerJoin(mission_creator_table, eq(mission_table.id, mission_creator_table.mission_id))
-		.where(
-			and(
-				eq(mission_creator_table.creator_user_id, userid),
-				eq(mission_creator_table.enabled, true)
-			)
-		);
+		.from(mission)
+		.innerJoin(mission_creator, eq(mission.id, mission_creator.mission_id))
+		.where(and(eq(mission_creator.creator_user_id, userid), eq(mission_creator.enabled, true)));
 
 	for (const mission of missions) {
 		const actions = await db
 			.select()
-			.from(mission_action_table)
+			.from(mission_action)
 			.where(
-				and(
-					eq(mission_action_table.mission_id, mission.id),
-					eq(mission_action_table.creator_user_id, userid)
-				)
+				and(eq(mission_action.mission_id, mission.id), eq(mission_action.creator_user_id, userid))
 			);
 		mission.actions = actions;
 	}
@@ -334,9 +307,9 @@ async function getCreatorMissions(userid: number): Promise<DefaultMission[]> {
 async function getMissionActionList(userid: number): Promise<MissionAction[]> {
 	const actions = await db
 		.select()
-		.from(mission_action_table)
-		.where(eq(mission_action_table.creator_user_id, userid))
-		.orderBy(mission_action_table.name);
+		.from(mission_action)
+		.where(eq(mission_action.creator_user_id, userid))
+		.orderBy(mission_action.name);
 
 	return actions;
 }
@@ -352,8 +325,8 @@ async function getProductCount(userid: number): Promise<number> {
 		.select({
 			count: sql<number>`count(*)`.as('count')
 		})
-		.from(product_table)
-		.where(and(eq(product_table.creator_user_id, userid), eq(product_table.enabled, true)));
+		.from(product)
+		.where(and(eq(product.creator_user_id, userid), eq(product.enabled, true)));
 
 	if (productCount.length === 0) {
 		return 0;

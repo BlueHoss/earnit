@@ -1,3 +1,4 @@
+import { stripe } from '$lib/stripe/stripe';
 import { z } from 'zod';
 
 // Schema for plan
@@ -6,7 +7,9 @@ export const planSchema = z.object({
 	name: z.string(),
 	description: z.string().nullable(),
 	plan_percent: z.string(),
-	plan_cost: z.string()
+	plan_cost: z.string(),
+	stripe_price_id: z.string().nullable(),
+	level: z.number().int().positive()
 });
 
 export type Plan = z.infer<typeof planSchema>;
@@ -16,7 +19,8 @@ export const planWithSubscription = planSchema.partial().extend({
 	follower_user_id: z.number().int().nullable(),
 	date_started: z.string().datetime().nullable(),
 	features: z.array(z.string()),
-	currentPlan: z.boolean().nullable()
+	currentPlan: z.boolean().nullable(),
+	stripe_subscription_id: z.string().nullable()
 });
 
 export type PlanWithSubscription = z.infer<typeof planWithSubscription>;

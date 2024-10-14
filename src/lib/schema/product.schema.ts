@@ -51,7 +51,7 @@ export const ProductQueryResultSchema = z.object({
 	description: z.string().nullable(),
 	cover_image: z.string().nullable(),
 	cost: z.union([z.number(), z.string().transform((val) => parseFloat(val))]),
-	date_purchased: z.date(),
+	date_purchased: z.string(),
 	creator_handle: z.string(),
 	store_name: z.string(),
 	reward_name: z.string(),

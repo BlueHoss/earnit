@@ -120,7 +120,7 @@
 			<Card.Content class="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
 				{#each data.products as product}
 					<a href="/market/{data.creator.id}/offering/{product.id}">
-						<MeritOfferingCard user={data.creator} {product} />
+						<MeritOfferingCard user={data.user} {product} />
 					</a>
 				{/each}
 			</Card.Content>

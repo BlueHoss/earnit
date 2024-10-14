@@ -1,9 +1,9 @@
 import {
-	credit_follower_balance_table,
-	login_table,
-	plan_subscription_table,
-	plan_table,
-	product_invoice_table
+	credit_follower_balance,
+	login,
+	plan_subscription,
+	plan,
+	product_invoice
 } from '$lib/server/database/schema';
 import { and, eq, isNull, sql } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
@@ -16,8 +16,8 @@ async function availableCredits(followerId: number) {
 		.select({
 			credits: sql<number>`sum(credit_balance)`.as('credits')
 		})
-		.from(credit_follower_balance_table)
-		.where(eq(credit_follower_balance_table.follower_user_id, followerId));
+		.from(credit_follower_balance)
+		.where(eq(credit_follower_balance.follower_user_id, followerId));
 
 	if (followerCredits.length === 0) {
 		return 0;
@@ -31,8 +31,8 @@ async function subscriptionCount(followerId: number) {
 		.select({
 			count: sql<number>`count(*)`.as('count')
 		})
-		.from(plan_subscription_table)
-		.where(eq(plan_subscription_table.follower_user_id, followerId));
+		.from(plan_subscription)
+		.where(eq(plan_subscription.follower_user_id, followerId));
 
 	if (productCount.length === 0) {
 		return 0;
@@ -41,28 +41,13 @@ async function subscriptionCount(followerId: number) {
 	}
 }
 
-// async function followingCount(followerId: number) {
-// 	const productCount = await db
-// 		.select({
-// 			count: sql<number>`count(*)`.as('count')
-// 		})
-// 		.from(follower_creator_table)
-// 		.where(eq(follower_creator_table.follower_user_id, followerId));
-
-// 	if (productCount.length === 0) {
-// 		return 0;
-// 	} else {
-// 		return Number(productCount[0].count);
-// 	}
-// }
-
 async function creditsRedeemed(followerId: number) {
 	const productCount = await db
 		.select({
 			count: sql<number>`sum(cost)`.as('count')
 		})
-		.from(product_invoice_table)
-		.where(eq(product_invoice_table.follower_user_id, followerId));
+		.from(product_invoice)
+		.where(eq(product_invoice.follower_user_id, followerId));
 
 	if (productCount.length === 0) {
 		return 0;
@@ -74,45 +59,26 @@ async function creditsRedeemed(followerId: number) {
 async function getSubscribeList(followerId: number): Promise<Subsciption[]> {
 	const list = await db
 		.select({
-			creator_user_id: plan_subscription_table.creator_user_id,
-			store_name: login_table.store_name,
-			title: login_table.title,
-			follower_count: login_table.follower_count,
-			profile_pic: login_table.profile_pic,
-			date_started: plan_subscription_table.date_started,
-			name: plan_table.name,
-			plan_cost: plan_table.plan_cost
+			creator_user_id: plan_subscription.creator_user_id,
+			store_name: login.store_name,
+			title: login.title,
+			follower_count: login.follower_count,
+			profile_pic: login.profile_pic,
+			date_started: plan_subscription.date_started,
+			name: plan.name,
+			plan_cost: plan.plan_cost
 		})
-		.from(login_table)
-		.innerJoin(plan_subscription_table, eq(plan_subscription_table.creator_user_id, login_table.id))
-		.innerJoin(plan_table, eq(plan_table.id, plan_subscription_table.plan_id))
+		.from(login)
+		.innerJoin(plan_subscription, eq(plan_subscription.creator_user_id, login.id))
+		.innerJoin(plan, eq(plan.id, plan_subscription.plan_id))
 		.where(
 			and(
-				eq(plan_subscription_table.follower_user_id, followerId),
-				isNull(plan_subscription_table.date_canceled)
+				eq(plan_subscription.follower_user_id, followerId),
+				isNull(plan_subscription.date_canceled)
 			)
 		);
 	return list;
 }
-
-// async function getFollowerList(followerId: number): Promise<Follower[]> {
-// 	const list = await db
-// 		.select({
-// 			store_name: login_table.store_name,
-// 			title: login_table.title,
-// 			creator_user_id: follower_creator_table.creator_user_id,
-// 			profile_pic: login_table.profile_pic,
-// 			credit_follower_balance_table: credit_follower_balance_table.credit_balance
-// 		})
-// 		.from(follower_creator_table)
-// 		.innerJoin(login_table, eq(login_table.id, follower_creator_table.creator_user_id))
-// 		.leftJoin(
-// 			credit_follower_balance_table,
-// 			eq(credit_follower_balance_table.creator_user_id, follower_creator_table.creator_user_id)
-// 		)
-// 		.where(eq(follower_creator_table.follower_user_id, followerId));
-// 	return list;
-// }
 
 async function loadDashboardData(followerUserId: number) {
 	return {
@@ -128,13 +94,13 @@ async function loadDashboardData(followerUserId: number) {
 async function getFollowerCreditsByCreator(followerId: number, creatorId: number) {
 	const followerCreditAmount = await db
 		.select({
-			count: credit_follower_balance_table.credit_balance
+			count: credit_follower_balance.credit_balance
 		})
-		.from(credit_follower_balance_table)
+		.from(credit_follower_balance)
 		.where(
 			and(
-				eq(credit_follower_balance_table.follower_user_id, followerId),
-				eq(credit_follower_balance_table.creator_user_id, creatorId)
+				eq(credit_follower_balance.follower_user_id, followerId),
+				eq(credit_follower_balance.creator_user_id, creatorId)
 			)
 		);
 
@@ -151,13 +117,13 @@ async function getFollowerProductsByCreatorList(
 ): Promise<{ id: number | null }[]> {
 	const followerProductsByCreator = await db
 		.select({
-			id: product_invoice_table.product_id
+			id: product_invoice.product_id
 		})
-		.from(product_invoice_table)
+		.from(product_invoice)
 		.where(
 			and(
-				eq(product_invoice_table.follower_user_id, followerId),
-				eq(product_invoice_table.creator_user_id, creatorId)
+				eq(product_invoice.follower_user_id, followerId),
+				eq(product_invoice.creator_user_id, creatorId)
 			)
 		);
 
@@ -173,11 +139,11 @@ async function getFollowerProductsPurchasedFromCreator(followerId: number, creat
 		.select({
 			count: sql<number>`count(*)`.as('count')
 		})
-		.from(product_invoice_table)
+		.from(product_invoice)
 		.where(
 			and(
-				eq(product_invoice_table.follower_user_id, followerId),
-				eq(product_invoice_table.creator_user_id, creatorId)
+				eq(product_invoice.follower_user_id, followerId),
+				eq(product_invoice.creator_user_id, creatorId)
 			)
 		);
 
@@ -193,73 +159,72 @@ async function getFollowerCreditBalanceDetails(
 ): Promise<FollowerCreditBalanceDetail[]> {
 	const balance = await db
 		.select({
-			creator_user_id: sql`COALESCE(${credit_follower_balance_table.creator_user_id}, ${plan_subscription_table.creator_user_id})`,
-			reward_name: login_table.reward_name,
-			profile_pic: login_table.profile_pic,
-			store_name: login_table.store_name,
-			total_credits:
-				sql<number>`COALESCE(SUM(${credit_follower_balance_table.credit_balance}), 0)`.as(
-					'total_credits'
-				),
-			plan_name: plan_table.name
+			creator_user_id: sql`COALESCE(${credit_follower_balance.creator_user_id}, ${plan_subscription.creator_user_id})`,
+			reward_name: login.reward_name,
+			profile_pic: login.profile_pic,
+			store_name: login.store_name,
+			total_credits: sql<number>`COALESCE(SUM(${credit_follower_balance.credit_balance}), 0)`.as(
+				'total_credits'
+			),
+			plan_name: plan.name
 		})
-		.from(login_table)
+		.from(login)
 		.leftJoin(
-			plan_subscription_table,
-			sql`${plan_subscription_table.follower_user_id} = ${followerId} AND 
-		  ${plan_subscription_table.creator_user_id} = ${login_table.id} AND 
-		  ${plan_subscription_table.date_canceled} IS NULL`
+			plan_subscription,
+			sql`${plan_subscription.follower_user_id} = ${followerId} AND 
+		  ${plan_subscription.creator_user_id} = ${login.id} AND 
+		  ${plan_subscription.date_canceled} IS NULL`
 		)
-		.leftJoin(plan_table, sql`${plan_table.id} = ${plan_subscription_table.plan_id}`)
+		.leftJoin(plan, sql`${plan.id} = ${plan_subscription.plan_id}`)
 		.leftJoin(
-			credit_follower_balance_table,
-			sql`${credit_follower_balance_table.creator_user_id} = ${login_table.id}`
+			credit_follower_balance,
+			sql`${credit_follower_balance.creator_user_id} = ${login.id}`
 		)
 		.where(
-			sql`${plan_subscription_table.follower_user_id} = ${followerId} OR 
-		  ${credit_follower_balance_table.follower_user_id} = ${followerId}`
+			sql`${plan_subscription.follower_user_id} = ${followerId} OR 
+		  ${credit_follower_balance.follower_user_id} = ${followerId}`
 		)
 		.groupBy(
-			plan_subscription_table.creator_user_id,
-			login_table.reward_name,
-			login_table.profile_pic,
-			login_table.store_name,
-			plan_table.name,
-			login_table.id,
-			credit_follower_balance_table.creator_user_id
+			plan_subscription.creator_user_id,
+			login.reward_name,
+			login.profile_pic,
+			login.store_name,
+			plan.name,
+			login.id,
+			credit_follower_balance.creator_user_id
 		)
-		.orderBy(login_table.store_name);
+		.orderBy(login.store_name);
 
 	// const balance = await db
 	// 	.select({
-	// 		creator_user_id: credit_follower_balance_table.creator_user_id,
-	// 		reward_name: login_table.reward_name,
-	// 		profile_pic: login_table.profile_pic,
-	// 		store_name: login_table.store_name,
-	// 		total_credits: sql<number>`SUM(${credit_follower_balance_table.credit_balance})`.as(
+	// 		creator_user_id: credit_follower_balance.creator_user_id,
+	// 		reward_name: login.reward_name,
+	// 		profile_pic: login.profile_pic,
+	// 		store_name: login.store_name,
+	// 		total_credits: sql<number>`SUM(${credit_follower_balance.credit_balance})`.as(
 	// 			'total_credits'
 	// 		),
-	// 		date: sql<Date>`MAX(${credit_follower_balance_table.date_updated})`.as('last_updated'),
-	// 		plan_name: plan_table.name
+	// 		date: sql<Date>`MAX(${credit_follower_balance.date_updated})`.as('last_updated'),
+	// 		plan_name: plan.name
 	// 	})
-	// 	.from(credit_follower_balance_table)
+	// 	.from(credit_follower_balance)
 	// 	.innerJoin(
-	// 		login_table,
-	// 		sql`${login_table.id} = ${credit_follower_balance_table.creator_user_id}`
+	// 		login,
+	// 		sql`${login.id} = ${credit_follower_balance.creator_user_id}`
 	// 	)
 	// 	.leftJoin(
-	// 		plan_subscription_table,
-	// 		sql`${plan_subscription_table.creator_user_id} = ${login_table.id} AND
-	// 	  ${plan_subscription_table.follower_user_id} = ${credit_follower_balance_table.follower_user_id}`
+	// 		plan_subscription,
+	// 		sql`${plan_subscription.creator_user_id} = ${login.id} AND
+	// 	  ${plan_subscription.follower_user_id} = ${credit_follower_balance.follower_user_id}`
 	// 	)
-	// 	.leftJoin(plan_table, sql`${plan_subscription_table.plan_id} = ${plan_table.id}`)
-	// 	.where(sql`${credit_follower_balance_table.follower_user_id} = ${followerId}`)
+	// 	.leftJoin(plan, sql`${plan_subscription.plan_id} = ${plan.id}`)
+	// 	.where(sql`${credit_follower_balance.follower_user_id} = ${followerId}`)
 	// 	.groupBy(
-	// 		credit_follower_balance_table.creator_user_id,
-	// 		login_table.reward_name,
-	// 		login_table.profile_pic,
-	// 		login_table.store_name,
-	// 		plan_table.name
+	// 		credit_follower_balance.creator_user_id,
+	// 		login.reward_name,
+	// 		login.profile_pic,
+	// 		login.store_name,
+	// 		plan.name
 	// 	)
 	// 	.orderBy(sql`total_credits DESC`, sql`last_updated DESC`);
 

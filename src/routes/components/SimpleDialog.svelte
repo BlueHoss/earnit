@@ -8,7 +8,7 @@
 </script>
 
 <Dialog.Root bind:open={showDialog}>
-	<Dialog.Content>
+	<Dialog.Content class="w-[600]">
 		<Dialog.Header>
 			<Dialog.Title>{title}</Dialog.Title>
 			<Dialog.Description>{description}</Dialog.Description>

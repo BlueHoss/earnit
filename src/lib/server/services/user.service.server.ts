@@ -9,13 +9,13 @@ import { Argon2id } from 'oslo/password';
 import { eq, sql } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import {
-	credit_creator_balance_table,
-	credit_follower_balance_table,
-	login_table,
-	mission_action_table,
-	mission_creator_table,
-	mission_default_action_table,
-	mission_table
+	credit_creator_balance,
+	credit_follower_balance,
+	login,
+	mission_action,
+	mission_creator,
+	mission_default_action,
+	mission
 } from '$lib/server/database/schema';
 import type { User } from 'lucia';
 
@@ -67,26 +67,26 @@ async function transformSignupToUser(signupData: SignupUser): Promise<BaseUser> 
 }
 
 async function addDefaultMissionToNewUser(creatorId: number) {
-	const missions = await db.select().from(mission_table);
+	const missions = await db.select().from(mission);
 
 	//Give the new creator all the missions
 	for (const mission of missions) {
-		const mission_creator = {
+		const new_mission_creator = {
 			mission_id: mission.id,
 			creator_user_id: creatorId
 		};
-		await db.insert(mission_creator_table).values(mission_creator);
+		await db.insert(mission_creator).values(new_mission_creator);
 
 		//Give the new creator all the mission default actions
 		const defaultActions = await db
 			.select()
-			.from(mission_default_action_table)
-			.where(eq(mission_default_action_table.mission_id, mission.id));
+			.from(mission_default_action)
+			.where(eq(mission_default_action.mission_id, mission.id));
 
 		for (const action of defaultActions) {
 			action.creator_user_id = creatorId;
 			delete action.id;
-			await db.insert(mission_action_table).values(action);
+			await db.insert(mission_action).values(action);
 		}
 	}
 }
@@ -109,8 +109,8 @@ function createHandle(firstName: string, lastName: string): string {
 async function getUserByEmail(email: string): Promise<BaseUser | null> {
 	const user = await db
 		.select()
-		.from(login_table)
-		.where(eq(TextUtilities.lower(login_table.email), email.toLowerCase()));
+		.from(login)
+		.where(eq(TextUtilities.lower(login.email), email.toLowerCase()));
 	if (user.length === 0) {
 		return null;
 	} else {
@@ -126,32 +126,32 @@ async function getUserByEmail(email: string): Promise<BaseUser | null> {
 async function getUserByUserId(userId: number): Promise<BaseUser | null> {
 	const user = await db
 		.select({
-			id: login_table.id,
-			handle: login_table.handle,
-			first_name: login_table.first_name,
-			last_name: login_table.last_name,
-			email: login_table.email,
-			verified: login_table.verified,
-			is_creator: login_table.is_creator,
-			is_follower: login_table.is_follower,
-			provider: login_table.provider,
-			provider_id: login_table.provider_id,
-			profile_pic: login_table.profile_pic,
-			social_media_profile: login_table.social_media_profile,
-			follower_count: login_table.follower_count,
-			title: login_table.title,
-			tag_line: login_table.tag_line,
-			bio: login_table.bio,
-			terms: login_table.terms,
-			receive_email: login_table.receive_email,
-			date_created: login_table.date_created,
-			date_updated: login_table.date_updated,
-			store_name: login_table.store_name,
-			reward_name: login_table.reward_name,
-			category: login_table.category
+			id: login.id,
+			handle: login.handle,
+			first_name: login.first_name,
+			last_name: login.last_name,
+			email: login.email,
+			verified: login.verified,
+			is_creator: login.is_creator,
+			is_follower: login.is_follower,
+			provider: login.provider,
+			provider_id: login.provider_id,
+			profile_pic: login.profile_pic,
+			social_media_profile: login.social_media_profile,
+			follower_count: login.follower_count,
+			title: login.title,
+			tag_line: login.tag_line,
+			bio: login.bio,
+			terms: login.terms,
+			receive_email: login.receive_email,
+			date_created: login.date_created,
+			date_updated: login.date_updated,
+			store_name: login.store_name,
+			reward_name: login.reward_name,
+			category: login.category
 		})
-		.from(login_table)
-		.where(eq(login_table.id, userId));
+		.from(login)
+		.where(eq(login.id, userId));
 	if (user.length === 0) {
 		return null;
 	} else {
@@ -165,7 +165,7 @@ async function getUserByUserId(userId: number): Promise<BaseUser | null> {
  * @returns BaseUser | null
  */
 async function getUserByToken(token: string): Promise<BaseUser | null> {
-	const user = await db.select().from(login_table).where(eq(login_table.token, token));
+	const user = await db.select().from(login).where(eq(login.token, token));
 
 	if (user.length === 0) {
 		return null;
@@ -181,7 +181,7 @@ async function getUserByToken(token: string): Promise<BaseUser | null> {
  * @returns BaseUser | null
  */
 async function updateUser(id: number, user: BaseUserUpdate): Promise<BaseUser | null> {
-	const result = await db.update(login_table).set(user).where(eq(login_table.id, id)).returning();
+	const result = await db.update(login).set(user).where(eq(login.id, id)).returning();
 	if (result.length === 0) {
 		return null;
 	} else {
@@ -198,11 +198,7 @@ async function createUser(user: BaseUser): Promise<BaseUser | null> {
 	//remove ID so the db creates a serial,identity or autoincrement.
 	//const { id: _, ...newUser } = user;
 
-	const result: BaseUser[] = await db
-		.insert(login_table)
-		.values(user)
-		.onConflictDoNothing()
-		.returning();
+	const result: BaseUser[] = await db.insert(login).values(user).onConflictDoNothing().returning();
 	if (result.length === 0) {
 		return null;
 	} else {
@@ -214,16 +210,16 @@ async function createUser(user: BaseUser): Promise<BaseUser | null> {
 async function addInitialCreditstoCreator(creatorId: number, initialCredit: number) {
 	const existingCreditRecord = await db
 		.select()
-		.from(credit_creator_balance_table)
-		.where(eq(credit_creator_balance_table.creator_user_id, creatorId));
+		.from(credit_creator_balance)
+		.where(eq(credit_creator_balance.creator_user_id, creatorId));
 	if (existingCreditRecord.length > 0) {
 		const creditRecord = existingCreditRecord[0];
 		creditRecord.credits_received += initialCredit;
 		creditRecord.date_updated = new Date();
 		await db
-			.update(credit_creator_balance_table)
+			.update(credit_creator_balance)
 			.set(creditRecord)
-			.where(eq(credit_creator_balance_table.id, creditRecord.id));
+			.where(eq(credit_creator_balance.id, creditRecord.id));
 	} else {
 		const credit = {
 			creator_user_id: creatorId,
@@ -231,7 +227,7 @@ async function addInitialCreditstoCreator(creatorId: number, initialCredit: numb
 			credits_received: initialCredit.toString(),
 			credits_awarded: '0.00'
 		};
-		await db.insert(credit_creator_balance_table).values(credit);
+		await db.insert(credit_creator_balance).values(credit);
 	}
 }
 
@@ -245,37 +241,38 @@ function postNewUserTasks(newUser: BaseUser) {
 async function getSessioUser(userId: number): Promise<User | null> {
 	const user = await db
 		.select({
-			userId: login_table.id,
-			id: login_table.id,
-			provider: login_table.provider,
-			providerId: login_table.provider_id,
-			email: login_table.email,
-			handle: login_table.handle,
-			first_name: login_table.first_name,
-			last_name: login_table.last_name,
-			role: login_table.role,
-			verified: login_table.verified,
-			token: login_table.token,
-			is_creator: login_table.is_creator,
-			is_follower: login_table.is_follower,
-			follower_count: login_table.follower_count,
-			profile_pic: login_table.profile_pic,
-			title: login_table.title,
-			tag_line: login_table.tag_line,
-			store_name: login_table.store_name,
-			reward_name: login_table.reward_name,
-			social_media_profile: login_table.social_media_profile,
+			userId: login.id,
+			id: login.id,
+			provider: login.provider,
+			providerId: login.provider_id,
+			email: login.email,
+			handle: login.handle,
+			first_name: login.first_name,
+			last_name: login.last_name,
+			role: login.role,
+			verified: login.verified,
+			token: login.token,
+			is_creator: login.is_creator,
+			is_follower: login.is_follower,
+			follower_count: login.follower_count,
+			profile_pic: login.profile_pic,
+			title: login.title,
+			tag_line: login.tag_line,
+			store_name: login.store_name,
+			reward_name: login.reward_name,
+			social_media_profile: login.social_media_profile,
+			stripe_customer_id: login.stripe_customer_id,
 			credit_balance: sql<number>`
 					CASE
-					WHEN ${login_table.is_creator} THEN (
-						SELECT SUM(${credit_creator_balance_table.credit_balance})
-						FROM ${credit_creator_balance_table}
-						WHERE ${credit_creator_balance_table.creator_user_id} = ${userId}
+					WHEN ${login.is_creator} THEN (
+						SELECT SUM(${credit_creator_balance.credit_balance})
+						FROM ${credit_creator_balance}
+						WHERE ${credit_creator_balance.creator_user_id} = ${userId}
 					)
-					WHEN ${login_table.is_follower} THEN (
-						SELECT SUM(${credit_follower_balance_table.credit_balance})
-						FROM ${credit_follower_balance_table}
-						WHERE ${credit_follower_balance_table.follower_user_id} = ${userId}
+					WHEN ${login.is_follower} THEN (
+						SELECT SUM(${credit_follower_balance.credit_balance})
+						FROM ${credit_follower_balance}
+						WHERE ${credit_follower_balance.follower_user_id} = ${userId}
 					)
 					ELSE 0
 					END
@@ -283,21 +280,21 @@ async function getSessioUser(userId: number): Promise<User | null> {
 
 			user_type: sql<string>`
 				CASE
-				WHEN ${login_table.is_creator} AND ${login_table.is_follower} THEN 'creator'
-				WHEN ${login_table.is_creator} THEN 'creator'
-				WHEN ${login_table.is_follower} THEN 'follower'
+				WHEN ${login.is_creator} AND ${login.is_follower} THEN 'creator'
+				WHEN ${login.is_creator} THEN 'creator'
+				WHEN ${login.is_follower} THEN 'follower'
 				ELSE 'public'
 				END
 			`.as('user_type'),
 			initials: sql<string>`
 				CONCAT(
-					UPPER(LEFT(${login_table.first_name}, 1)),
-					UPPER(LEFT(COALESCE(${login_table.last_name}, ''), 1))
+					UPPER(LEFT(${login.first_name}, 1)),
+					UPPER(LEFT(COALESCE(${login.last_name}, ''), 1))
 				)
 			`.as('initials')
 		})
-		.from(login_table)
-		.where(eq(login_table.id, userId));
+		.from(login)
+		.where(eq(login.id, userId));
 	if (user.length === 0) {
 		return null;
 	} else {

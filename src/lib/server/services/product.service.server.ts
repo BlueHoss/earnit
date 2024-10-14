@@ -3,12 +3,12 @@ import { ProductQueryResultSchema } from '$lib/schema/product.schema';
 import { z } from 'zod';
 
 import {
-	credit_follower_balance_table,
-	credit_transaction_table,
-	login_table,
-	product_invoice_table,
-	product_item_table,
-	product_table
+	credit_follower_balance,
+	credit_transaction,
+	login,
+	product_invoice,
+	product_item,
+	product
 } from '$lib/server/database/schema';
 import type {
 	Product,
@@ -17,7 +17,7 @@ import type {
 	ProductQueryResult,
 	ProductWithItemCount
 } from '$lib/schema/product.schema';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, sql, sum } from 'drizzle-orm';
 import {
 	PUBLIC_SUPABASE_STORAGE_URL,
 	PUBLIC_SUPABASE_PRODUCT_IMAGE_BUCKET,
@@ -32,7 +32,7 @@ async function createProduct(newProduct: ProductNewUpdateType) {
 	}
 
 	const result: ProductNewUpdateType[] = await db
-		.insert(product_table)
+		.insert(product)
 		.values(newProduct)
 		.onConflictDoNothing()
 		.returning();
@@ -64,12 +64,9 @@ async function uploadProductItems(productId: number, productItems: ProductItemNe
 		productItem.product_id = productId;
 
 		if (productItem.id && !isNaN(productItem.id)) {
-			await db
-				.update(product_item_table)
-				.set(productItem)
-				.where(eq(product_item_table.id, productItem.id));
+			await db.update(product_item).set(productItem).where(eq(product_item.id, productItem.id));
 		} else {
-			await db.insert(product_item_table).values(productItem).onConflictDoNothing();
+			await db.insert(product_item).values(productItem).onConflictDoNothing();
 		}
 	}
 }
@@ -80,9 +77,9 @@ async function updateProduct(product: ProductNewUpdateType): Promise<Product | n
 	}
 
 	const result = await db
-		.update(product_table)
+		.update(product)
 		.set(product)
-		.where(eq(product_table.id, product.id))
+		.where(eq(product.id, product.id))
 		.returning();
 
 	if (result.length === 0) {
@@ -98,10 +95,7 @@ async function getProductsByUserId(userId: number): Promise<Product[] | []> {
 		return [];
 	}
 
-	const result = await db
-		.select()
-		.from(product_table)
-		.where(eq(product_table.creator_user_id, userId));
+	const result = await db.select().from(product).where(eq(product.creator_user_id, userId));
 
 	if (result.length === 0) {
 		return [];
@@ -115,7 +109,7 @@ async function getProductById(userId: number, productId: number): Promise<Produc
 		return getDefaultProduct(userId);
 	}
 
-	const result = await db.select().from(product_table).where(eq(product_table.id, productId));
+	const result = await db.select().from(product).where(eq(product.id, productId));
 
 	if (result.length === 0) {
 		return null;
@@ -129,20 +123,20 @@ async function getProductListingById(productId: number): Promise<ProductWithItem
 
 	const result = await db
 		.select({
-			id: product_table.id,
-			name: product_table.name,
-			description: product_table.description,
-			creator_user_id: product_table.creator_user_id,
-			cover_image: product_table.cover_image,
-			cost: sql<number>`CAST(${product_table.cost} AS FLOAT)`.as('cost'),
-			enabled: product_table.enabled,
+			id: product.id,
+			name: product.name,
+			description: product.description,
+			creator_user_id: product.creator_user_id,
+			cover_image: product.cover_image,
+			cost: sql<number>`CAST(${product.cost} AS FLOAT)`.as('cost'),
+			enabled: product.enabled,
 			item_count:
-				sql<number>`(SELECT COUNT(*) FROM ${product_item_table} WHERE ${product_item_table.product_id} = ${productId})`.as(
+				sql<number>`(SELECT COUNT(*) FROM ${product_item} WHERE ${product_item.product_id} = ${productId})`.as(
 					'item_count'
 				)
 		})
-		.from(product_table)
-		.where(eq(product_table.id, productId));
+		.from(product)
+		.where(eq(product.id, productId));
 
 	if (result.length === 0) {
 		return null;
@@ -159,37 +153,35 @@ async function getFullProductPurchasedByFollower(
 		return null;
 	}
 
-	const product: ProductQueryResult[] = await db
+	const productResult: ProductQueryResult[] = await db
 		.select({
-			id: product_table.id,
-			creator_user_id: product_table.creator_user_id,
-			name: product_table.name,
-			description: product_table.description,
-			cover_image: product_table.cover_image,
-			cost: sql<number>`CAST(${product_invoice_table.cost} AS FLOAT)`.as('cost'),
-			date_purchased: product_invoice_table.date_purchased,
-			creator_handle: login_table.handle,
-			store_name: login_table.store_name,
-			reward_name: login_table.reward_name
+			id: product.id,
+			creator_user_id: product.creator_user_id,
+			name: product.name,
+			description: product.description,
+			cover_image: product.cover_image,
+			cost: sql<number>`CAST(${product_invoice.cost} AS FLOAT)`.as('cost'),
+			date_purchased: product_invoice.date_purchased,
+			creator_handle: login.handle,
+			store_name: login.store_name,
+			reward_name: login.reward_name
 		})
-		.from(product_table)
-		.innerJoin(product_invoice_table, eq(product_invoice_table.product_id, product_table.id))
-		.innerJoin(login_table, eq(login_table.id, product_invoice_table.creator_user_id))
-		.where(
-			and(eq(product_table.id, productId), eq(product_invoice_table.follower_user_id, followerId))
-		);
+		.from(product)
+		.innerJoin(product_invoice, eq(product_invoice.product_id, product.id))
+		.innerJoin(login, eq(login.id, product_invoice.creator_user_id))
+		.where(and(eq(product.id, productId), eq(product_invoice.follower_user_id, followerId)));
 
-	if (product.length === 0) {
+	if (productResult.length === 0) {
 		return null;
 	} else {
 		const productItems = await db
 			.select()
-			.from(product_item_table)
-			.where(eq(product_item_table.product_id, productId));
+			.from(product_item)
+			.where(eq(product_item.product_id, productId));
 
-		product[0].productItems = productItems;
+		productResult[0].productItems = productItems;
 
-		return product[0];
+		return productResult[0];
 	}
 }
 
@@ -200,10 +192,7 @@ async function getProductItemsByProductId(
 		return [];
 	}
 
-	const result = await db
-		.select()
-		.from(product_item_table)
-		.where(eq(product_item_table.product_id, productId));
+	const result = await db.select().from(product_item).where(eq(product_item.product_id, productId));
 
 	if (result.length === 0) {
 		return [];
@@ -213,11 +202,11 @@ async function getProductItemsByProductId(
 }
 
 function getDefaultProduct(userId: number): ProductNewUpdateType {
-	const product: ProductNewUpdateType = {
+	const newProduct: ProductNewUpdateType = {
 		creator_user_id: userId,
 		cover_image: `${PUBLIC_SUPABASE_STORAGE_URL}/${PUBLIC_SUPABASE_PRODUCT_IMAGE_BUCKET}/${PUBLIC_DEFAULT_PRODUCT_IMAGE}`
 	};
-	return product;
+	return newProduct;
 }
 
 async function deleteProductItemById(productItemId: number) {
@@ -228,8 +217,8 @@ async function deleteProductItemById(productItemId: number) {
 		}
 
 		const deletedProductItem = await db
-			.delete(product_item_table)
-			.where(eq(product_item_table.id, productItemId))
+			.delete(product_item)
+			.where(eq(product_item.id, productItemId))
 			.returning();
 
 		if (deletedProductItem.length === 0) {
@@ -254,10 +243,7 @@ async function deleteProductItemById(productItemId: number) {
 
 async function deleteProduct(productId: number) {
 	try {
-		const deletedProduct = await db
-			.delete(product_table)
-			.where(eq(product_table.id, productId))
-			.returning();
+		const deletedProduct = await db.delete(product).where(eq(product.id, productId)).returning();
 
 		if (deletedProduct.length === 0) {
 			console.log('No product found with the given ID');
@@ -282,25 +268,25 @@ async function getProductsPurchasedByFollower(
 ): Promise<ProductQueryResult[]> {
 	const products = await db
 		.select({
-			id: product_table.id,
-			creator_user_id: product_table.creator_user_id,
-			name: product_table.name,
-			description: product_table.description,
-			cover_image: product_table.cover_image,
-			cost: sql<number>`CAST(${product_invoice_table.cost} AS FLOAT)`.as('cost'),
-			date_purchased: product_invoice_table.date_purchased,
-			creator_handle: login_table.handle,
-			store_name: login_table.store_name,
-			reward_name: login_table.reward_name,
+			id: product.id,
+			creator_user_id: product.creator_user_id,
+			name: product.name,
+			description: product.description,
+			cover_image: product.cover_image,
+			cost: sql<number>`CAST(${product_invoice.cost} AS FLOAT)`.as('cost'),
+			date_purchased: product_invoice.date_purchased,
+			creator_handle: login.handle,
+			store_name: login.store_name,
+			reward_name: login.reward_name,
 			item_count:
-				sql<number>`(SELECT COUNT(*) FROM ${product_item_table} WHERE ${product_item_table.product_id} = ${product_table.id})`.as(
+				sql<number>`(SELECT COUNT(*) FROM ${product_item} WHERE ${product_item.product_id} = ${product.id})`.as(
 					'item_count'
 				)
 		})
-		.from(product_table)
-		.innerJoin(product_invoice_table, eq(product_invoice_table.product_id, product_table.id))
-		.innerJoin(login_table, eq(login_table.id, product_invoice_table.creator_user_id))
-		.where(eq(product_invoice_table.follower_user_id, followerUserId));
+		.from(product)
+		.innerJoin(product_invoice, eq(product_invoice.product_id, product.id))
+		.innerJoin(login, eq(login.id, product_invoice.creator_user_id))
+		.where(eq(product_invoice.follower_user_id, followerUserId));
 
 	// Validate the results
 	const validatedProducts = z.array(ProductQueryResultSchema).parse(products);
@@ -314,39 +300,39 @@ async function redeemProductFromCreator(
 	productId: number
 ): Promise<EarnItActionResult> {
 	try {
-		const products = await db.select().from(product_table).where(eq(product_table.id, productId));
+		const products = await db.select().from(product).where(eq(product.id, productId));
 
 		if (products.length === 0) {
 			console.log('No product found with the given ID');
 			return ActionResponse.fail('No product found with the given ID');
 		}
 
-		const product = products[0];
+		const productDb = products[0];
 
 		// Get existing follower's credit balance for this creator
 		const followerCreditRecords = await db
-			.select()
-			.from(credit_follower_balance_table)
+			.select({
+				total: sum(credit_follower_balance.credit_balance).as('total')
+			})
+			.from(credit_follower_balance)
 			.where(
 				and(
-					eq(credit_follower_balance_table.follower_user_id, followerId),
-					eq(credit_follower_balance_table.creator_user_id, creatorId)
+					eq(credit_follower_balance.follower_user_id, followerId),
+					eq(credit_follower_balance.creator_user_id, creatorId)
 				)
 			);
 
-		let followerCreditRecord = null;
-		if (followerCreditRecords.length === 1) {
-			followerCreditRecord = followerCreditRecords[0];
-		}
-
-		if (!followerCreditRecord) {
+		let creditBalance = 0;
+		if (followerCreditRecords.length > 0) {
+			creditBalance = Number(followerCreditRecords[0].total);
+		} else {
 			console.log('You do not have any credit with this creator to purchase this product');
 			return ActionResponse.fail(
 				'You do not have any credit with this creator to purchase this product'
 			);
 		}
 
-		if (Number(followerCreditRecord.credit_balance) < Number(product.cost)) {
+		if (Number(creditBalance) < Number(productDb.cost)) {
 			console.log('You do not have enough credit to purchase this product');
 			return ActionResponse.fail('You do not have enough credit to purchase this product');
 		}
@@ -359,44 +345,44 @@ async function redeemProductFromCreator(
 			// 1. Create product invoice
 			const productInvoice = {
 				follower_user_id: followerId,
-				creator_user_id: product.creator_user_id,
+				creator_user_id: productDb.creator_user_id,
 				product_id: productId,
-				cost: product.cost
+				cost: productDb.cost
 			};
 
-			await tx.insert(product_invoice_table).values(productInvoice).returning();
+			await tx.insert(product_invoice).values(productInvoice).returning();
 
 			// 2. Update creator's credit pool
 			// const updatedCreatorPool = await tx
-			// 	.update(credit_creator_balance_table)
+			// 	.update(credit_creator_balance)
 			// 	.set({
-			// 		available_credits: sql`${credit_creator_balance_table.available_credits}`
+			// 		available_credits: sql`${credit_creator_balance.available_credits}`
 			// 	})
-			// 	.where(eq(credit_creator_balance_table.creator_user_id, creatorId))
+			// 	.where(eq(credit_creator_balance.creator_user_id, creatorId))
 			// 	.returning();
 
 			// 3. Insert a new credit transaction
 			const newTransaction = await tx
-				.insert(credit_transaction_table)
+				.insert(credit_transaction)
 				.values({
 					transaction_type: 'Product_Redemption',
 					creator_user_id: creatorId,
 					follower_user_id: followerId,
-					amount: product.cost,
-					description: `Credit purchase of ${product.name} for ${product.cost} credits`
+					amount: productDb.cost,
+					description: `Credit purchase of ${productDb.name} for ${productDb.cost} credits`
 				})
 				.returning();
 
 			// 4. Update follower's credit balance
 			const updatedFollowerBalance = await tx
-				.update(credit_follower_balance_table)
+				.update(credit_follower_balance)
 				.set({
-					credit_balance: sql`${credit_follower_balance_table.credit_balance} - ${product.cost}`
+					credit_balance: sql`${credit_follower_balance.credit_balance} - ${productDb.cost}`
 				})
 				.where(
 					and(
-						eq(credit_follower_balance_table.follower_user_id, followerId),
-						eq(credit_follower_balance_table.creator_user_id, creatorId)
+						eq(credit_follower_balance.follower_user_id, followerId),
+						eq(credit_follower_balance.creator_user_id, creatorId)
 					)
 				)
 				.returning();

@@ -1,14 +1,14 @@
 // lib/server/lucia.ts
 import { Lucia, TimeSpan } from 'lucia';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
-import { login_table, auth_session_table } from '$lib/server/database/schema';
+import { login, auth_session } from '$lib/server/database/schema';
 import db from '$lib/server/database/drizzle';
 import { dev } from '$app/environment';
 import { Google } from 'arctic';
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
 import { PUBLIC_BASE_URL } from '$env/static/public';
 
-const adapter = new DrizzlePostgreSQLAdapter(db, auth_session_table, login_table);
+const adapter = new DrizzlePostgreSQLAdapter(db, auth_session, login);
 
 export const lucia = new Lucia(adapter, {
 	sessionCookie: {
@@ -43,7 +43,8 @@ export const lucia = new Lucia(adapter, {
 			store_name: attributes.store_name,
 			reward_name: attributes.reward_name,
 			credit_balance: attributes.credit_balance,
-			social_media_profile: attributes.social_media_profile
+			social_media_profile: attributes.social_media_profile,
+			stripe_customer_id: attributes.stripe_customer_id
 		};
 	}
 });
@@ -78,6 +79,7 @@ interface DatabaseUserAttributes {
 	reward_name: string;
 	credit_balance: string;
 	social_media_profile: string;
+	stripe_customer_id: string;
 }
 
 function makeInitials(firstName: string, lastName: string) {

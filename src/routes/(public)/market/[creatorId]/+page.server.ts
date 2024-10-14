@@ -1,13 +1,9 @@
-import type { PlanWithSubscription } from '$lib/schema/plan.schema.js';
 import { CreatorDashboardService } from '$lib/server/services/creator.dashboard.service.server.js';
-import { CreatorManagmentService } from '$lib/server/services/creator.management.service.server.js';
 import { FollowersDashboardService } from '$lib/server/services/follower.dashboard.service.server.js';
 import { PlanService } from '$lib/server/services/plan.service.server.js';
 import { ProductService } from '$lib/server/services/product.service.server.js';
 import { UserService } from '$lib/server/services/user.service.server.js';
-import type { EarnItActionResult } from '$lib/utils/action-result.js';
-import { error, fail, type Actions } from '@sveltejs/kit';
-import { setFlash } from 'sveltekit-flash-message/server';
+import { error } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageLoad} */
 export async function load({ params, locals }) {
@@ -52,68 +48,3 @@ export async function load({ params, locals }) {
 		followerPlan
 	};
 }
-
-export const actions: Actions = {
-	purchaseProduct: async (event) => {
-		try {
-			const data = await event.request.formData();
-			const planId = data.get('planId');
-			const creatorId = data.get('creatorId');
-			const userId = data.get('userId');
-
-			const result: EarnItActionResult = await PlanService.purchaseRecurringPlan(
-				Number(creatorId),
-				Number(userId),
-				Number(planId)
-			);
-
-			if (result.success) {
-				setFlash({ type: 'success', message: 'Subscription success!' }, event);
-				return { success: true, message: 'Subscription processed successfully' };
-			} else {
-				const errorMessage = result.message ?? 'Unknown error occurred';
-				setFlash({ type: 'error', message: errorMessage }, event);
-				return fail(400, {
-					errors: [errorMessage]
-				});
-			}
-		} catch (err) {
-			console.error('Unexpected error:', err);
-			const errorMessage = 'An unexpected error occurred';
-			return fail(500, {
-				errors: [errorMessage]
-			});
-		}
-	},
-	planUnsubscribe: async (event) => {
-		try {
-			const data = await event.request.formData();
-			const planId = data.get('planId');
-			const creatorId = data.get('creatorId');
-			const userId = data.get('userId');
-
-			const result: EarnItActionResult = await PlanService.unsubscribeFromPlan(
-				Number(creatorId),
-				Number(userId),
-				Number(planId)
-			);
-
-			if (result.success) {
-				setFlash({ type: 'success', message: 'Subscription success!' }, event);
-				return { success: true, message: 'Subscription processed successfully' };
-			} else {
-				const errorMessage = result.message ?? 'Unknown error occurred';
-				setFlash({ type: 'error', message: errorMessage }, event);
-				return fail(400, {
-					errors: [errorMessage]
-				});
-			}
-		} catch (err) {
-			console.error('Unexpected error:', err);
-			const errorMessage = 'An unexpected error occurred';
-			return fail(500, {
-				errors: [errorMessage]
-			});
-		}
-	}
-};

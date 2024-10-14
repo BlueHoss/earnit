@@ -7,7 +7,7 @@
 
 import { eq } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
-import { login_table } from '$lib/server/database/schema';
+import { login } from '$lib/server/database/schema';
 import { TextUtilities } from '$lib/utils/text-utilities';
 import { ImageService } from './image.service.server';
 import { type ProfileEditUser } from '$lib/schema/login.schema';
@@ -21,10 +21,10 @@ import { type ProfileEditUser } from '$lib/schema/login.schema';
 async function getUserBio(userid: number) {
 	const bio = await db
 		.select({
-			bio: login_table.bio
+			bio: login.bio
 		})
-		.from(login_table)
-		.where(eq(login_table.id, userid));
+		.from(login)
+		.where(eq(login.id, userid));
 	return bio[0];
 }
 
@@ -37,25 +37,25 @@ async function getUserBio(userid: number) {
 async function getUserProfile(userid: number): Promise<ProfileEditUser> {
 	const bio = await db
 		.select({
-			id: login_table.id,
-			handle: login_table.handle,
-			title: login_table.title,
-			email: login_table.email,
-			bio: login_table.bio,
-			first_name: login_table.first_name,
-			last_name: login_table.last_name,
-			receive_email: login_table.receive_email,
-			profile_pic: login_table.profile_pic,
-			social_media_profile: login_table.social_media_profile,
-			tag_line: login_table.tag_line,
-			is_creator: login_table.is_creator,
-			is_follower: login_table.is_follower,
-			reward_name: login_table.reward_name,
-			store_name: login_table.store_name,
-			category: login_table.category
+			id: login.id,
+			handle: login.handle,
+			title: login.title,
+			email: login.email,
+			bio: login.bio,
+			first_name: login.first_name,
+			last_name: login.last_name,
+			receive_email: login.receive_email,
+			profile_pic: login.profile_pic,
+			social_media_profile: login.social_media_profile,
+			tag_line: login.tag_line,
+			is_creator: login.is_creator,
+			is_follower: login.is_follower,
+			reward_name: login.reward_name,
+			store_name: login.store_name,
+			category: login.category
 		})
-		.from(login_table)
-		.where(eq(login_table.id, userid));
+		.from(login)
+		.where(eq(login.id, userid));
 	return bio[0];
 }
 
@@ -71,7 +71,7 @@ async function setUserProfile(userid: number, data: ProfileEditUser) {
 	removeOldProfilePic(userid, data.profile_pic);
 
 	const result = await db
-		.update(login_table)
+		.update(login)
 		.set({
 			first_name: data.first_name,
 			last_name: data.last_name,
@@ -84,7 +84,7 @@ async function setUserProfile(userid: number, data: ProfileEditUser) {
 			profile_pic: data.profile_pic,
 			social_media_profile: data.social_media_profile
 		})
-		.where(eq(login_table.id, userid));
+		.where(eq(login.id, userid));
 
 	return result;
 }
@@ -118,15 +118,15 @@ async function removeOldProfilePic(userid: number, newProfilePic: string | null)
 async function getAllCreators() {
 	const creators = await db
 		.select({
-			id: login_table.id,
-			profile_pic: login_table.profile_pic,
-			store_name: login_table.store_name,
-			title: login_table.title,
-			handle: login_table.handle,
-			category: login_table.category
+			id: login.id,
+			profile_pic: login.profile_pic,
+			store_name: login.store_name,
+			title: login.title,
+			handle: login.handle,
+			category: login.category
 		})
-		.from(login_table)
-		.where(eq(login_table.is_creator, true));
+		.from(login)
+		.where(eq(login.is_creator, true));
 
 	return creators;
 }

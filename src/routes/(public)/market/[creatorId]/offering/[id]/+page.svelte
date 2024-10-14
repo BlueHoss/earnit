@@ -111,7 +111,7 @@
 						</Badge>
 						{#if data.user}
 							{#if isOwned}
-								<Title>You own this product</Title>
+								<Title><a href="/earn/{data.product.id}">You own this! Go to product</a></Title>
 							{:else}
 								<Button
 									variant="default"

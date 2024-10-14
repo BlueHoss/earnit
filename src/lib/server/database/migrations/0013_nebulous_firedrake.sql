@@ -1,0 +1,1 @@
+ALTER TABLE "plan_subscription" ADD COLUMN "level" integer DEFAULT 0 NOT NULL;

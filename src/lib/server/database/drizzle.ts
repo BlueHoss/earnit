@@ -6,6 +6,13 @@ const pool = new pg.Pool({
 });
 
 await pool.connect();
-const db = drizzle(pool);
+const db = drizzle(pool, {
+	// logger: {
+	// 	logQuery: (query: string, params: unknown[]) => {
+	// 		console.log('Query:', query);
+	// 		console.log('Parameters:', params);
+	// 	}
+	// }
+});
 
 export default db;
