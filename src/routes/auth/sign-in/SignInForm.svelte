@@ -7,7 +7,7 @@
 	import { signInSchema, type SignInSchema } from '$lib/schema/login.schema';
 	import { pendingActions } from '$lib/stores/pending-action.store';
 	import type { ActionResult } from '@sveltejs/kit';
-	import { redirectWithRefresh } from '$lib/utils/redirect-with-refresh';
+	import { redirectWithRefresh } from '$lib/utilities/redirect-with-refresh';
 
 	export let data: SuperValidated<Infer<SignInSchema>>;
 

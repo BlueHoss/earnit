@@ -48,3 +48,18 @@ When we put all the part together this is what the database diagram looks like"
 
 Based on Sveltekit Auth
 From: https://github.com/delay/sveltekit-auth
+
+## Stripe
+
+The stripe integration uses webhooks to finalize a subscription purchase. The webhook at /api/stripe/webhooks will be hit by stripe once the payment is confirmed on their side.
+
+What does this mean for development?
+
+When testing stripe localy follow the steps below to channel the Stripe webhook from Stripe back to your localhost:
+
+- In a new terminal window run the following command
+- `stripe listen --forward-to localhost:5173/api/stripe/webhooks`
+
+* Ensure that the webhook signing secret (displayed in the terminal after running command above) matches your .env.PRIVATE_STRIPE_WEBHOOK_SECRET
+
+That will leave the terminal and tell Stripe to send any 'test' webhooks to your local machine.

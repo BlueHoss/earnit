@@ -13,7 +13,8 @@ import {
 	boolean,
 	smallint,
 	uniqueIndex,
-	primaryKey
+	primaryKey,
+	date
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
@@ -54,7 +55,8 @@ export const mission_default_action = pgTable('mission_default_action', {
 	name: text('name').notNull(),
 	reward_per_day: integer('reward_per_day').default(0).notNull(),
 	description: text('description'),
-	icon: text('icon')
+	icon: text('icon'),
+	lookup_name: text('lookup_name').notNull().default('notset')
 });
 
 export const credit_transaction = pgTable(
@@ -62,6 +64,10 @@ export const credit_transaction = pgTable(
 	{
 		id: serial('id').primaryKey().notNull(),
 		transaction_type: text('transaction_type'),
+		credit_follower_distribution_id: integer('credit_follower_distribution_id').references(
+			() => credit_follower_distribution.id,
+			{ onDelete: 'set null' }
+		),
 		description: text('description'),
 		follower_user_id: integer('follower_user_id')
 			.notNull()
@@ -70,7 +76,12 @@ export const credit_transaction = pgTable(
 			.notNull()
 			.references(() => login.id, { onDelete: 'cascade' }),
 		amount: numeric('amount', { precision: 10, scale: 2 }).default('0.00').notNull(),
-		date_transaction: timestamp('date_transaction', { mode: 'string' }).defaultNow().notNull()
+		mission_action_id: integer('mission_action_id').references(() => mission_action.id, {
+			onDelete: 'set null'
+		}),
+		date_transaction: timestamp('date_transaction', { mode: 'string', withTimezone: true })
+			.defaultNow()
+			.notNull()
 	},
 	(table) => {
 		return {
@@ -95,7 +106,7 @@ export const credit_follower_balance = pgTable(
 			.references(() => login.id, { onDelete: 'cascade' }),
 		creator_user_id: integer('creator_user_id')
 			.notNull()
-			.references(() => login.id),
+			.references(() => login.id, { onDelete: 'cascade' }),
 		credit_balance: numeric('credit_balance', { precision: 10, scale: 2 })
 			.default('0.00')
 			.notNull(),
@@ -120,14 +131,16 @@ export const credit_creator_balance = pgTable(
 		id: serial('id').primaryKey().notNull(),
 		creator_user_id: integer('creator_user_id')
 			.notNull()
-			.references(() => login.id),
+			.references(() => login.id, { onDelete: 'cascade' }),
 		credits_awarded: numeric('credits_awarded', { precision: 10, scale: 2 })
 			.default('0.00')
 			.notNull(),
 		credits_received: numeric('credits_received', { precision: 10, scale: 2 })
 			.default('0.00')
 			.notNull(),
-		date_updated: timestamp('date_updated', { mode: 'string' }).defaultNow().notNull(),
+		date_updated: timestamp('date_updated', { mode: 'string', withTimezone: true })
+			.defaultNow()
+			.notNull(),
 		credit_balance: numeric('credit_balance')
 	},
 	(table) => {
@@ -140,16 +153,25 @@ export const credit_creator_balance = pgTable(
 	}
 );
 
-export const credit_distribution = pgTable('credit_distribution', {
+export const credit_creator_distribution = pgTable('credit_creator_distribution', {
 	id: serial('id').primaryKey().notNull(),
 	earnit_creator_user_id: integer('earnit_creator_user_id')
 		.notNull()
 		.references(() => login.id),
 	creator_user_id: integer('creator_user_id')
 		.notNull()
-		.references(() => login.id),
+		.references(() => login.id, { onDelete: 'cascade' }),
 	amount: numeric('amount', { precision: 10, scale: 2 }).default('0.00').notNull(),
-	date_transaction: timestamp('date_transaction', { mode: 'string' }).defaultNow().notNull()
+	date_transaction: timestamp('date_transaction', { mode: 'string', withTimezone: true })
+		.defaultNow()
+		.notNull()
+});
+
+export const credit_follower_distribution = pgTable('credit_follower_distribution', {
+	id: serial('id').primaryKey().notNull(),
+	date_ran: date('date_transaction').notNull(),
+	actions_processed: integer('actions_processed').default(0).notNull(),
+	status: text('status').notNull().default('running')
 });
 
 export const django_migrations = pgTable('django_migrations', {
@@ -579,7 +601,7 @@ export const auth_session = pgTable('auth_session', {
 	userId: integer('user_id')
 		.notNull()
 		.references(() => login.id, { onDelete: 'cascade' }),
-	expiresAt: timestamp('expires_at', { mode: 'date' }).notNull(),
+	expiresAt: timestamp('expires_at', { mode: 'date', withTimezone: true }).notNull(),
 	token: text('token').notNull()
 });
 
@@ -595,8 +617,12 @@ export const login = pgTable(
 		verified: boolean('verified').default(false).notNull(),
 		receive_email: boolean('receive_email').default(true).notNull(),
 		hashed_password: text('hashed_password').notNull(),
-		date_created: timestamp('date_created', { mode: 'string' }).defaultNow().notNull(),
-		date_updated: timestamp('date_updated', { mode: 'string' }).defaultNow().notNull(),
+		date_created: timestamp('date_created', { mode: 'string', withTimezone: true })
+			.defaultNow()
+			.notNull(),
+		date_updated: timestamp('date_updated', { mode: 'string', withTimezone: true })
+			.defaultNow()
+			.notNull(),
 		provider_id: text('provider_id'),
 		provider: text('provider'),
 		profile_pic: text('profile_pic'),
@@ -631,12 +657,12 @@ export const plan_subscription = pgTable('plan_subscription', {
 	follower_user_id: integer('follower_user_id')
 		.notNull()
 		.references(() => login.id, { onDelete: 'cascade' }),
-	date_started: timestamp('date_started', { mode: 'string' }).notNull(),
+	date_started: timestamp('date_started', { mode: 'string', withTimezone: true }).notNull(),
 	plan_id: integer('plan_id')
 		.notNull()
 		.references(() => plan.id),
 	stripe_subscription_id: text('stripe_subscription_id'),
-	date_canceled: timestamp('date_canceled', { mode: 'string' })
+	date_canceled: timestamp('date_canceled', { mode: 'string', withTimezone: true })
 });
 
 export const plan = pgTable('plan', {
@@ -651,8 +677,8 @@ export const plan = pgTable('plan', {
 
 export const mission = pgTable('mission', {
 	id: serial('id').primaryKey().notNull(),
-	name: text('name'),
-	platform: text('platform'),
+	name: text('name').notNull(),
+	platform: text('platform').notNull(),
 	description: text('description')
 });
 
@@ -673,9 +699,11 @@ export const product_invoice = pgTable('product_invoice', {
 	id: serial('id').primaryKey().notNull(),
 	product_id: integer('product_id').references(() => product.id),
 	cost: numeric('cost', { precision: 10, scale: 2 }).default('0.00').notNull(),
-	date_purchased: timestamp('date_purchased', { mode: 'string' }).defaultNow().notNull(),
+	date_purchased: timestamp('date_purchased', { mode: 'string', withTimezone: true })
+		.defaultNow()
+		.notNull(),
 	follower_user_id: integer('follower_user_id').references(() => login.id, { onDelete: 'cascade' }),
-	creator_user_id: integer('creator_user_id').references(() => login.id)
+	creator_user_id: integer('creator_user_id').references(() => login.id, { onDelete: 'cascade' })
 });
 
 export const mission_action = pgTable('mission_action', {
@@ -689,7 +717,8 @@ export const mission_action = pgTable('mission_action', {
 		.notNull()
 		.references(() => login.id, { onDelete: 'cascade' }),
 	description: text('description'),
-	icon: text('icon')
+	icon: text('icon'),
+	lookup_name: text('lookup_name').notNull().default('notset')
 });
 
 export const product_item = pgTable('product_item', {
@@ -742,3 +771,38 @@ export const mission_creator = pgTable(
 		};
 	}
 );
+
+export const earnit_scanner_follower = pgTable('earnit_scanner_follower', {
+	id: serial('id').primaryKey().notNull(),
+	follower_user_id: integer('follower_user_id')
+		.notNull()
+		.references(() => login.id, { onDelete: 'cascade' }),
+	scanner_follower_id: integer('scanner_follower_id').notNull(),
+	date_added: timestamp('date_added', { mode: 'string', withTimezone: true }).notNull()
+});
+
+export const earnit_scanner_creator = pgTable('earnit_scanner_creator', {
+	id: serial('id').primaryKey().notNull(),
+	creator_user_id: integer('creator_user_id')
+		.notNull()
+		.references(() => login.id, { onDelete: 'cascade' }),
+	scanner_creator_id: integer('scanner_creator_id').notNull(),
+	date_added: timestamp('date_added', { mode: 'string', withTimezone: true }).notNull()
+});
+
+export const follower_action = pgTable('follower_action', {
+	id: serial('id').primaryKey().notNull(),
+	creator_user_id: integer('creator_user_id')
+		.notNull()
+		.references(() => login.id, { onDelete: 'cascade' }),
+	follower_user_id: integer('follower_user_id')
+		.notNull()
+		.references(() => login.id, { onDelete: 'cascade' }),
+	mission_action_id: integer('mission_action_id')
+		.notNull()
+		.references(() => mission_action.id, { onDelete: 'cascade' }),
+	credits: numeric('credits', { precision: 10, scale: 2 }).default('0.00').notNull(),
+	status: text('status').notNull().default('pending'),
+	error_message: text('error_message'),
+	date_added: timestamp('date_added', { mode: 'string', withTimezone: true }).notNull()
+});

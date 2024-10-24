@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const missionSchema = z.object({
 	id: z.number().int().positive(),
 	name: z.string(),
-	description: z.string(),
+	description: z.string().nullable(),
 	platform: z.string()
 });
 
@@ -13,10 +13,11 @@ export const missionActionSchema = z.object({
 	id: z.number().int().positive(),
 	mission_id: z.number().int().positive(),
 	name: z.string(),
-	description: z.string().optional(),
-	icon: z.string().optional(),
+	description: z.string().nullable(),
+	icon: z.string().nullable(),
 	reward_per_day: z.number().nonnegative(),
-	creator_user_id: z.number().int().positive()
+	creator_user_id: z.number().int().positive(),
+	lookup_name: z.string()
 });
 
 export type MissionSchema = typeof missionSchema;

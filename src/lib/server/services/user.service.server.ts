@@ -1,4 +1,4 @@
-import { TextUtilities } from '$lib/utils/text-utilities.js';
+import { TextUtilities } from '$lib/utilities/text-utilities.js';
 import {
 	PUBLIC_SUPABASE_STORAGE_URL,
 	PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET,
@@ -18,6 +18,7 @@ import {
 	mission
 } from '$lib/server/database/schema';
 import type { User } from 'lucia';
+import type { MissionAction } from '$lib/schema/mission.schema';
 
 /**
  * Function to create a new user with default values
@@ -60,8 +61,8 @@ async function transformSignupToUser(signupData: SignupUser): Promise<BaseUser> 
 			title: "Earn It's Newest Earner",
 			profile_pic: `${PUBLIC_SUPABASE_STORAGE_URL}/${PUBLIC_SUPABASE_PROFILE_IMAGE_BUCKET}/defaultuser.png`,
 			token: crypto.randomUUID(),
-			date_created: new Date(),
-			date_updated: new Date()
+			date_created: new Date().toUTCString(),
+			date_updated: new Date().toUTCString()
 		};
 	}
 }

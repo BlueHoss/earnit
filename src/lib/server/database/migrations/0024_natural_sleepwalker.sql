@@ -1,0 +1,2 @@
+ALTER TABLE "mission_action" ADD COLUMN "lookup_name" text DEFAULT 'notset' NOT NULL;--> statement-breakpoint
+ALTER TABLE "mission_default_action" ADD COLUMN "lookup_name" text DEFAULT 'notset' NOT NULL;

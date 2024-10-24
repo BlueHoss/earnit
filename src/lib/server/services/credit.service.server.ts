@@ -6,18 +6,24 @@
  * 4: Creator purchases credits via a plan.
  */
 
-import { type EarnItActionResult, ActionResponse } from '$lib/utils/action-result';
+import { type EarnItActionResult, ActionResponse } from '$lib/utilities/action-result';
 import { and, desc, eq, ne, sql } from 'drizzle-orm';
-import db from '../database/drizzle';
+import db from '$lib/server/database/drizzle';
 import {
 	credit_creator_balance,
-	credit_distribution,
+	credit_creator_distribution,
 	credit_follower_balance,
 	credit_transaction,
 	login,
 	mission_action
 } from '../database/schema';
 import type { CreditDistributed } from '$lib/schema/credit.schema';
+import { LoggerService } from './logger.service.server';
+
+export const TRANSACTION_TYPES = {
+	Follower_Deposit: 'Follower_Deposit',
+	Product_Redemption: 'Product_Redemption'
+} as const;
 
 async function makeFollowerDeposit(
 	creatorId: number,
@@ -25,7 +31,6 @@ async function makeFollowerDeposit(
 	credits: number,
 	missionActionId: number
 ): Promise<EarnItActionResult> {
-	const TRANSACTION_TYPE = 'Follower_Deposit';
 	try {
 		// Add Credit Transaction
 		// Update Follower Balance
@@ -37,6 +42,11 @@ async function makeFollowerDeposit(
 			.where(eq(mission_action.id, missionActionId));
 
 		if (missionActions.length === 0) {
+			LoggerService.error(
+				'Mission action not found',
+				`Using the MissionAction id ${missionActionId} the mission action was not found.`,
+				'makeFollowerDeposit'
+			);
 			return ActionResponse.fail('Mission action not found');
 		}
 
@@ -50,13 +60,12 @@ async function makeFollowerDeposit(
 			.from(credit_creator_balance)
 			.where(eq(credit_creator_balance.creator_user_id, creatorId));
 
-		if (creatorBalances.length === 0) {
-			return ActionResponse.fail('Creator does not have enough credits.');
-		}
-
-		const creatorBalance = creatorBalances[0];
-
-		if (credits > Number(creatorBalance.available_credits)) {
+		if (creatorBalances.length === 0 || credits > Number(creatorBalances[0].available_credits)) {
+			LoggerService.error(
+				'Creator does not have enough credits.',
+				`Creator ${creatorId} does not have enough credits to give ${followerId} ${credits}`,
+				'makeFollowerDeposit'
+			);
 			return ActionResponse.fail('Creator does not have enough credits.');
 		}
 
@@ -65,10 +74,10 @@ async function makeFollowerDeposit(
 			await tx
 				.insert(credit_transaction)
 				.values({
-					transaction_type: TRANSACTION_TYPE,
+					transaction_type: TRANSACTION_TYPES.Follower_Deposit,
 					creator_user_id: creatorId,
 					follower_user_id: followerId,
-					amount: credits,
+					amount: credits.toString(),
 					description: `${missionAction.name}: ${missionAction.description}`
 				})
 				.returning();
@@ -91,8 +100,7 @@ async function makeFollowerDeposit(
 				await tx.insert(credit_follower_balance).values({
 					follower_user_id: followerId,
 					creator_user_id: creatorId,
-					credit_balance: credits,
-					date_updated: new Date()
+					credit_balance: credits.toString()
 				});
 			}
 
@@ -100,8 +108,7 @@ async function makeFollowerDeposit(
 			await tx
 				.update(credit_creator_balance)
 				.set({
-					credits_awarded: sql`${credit_creator_balance.credits_awarded} + ${credits}`,
-					credit_balance: sql`${credit_creator_balance.credit_balance} - ${credits}`
+					credits_awarded: sql`${credit_creator_balance.credits_awarded} - ${credits}`
 				})
 				.where(eq(credit_creator_balance.creator_user_id, creatorId))
 				.returning();
@@ -130,46 +137,39 @@ async function makeCreatorDeposit(
 			.from(credit_creator_balance)
 			.where(eq(credit_creator_balance.creator_user_id, earnItCreatorId));
 
-		if (creatorBalances.length === 0) {
+		if (creatorBalances.length === 0 || amount > Number(creatorBalances[0].available_credits)) {
 			return ActionResponse.fail('Earn It Creator does not have enough credits (Wrong creator?).');
 		}
 
-		const creatorBalance = creatorBalances[0];
-
-		if (amount > Number(creatorBalance.available_credits)) {
-			return ActionResponse.fail('Creator does not have enough credits.');
-		}
-
 		await db.transaction(async (tx) => {
-			// 1. record the credit distribution
-			await tx
-				.insert(credit_distribution)
-				.values({
-					earnit_creator_user_id: earnItCreatorId,
+			const creatorBalanceRecord = await tx
+				.select()
+				.from(credit_creator_balance)
+				.where(eq(credit_creator_balance.creator_user_id, creatorId));
+
+			if (creatorBalanceRecord.length === 0) {
+				await tx.insert(credit_creator_balance).values({
 					creator_user_id: creatorId,
-					amount: amount,
-					date_transaction: new Date()
-				})
-				.returning();
+					credits_received: amount.toString(),
+					credits_awarded: '0.00',
+					date_updated: new Date().toUTCString()
+				});
+			} else {
+				await tx
+					.update(credit_creator_balance)
+					.set({
+						credits_received: sql`${credit_creator_balance.credits_received} + ${amount}`,
+						date_updated: new Date().toUTCString()
+					})
+					.where(eq(credit_creator_balance.creator_user_id, creatorId));
+			}
 
-			// 1. Update Earn It creators's credit balance
-			await tx
-				.update(credit_creator_balance)
-				.set({
-					credits_awarded: amount.toString()
-				})
-				.where(eq(credit_creator_balance.creator_user_id, earnItCreatorId))
-				.returning();
-
-			// 3. Update creators's credit balance
-			await tx
-				.update(credit_creator_balance)
-				.set({
-					credits_awarded: sql`${credit_creator_balance.credits_received} + ${amount}`,
-					credit_balance: sql`${credit_creator_balance.credit_balance} + ${amount}`
-				})
-				.where(eq(credit_creator_balance.creator_user_id, creatorId))
-				.returning();
+			await tx.insert(credit_creator_distribution).values({
+				earnit_creator_user_id: earnItCreatorId,
+				creator_user_id: creatorId,
+				amount: amount.toString(),
+				date_transaction: new Date().toUTCString()
+			});
 		});
 
 		return ActionResponse.success('Credits applied to Creator successfully');
@@ -195,7 +195,7 @@ async function getCreditDistributionList(creatorId: number): Promise<CreditDistr
 		.where(
 			and(
 				eq(credit_transaction.creator_user_id, creatorId),
-				ne(credit_transaction.transaction_type, 'Product_Redemption')
+				ne(credit_transaction.transaction_type, TRANSACTION_TYPES.Product_Redemption)
 			)
 		)
 		.orderBy(desc(credit_transaction.date_transaction));

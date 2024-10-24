@@ -1,4 +1,4 @@
-import { ActionResponse, type EarnItActionResult } from '$lib/utils/action-result';
+import { ActionResponse, type EarnItActionResult } from '$lib/utilities/action-result';
 import type { User } from 'lucia';
 import Stripe from 'stripe';
 import { PUBLIC_BASE_URL } from '$env/static/public';
@@ -8,6 +8,7 @@ import db from '$lib/server/database/drizzle';
 import { LoggerService } from './logger.service.server';
 import { PlanService } from './plan.service.server';
 import { stripe } from '$lib/stripe/stripe.ts';
+import { PlanRepository } from '../repositories/plan.repository.server';
 
 async function cancelSubscription(subscriptionId: string): Promise<EarnItActionResult> {
 	try {
@@ -33,7 +34,7 @@ async function billUserFirstTime(
 		return ActionResponse.fail('User not found. Payment failed.');
 	}
 
-	const plan = await PlanService.getPlanFromId(planId);
+	const plan = await PlanRepository.getPlanById(planId);
 
 	if (!plan) {
 		return ActionResponse.fail(`Plan was not found for planId: ${planId}`);

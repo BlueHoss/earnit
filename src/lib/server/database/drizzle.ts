@@ -7,6 +7,7 @@ const pool = new pg.Pool({
 
 await pool.connect();
 const db = drizzle(pool, {
+	//Uncomment this to log all db queries
 	// logger: {
 	// 	logQuery: (query: string, params: unknown[]) => {
 	// 		console.log('Query:', query);

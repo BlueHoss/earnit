@@ -2,7 +2,7 @@ import { Axiom } from '@axiomhq/js';
 //import Analytics from '@june-so/analytics-node';
 import { AXIOM_TOKEN, AXIOM_ORG_ID, AXIOM_DATASET } from '$env/static/private';
 import { PUBLIC_PROD_DOMAIN } from '$env/static/public';
-import { LogHelpers } from '$lib/utils/log-helpers';
+import { LogHelpers } from '$lib/utilities/log-helpers';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore

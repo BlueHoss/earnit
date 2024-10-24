@@ -1,9 +1,11 @@
 import { lucia } from '$lib/server/lucia';
 import { redirect, type Handle } from '@sveltejs/kit';
 import type { HandleServerError } from '@sveltejs/kit';
-
 import log from '$lib/server/log';
 import { UserService } from '$lib/server/services/user.service.server';
+import { initSupabaseListener } from '$lib/server/supabaseListener.server';
+
+const cleanup = initSupabaseListener();
 
 export const handleError: HandleServerError = async ({ error, event }) => {
 	const errorId = crypto.randomUUID();
@@ -22,6 +24,7 @@ export const handleError: HandleServerError = async ({ error, event }) => {
 		errorId
 	};
 };
+
 export const handle: Handle = async ({ event, resolve }) => {
 	const startTimer = Date.now();
 	event.locals.startTimer = startTimer;
@@ -78,3 +81,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 	//log(response.status, event);
 	return response;
 };
+
+// Cleanup function to be called when the server shuts down
+process.on('SIGTERM', () => {
+	console.log('SIGTERM received. Cleaning up...');
+	cleanup();
+	process.exit(0);
+});

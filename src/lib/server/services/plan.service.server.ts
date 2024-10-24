@@ -1,26 +1,19 @@
 import type { Plan, PlanWithSubscription } from '$lib/schema/plan.schema';
-import { ActionResponse, type EarnItActionResult } from '$lib/utils/action-result';
+import { ActionResponse, type EarnItActionResult } from '$lib/utilities/action-result';
 import { and, desc, eq, isNull, sql } from 'drizzle-orm';
-import db from '../database/drizzle';
+import db from '$lib/server/database/drizzle';
 import { plan_subscription, plan } from '../database/schema';
 import { MissionService } from './mission.service.server';
 import { UserService } from './user.service.server';
 import type { User } from 'lucia';
 import { LoggerService } from './logger.service.server';
 import { PaymentService } from './payment.service.server';
+import { PlanRepository } from '../repositories/plan.repository.server';
 
 export interface PlanPageData {
 	SubscriberPlans: PlanWithSubscription[];
 	CreatorMissionCredits: number;
 	Creator: User;
-}
-
-async function getPlanFromId(planId: number): Promise<Plan | null> {
-	const plans = await db.select().from(plan).where(eq(plan.id, planId));
-	if (plans.length === 0) {
-		return null;
-	}
-	return plans[0];
 }
 
 async function getSubscribePageData(followerId: number, creatorId: number): Promise<PlanPageData> {
@@ -144,16 +137,10 @@ async function cancelExistingSubscriptions(
 	creatorId: number
 ): Promise<EarnItActionResult> {
 	try {
-		const existingSubscriptions = await db
-			.select()
-			.from(plan_subscription)
-			.where(
-				and(
-					eq(plan_subscription.follower_user_id, followerId),
-					eq(plan_subscription.creator_user_id, creatorId),
-					isNull(plan_subscription.date_canceled)
-				)
-			);
+		const existingSubscriptions = await PlanRepository.getActivePlanSubscriptionsByUser(
+			creatorId,
+			followerId
+		);
 
 		for (let index = 0; index < existingSubscriptions.length; index++) {
 			const sub = existingSubscriptions[index];
@@ -175,16 +162,10 @@ async function cancelSubscription(
 	planId: number
 ): Promise<EarnItActionResult> {
 	try {
-		const existingSubscription = await db
-			.select()
-			.from(plan_subscription)
-			.where(
-				and(
-					eq(plan_subscription.follower_user_id, followerId),
-					eq(plan_subscription.creator_user_id, creatorId),
-					eq(plan_subscription.plan_id, planId)
-				)
-			);
+		const existingSubscription = await PlanRepository.getActivePlanSubscriptionsByUser(
+			creatorId,
+			followerId
+		);
 
 		for (let index = 0; index < existingSubscription.length; index++) {
 			const sub = existingSubscription[index];
@@ -221,6 +202,5 @@ export const PlanService = {
 	getSubscribedPlans,
 	getSubscribePageData,
 	getSubscriberPlan,
-	getPlanFromId,
 	cancelSubscription
 };

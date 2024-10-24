@@ -15,6 +15,7 @@ import type { ProductInvoiceResult } from '$lib/schema/product_invoice.schema';
 import { ProductService } from './product.service.server';
 import type { CreatorDashboard, CreatorMarketplaceData } from '$lib/types';
 import { type DefaultMission, type MissionAction } from '$lib/schema/mission.schema';
+import { TRANSACTION_TYPES } from './credit.service.server';
 
 /**
  * Retrieves the number of paid subscribers for a given Creator.
@@ -81,7 +82,7 @@ async function getCreditAmountDistributed(creatorId: number) {
 		.where(
 			and(
 				eq(credit_transaction.creator_user_id, creatorId),
-				ne(credit_transaction.transaction_type, 'Product_Redemption')
+				ne(credit_transaction.transaction_type, TRANSACTION_TYPES.Product_Redemption)
 			)
 		);
 

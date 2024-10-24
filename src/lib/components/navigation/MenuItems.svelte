@@ -10,6 +10,8 @@
 <nav class="space-y-1">
 	{#each MenuItems as item}
 		<a
+			data-sveltekit-preload-data="tap"
+			data-comment="preload-data=tap will prevent the UI from loading the page until the user actually clicks the link."
 			href={item.path}
 			class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all
 	{$currentPath === item.path ? 'bg-blue-500 text-white' : 'hover:text-primary'}"

@@ -1,6 +1,6 @@
 import { PUBLIC_BASE_URL } from '$env/static/public';
 import { PlanService } from '$lib/server/services/plan.service.server';
-import type { EarnItActionResult } from '$lib/utils/action-result.js';
+import type { EarnItActionResult } from '$lib/utilities/action-result.js';
 import { fail, redirect, type Actions } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
 

@@ -1,6 +1,6 @@
 import type { DefaultMission, MissionAction } from '$lib/schema/mission.schema';
 import { and, eq, sum } from 'drizzle-orm';
-import db from '../database/drizzle';
+import db from '$lib/server/database/drizzle';
 import {
 	mission_action,
 	mission_creator,

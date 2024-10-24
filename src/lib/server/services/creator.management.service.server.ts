@@ -8,7 +8,7 @@
 import { eq } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import { login } from '$lib/server/database/schema';
-import { TextUtilities } from '$lib/utils/text-utilities';
+import { TextUtilities } from '$lib/utilities/text-utilities';
 import { ImageService } from './image.service.server';
 import { type ProfileEditUser } from '$lib/schema/login.schema';
 

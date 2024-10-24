@@ -37,6 +37,14 @@
 				<RewardCurrency amount={creator.total_credits} name={creator.reward_name} />
 			</div>
 		</div>
+		<Button
+			href="https://instagram.com/{creator.social_media_profile}"
+			variant="link"
+			target="_blank"
+			rel="noopener"
+		>
+			IG: {creator.social_media_profile}
+		</Button>
 	</Card.Content>
 	<hr />
 	<Card.Footer

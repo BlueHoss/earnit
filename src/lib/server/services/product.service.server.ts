@@ -24,7 +24,8 @@ import {
 	PUBLIC_DEFAULT_PRODUCT_IMAGE
 } from '$env/static/public';
 import { ImageService } from './image.service.server';
-import { type EarnItActionResult, ActionResponse } from '$lib/utils/action-result';
+import { type EarnItActionResult, ActionResponse } from '$lib/utilities/action-result';
+import { TRANSACTION_TYPES } from './credit.service.server';
 
 async function createProduct(newProduct: ProductNewUpdateType) {
 	if (!newProduct) {
@@ -365,7 +366,7 @@ async function redeemProductFromCreator(
 			const newTransaction = await tx
 				.insert(credit_transaction)
 				.values({
-					transaction_type: 'Product_Redemption',
+					transaction_type: TRANSACTION_TYPES.Product_Redemption,
 					creator_user_id: creatorId,
 					follower_user_id: followerId,
 					amount: productDb.cost,

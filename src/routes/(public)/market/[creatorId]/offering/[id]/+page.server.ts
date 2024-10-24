@@ -4,7 +4,7 @@ import { ProductService } from '$lib/server/services/product.service.server';
 import { UserService } from '$lib/server/services/user.service.server';
 import { FollowersDashboardService } from '$lib/server/services/follower.dashboard.service.server';
 import { setFlash } from 'sveltekit-flash-message/server';
-import type { EarnItActionResult } from '$lib/utils/action-result';
+import type { EarnItActionResult } from '$lib/utilities/action-result';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { creatorId, id } = params;

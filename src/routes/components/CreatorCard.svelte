@@ -28,6 +28,11 @@
 		<p class="text-xs text-muted-foreground mb-4">
 			Category: {creator.category || 'Uncategorized'}
 		</p>
-		<Button variant="outline" href="/market/{creator.id}" class="w-full">View Store</Button>
+		<Button
+			variant="outline"
+			href="/market/{creator.id}"
+			data-sveltekit-preload-data="tap"
+			class="w-full">View Store</Button
+		>
 	</Card.Content>
 </Card.Root>

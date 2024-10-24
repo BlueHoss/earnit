@@ -17,6 +17,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import SimpleDialog from '../../../../components/SimpleDialog.svelte';
 	import DateFormatter from '$lib/components/base/DateFormatter.svelte';
+	import Currency from '$lib/components/base/Currency.svelte';
 
 	let clientSecret = '';
 	let newSubscriptionId: string = '';
@@ -165,12 +166,6 @@
 		}
 	}
 
-	function submitTest() {
-		if (testFormElement) {
-			testFormElement.submit();
-		}
-	}
-
 	function submitUnsubscribe() {
 		if (unsubscribeFormElement) {
 			unsubscribeFormElement.submit();
@@ -223,7 +218,9 @@
 							{/if}
 						</div>
 						<div class="text-1xl font-bold mb-2">
-							{plan.plan_cost}<span class="text-sm font-normal">/ Month</span>
+							<Currency amount={Number(plan.plan_cost)} /><span class="text-sm font-normal"
+								>/ Month</span
+							>
 						</div>
 						<ul class="mt-2 space-y-1 text-sm">
 							{#each plan.features as feature}

@@ -161,6 +161,7 @@ async function getFollowerCreditBalanceDetails(
 		.select({
 			creator_user_id: sql`COALESCE(${credit_follower_balance.creator_user_id}, ${plan_subscription.creator_user_id})`,
 			reward_name: login.reward_name,
+			social_media_profile: login.social_media_profile,
 			profile_pic: login.profile_pic,
 			store_name: login.store_name,
 			total_credits: sql<number>`COALESCE(SUM(${credit_follower_balance.credit_balance}), 0)`.as(
@@ -194,39 +195,6 @@ async function getFollowerCreditBalanceDetails(
 			credit_follower_balance.creator_user_id
 		)
 		.orderBy(login.store_name);
-
-	// const balance = await db
-	// 	.select({
-	// 		creator_user_id: credit_follower_balance.creator_user_id,
-	// 		reward_name: login.reward_name,
-	// 		profile_pic: login.profile_pic,
-	// 		store_name: login.store_name,
-	// 		total_credits: sql<number>`SUM(${credit_follower_balance.credit_balance})`.as(
-	// 			'total_credits'
-	// 		),
-	// 		date: sql<Date>`MAX(${credit_follower_balance.date_updated})`.as('last_updated'),
-	// 		plan_name: plan.name
-	// 	})
-	// 	.from(credit_follower_balance)
-	// 	.innerJoin(
-	// 		login,
-	// 		sql`${login.id} = ${credit_follower_balance.creator_user_id}`
-	// 	)
-	// 	.leftJoin(
-	// 		plan_subscription,
-	// 		sql`${plan_subscription.creator_user_id} = ${login.id} AND
-	// 	  ${plan_subscription.follower_user_id} = ${credit_follower_balance.follower_user_id}`
-	// 	)
-	// 	.leftJoin(plan, sql`${plan_subscription.plan_id} = ${plan.id}`)
-	// 	.where(sql`${credit_follower_balance.follower_user_id} = ${followerId}`)
-	// 	.groupBy(
-	// 		credit_follower_balance.creator_user_id,
-	// 		login.reward_name,
-	// 		login.profile_pic,
-	// 		login.store_name,
-	// 		plan.name
-	// 	)
-	// 	.orderBy(sql`total_credits DESC`, sql`last_updated DESC`);
 
 	if (balance.length === 0) {
 		return [];

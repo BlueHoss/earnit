@@ -113,6 +113,104 @@
       "when": 1728681184707,
       "tag": "0015_many_mentallo",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1728925926619,
+      "tag": "0016_good_shinobi_shaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1728926311583,
+      "tag": "0017_gifted_mysterio",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1728926700698,
+      "tag": "0018_giant_tomas",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1728926773477,
+      "tag": "0019_jittery_mindworm",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1728942539707,
+      "tag": "0020_shallow_marvel_zombies",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1728961404584,
+      "tag": "0021_giant_maximus",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1729104238288,
+      "tag": "0022_lazy_swordsman",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1729549860949,
+      "tag": "0023_needy_queen_noir",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1729641646883,
+      "tag": "0024_natural_sleepwalker",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1729642806142,
+      "tag": "0025_nebulous_skullbuster",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1729643170639,
+      "tag": "0026_overjoyed_rafael_vega",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1729705484970,
+      "tag": "0027_material_tarantula",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1729729488205,
+      "tag": "0028_brief_the_captain",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1729796412219,
+      "tag": "0029_curved_gateway",
+      "breakpoints": true
     }
   ]
 }

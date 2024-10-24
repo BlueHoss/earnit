@@ -35,11 +35,6 @@ export const baseLoginSchema = z.object({
 	title: z.string().nullable(),
 	tag_line: z.string().nullable(),
 	bio: z.string().nullable(),
-	// terms: z
-	// 	.literal<boolean>(true, {
-	// 		errorMap: () => ({ message: 'You must accept the terms & privacy policy' })
-	// 	})
-	// 	.default(false as true),
 	terms: z
 		.boolean({
 			required_error: 'You must accept the terms & privacy policy',
@@ -48,11 +43,10 @@ export const baseLoginSchema = z.object({
 		.refine((val) => val === true, {
 			message: 'You must accept the terms & privacy policy'
 		}),
-	//terms: z.boolean().default(false),
 	token: z.string(),
 	receive_email: z.boolean().default(true),
-	date_created: z.date().optional(),
-	date_updated: z.date().optional(),
+	date_created: z.string().datetime().optional(),
+	date_updated: z.string().datetime().optional(),
 	store_name: z.string().nullable(),
 	reward_name: z.string().nullable(),
 	category: z.string().nullable(),
@@ -150,32 +144,32 @@ export const passworUpdateSchema = z
 
 export type PasswordUpdate = z.infer<typeof passworUpdateSchema>;
 
-/**
- * Fetch Followers/Creators schema
- *
- */
-export const loginQueryResultSchema = baseLoginSchema.partial();
-export type LoginQueryResult = z.infer<typeof loginQueryResultSchema>;
+// /**
+//  * Fetch Followers/Creators schema
+//  *
+//  */
+// export const loginQueryResultSchema = baseLoginSchema.partial();
+// export type LoginQueryResult = z.infer<typeof loginQueryResultSchema>;
 
-export const creatorScheam = baseLoginSchema
-	.omit({
-		hashed_password: true,
-		terms: true,
-		role: true,
-		verified: true,
-		token: true,
-		date_created: true,
-		date_updated: true,
-		follower_count: true,
-		roleError: true,
-		provider: true,
-		provider_id: true,
-		receive_email: true,
-		bio: true,
-		category: true
-	})
-	.extend({
-		subscribers: z.array(z.object({ id: z.number().nullable() })).optional()
-	});
+// export const creatorScheam = baseLoginSchema
+// 	.omit({
+// 		hashed_password: true,
+// 		terms: true,
+// 		role: true,
+// 		verified: true,
+// 		token: true,
+// 		date_created: true,
+// 		date_updated: true,
+// 		follower_count: true,
+// 		roleError: true,
+// 		provider: true,
+// 		provider_id: true,
+// 		receive_email: true,
+// 		bio: true,
+// 		category: true
+// 	})
+// 	.extend({
+// 		subscribers: z.array(z.object({ id: z.number().nullable() })).optional()
+// 	});
 
-export type Creator = z.infer<typeof creatorScheam>;
+// export type Creator = z.infer<typeof creatorScheam>;
