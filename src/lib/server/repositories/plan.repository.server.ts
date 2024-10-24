@@ -1,11 +1,7 @@
 import { isNull, and, eq, desc } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import { plan_subscription, plan } from '../database/schema';
-import type {
-	PlanSubscription,
-	PlanSubscriptionWithCost,
-	PlanSubscriptionWithPercent
-} from '$lib/schema/plan.schema';
+import type { PlanSubscription, PlanSubscriptionWithPercent } from '$lib/schema/plan.schema';
 
 async function getActivePlanSubscriptions(): Promise<PlanSubscription[]> {
 	const where = isNull(plan_subscription.date_canceled);

@@ -2,7 +2,7 @@
  * Handle all of the logic for the database of the scanner repository.
  */
 
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import db from '$lib/server/database/drizzle';
 import {
 	post,
@@ -70,10 +70,45 @@ async function getScanCreatorBySocialMediaProfile(socialMediaProfile: string) {
 	return public_profileRecs.length > 0 ? public_profileRecs[0] : null;
 }
 
+async function getPublicProfileFromSocialMediaHandle(socialMediaHandle: string) {
+	const where = eq(public_profile.username, socialMediaHandle);
+	const public_profileRecs = await db.select().from(public_profile).where(where).limit(1);
+
+	return public_profileRecs.length > 0 ? public_profileRecs[0] : null;
+}
+
+async function addCreatorToPublicProfile(socialMediaHandle: string) {
+	const id = await getNexPublicProfileID();
+	const profile = {
+		id: id,
+		username: socialMediaHandle,
+		ig_id: '999',
+		pk_id: '999',
+		private_profile: false,
+		registered_date: new Date().toUTCString(),
+		last_checked: new Date().toUTCString()
+	};
+
+	const insert = await db.insert(public_profile).values(profile);
+
+	return insert;
+}
+
+async function getNexPublicProfileID() {
+	const publicProfile = await db
+		.select()
+		.from(public_profile)
+		.orderBy(desc(public_profile.id))
+		.limit(1);
+	return publicProfile.length > 0 ? publicProfile[0].id + 1 : 1;
+}
+
 export const ScannerRepository = {
 	getUserToCheck,
 	getPostById,
 	getScanCreatorByPost,
 	getScanCreatorById,
-	getScanCreatorBySocialMediaProfile
+	getScanCreatorBySocialMediaProfile,
+	getPublicProfileFromSocialMediaHandle,
+	addCreatorToPublicProfile
 };

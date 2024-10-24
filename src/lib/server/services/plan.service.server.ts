@@ -9,6 +9,7 @@ import type { User } from 'lucia';
 import { LoggerService } from './logger.service.server';
 import { PaymentService } from './payment.service.server';
 import { PlanRepository } from '../repositories/plan.repository.server';
+import { ScannerRepository } from '../repositories/scanner.repository.server';
 
 export interface PlanPageData {
 	SubscriberPlans: PlanWithSubscription[];
@@ -120,8 +121,10 @@ async function purchaseRecurringPlan(
 			stripe_subscription_id: stripeSubscriptionId
 		};
 
-		// Get existing follower's credit balance for this creator
 		await db.insert(plan_subscription).values(subscriptionPlan);
+
+		//handle Creator in Scanner Tool.
+		handleCreatorInScannerTool(creatorId);
 
 		return ActionResponse.success('Plan subscription success!');
 	} catch (error) {
@@ -129,6 +132,29 @@ async function purchaseRecurringPlan(
 		return ActionResponse.fail(
 			'An error occurred while purchaing the plan. Please try again later.'
 		);
+	}
+}
+
+async function handleCreatorInScannerTool(creatorId: number) {
+	const creator = await UserService.getUserByUserId(creatorId);
+	if (!creator) {
+		return;
+	}
+
+	if (!creator.social_media_profile) {
+		LoggerService.error(
+			'Creator does not have a social media profile. Followers will not be rewarded.',
+			`Creator: ${creatorId}`
+		);
+		return;
+	}
+
+	const isInScannerTool = await ScannerRepository.getPublicProfileFromSocialMediaHandle(
+		creator.social_media_profile
+	);
+
+	if (!isInScannerTool) {
+		await ScannerRepository.addCreatorToPublicProfile(creator.social_media_profile);
 	}
 }
 
@@ -147,6 +173,9 @@ async function cancelExistingSubscriptions(
 			cancelSubscription(followerId, creatorId, sub.plan_id);
 		}
 
+		//handle removing creator from Scanner Tool.
+		handleRemoveCreatorFromScannerTool(creatorId);
+
 		return ActionResponse.success('Plan unsubscribe success!');
 	} catch (error) {
 		LoggerService.handleError(error, 'Error canceling Stripe subscription');
@@ -154,6 +183,14 @@ async function cancelExistingSubscriptions(
 			'An error occurred while purchaing the plan. Please try again later.'
 		);
 	}
+}
+
+/**
+ * Remove the creator from the Scanner Tool if they have no active subscriptions.
+ * @param creatorId
+ */
+async function handleRemoveCreatorFromScannerTool(creatorId: number) {
+	//TBD - Waiting on a feature from Indrit to set the creator as Inactive rather than delete them.
 }
 
 async function cancelSubscription(
