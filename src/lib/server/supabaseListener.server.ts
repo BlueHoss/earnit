@@ -30,8 +30,6 @@ export function initSupabaseListener() {
 		.subscribe((status) => {
 			if (status === 'SUBSCRIBED') {
 				console.log('Supabase listener is now connected and listening for changes.');
-				const dist = new DistributionService('instagram');
-				dist.processUserPostCheckStatus();
 			}
 		});
 
