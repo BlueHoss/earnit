@@ -1,0 +1,577 @@
+<documents>
+  <document index="1">
+    <source>/Users/brett/Documents/Code/bluehoss/earnit/earnit/claude-helper/../README.md</source>
+    <document_content># Earn It
+
+## Database Schema
+
+Added by Brett 8/20/24
+
+### Reward System
+
+The Earn It Reward System runs in the background to track Followers and Creators and apply the specified rewards to the correct Follower. The Reward System has very specific actions it can track and apply. The mechanism for changing those actions in the database are specified below.
+
+### mission table
+
+This `mission` table holds the Merit Missions for each Platform. This is just the name of the mission and platform only. Right now only Instagram is supported. These are hard coded and and dependent on the Reward System to track and apply.
+
+![mission table](/read-me/img/mission-table.png)
+
+The Reward Actions are held in the `reward_action` table. Currently we have 6 for Instagram. Each of the `reward_action` tells the Follower how much the &apos;action&apos; they perform is worth. For example see below:
+
+![merit missions](/read-me/img/Mission.png)
+
+Combine the `mission` Table with the `reward_action` table and we can specify how much each Mission on each Platform is worth.
+
+The `mission_action` table has the `creator_user_id` field so that Creators can specify how much each action is worth. They cannot change the action or name of the action but they can change the value of an action for their own profile by changing the `reward_per_day` (We will be updating this field `value` for accuracy).
+
+![reward action table](/read-me/img/reward_action-table.png)
+
+When a Follower in Earn performs an action the Reward System will track their actions and give that Follower the specified reward. These rewards are tracked in the `reward_earned` table.
+
+![reward earned table](/read-me/img/reward_earned-table.png)
+
+The Reward System will apply the reward value found in `reward_action` and apply it to the proper `follower_user_id` and `creator_user_id` so that the Follower receives credit for their action.
+
+### Put it all together
+
+When we put all the part together this is what the database diagram looks like&quot;
+
+![reward system diagram](/read-me/img/reward_system_diagram.png)
+
+# Earn It Colors
+
+## Base color pallet:
+
+![root color pallet](/read-me/img/root-color-pallet.png)
+
+### Dark color pallet:
+
+![dark color pallet](/read-me/img/dark-color-pallet.png)
+
+Based on Sveltekit Auth
+From: https://github.com/delay/sveltekit-auth
+
+## Stripe
+
+The stripe integration uses webhooks to finalize a subscription purchase. The webhook at /api/stripe/webhooks will be hit by stripe once the payment is confirmed on their side.
+
+What does this mean for development?
+
+When testing stripe localy follow the steps below to channel the Stripe webhook from Stripe back to your localhost:
+
+- In a new terminal window run the following command
+- `stripe listen --forward-to localhost:5173/api/stripe/webhooks`
+
+* Ensure that the webhook signing secret (displayed in the terminal after running command above) matches your .env.PRIVATE_STRIPE_WEBHOOK_SECRET
+
+That will leave the terminal and tell Stripe to send any &apos;test&apos; webhooks to your local machine.
+</document_content>
+  </document>
+  <document index="2">
+    <source>/Users/brett/Documents/Code/bluehoss/earnit/earnit/claude-helper/../claude-helper/generate_backend_xml.py</source>
+    <document_content>import os
+import fnmatch
+
+# Backend-specific directories to ignore
+BACKEND_IGNORED_DIRS = {
+    &apos;venv&apos;,
+    &apos;env&apos;,
+    &apos;__pycache__&apos;,
+    &apos;.pytest_cache&apos;,
+    &apos;migrations&apos;,
+    &apos;node_modules&apos;,
+    &apos;target&apos;,
+    &apos;bin&apos;,
+    &apos;obj&apos;,
+}
+
+# Backend file extensions to include
+BACKEND_EXTENSIONS = {
+    # Python
+    &apos;.py&apos;, &apos;.pyi&apos;, &apos;.pyw&apos;,
+    # Java/Kotlin
+    &apos;.java&apos;, &apos;.kt&apos;, &apos;.gradle&apos;,
+    # C#/.NET
+    &apos;.cs&apos;, &apos;.vb&apos;, &apos;.fs&apos;,
+    # Ruby
+    &apos;.rb&apos;, &apos;.rake&apos;,
+    # PHP
+    &apos;.php&apos;,
+    # Go
+    &apos;.go&apos;,
+    # Rust
+    &apos;.rs&apos;,
+    # Config Files
+    &apos;.yml&apos;, &apos;.yaml&apos;, &apos;.toml&apos;, &apos;.ini&apos;,
+    # Database
+    &apos;.sql&apos;,
+    # Shell Scripts
+    &apos;.sh&apos;, &apos;.bash&apos;,
+    # Documentation
+    &apos;.md&apos;,
+}
+
+def should_include_backend_file(file_path):
+    &quot;&quot;&quot;Determine if a backend file should be included.&quot;&quot;&quot;
+    dir_path, filename = os.path.split(file_path)
+    
+    # Check if in ignored directory
+    dir_parts = dir_path.split(os.sep)
+    if any(part in BACKEND_IGNORED_DIRS for part in dir_parts):
+        return False
+    
+    # Get file extension
+    _, ext = os.path.splitext(filename)
+    return ext.lower() in BACKEND_EXTENSIONS
+
+def read_file(file_path):
+    &quot;&quot;&quot;Read file content with error handling.&quot;&quot;&quot;
+    try:
+        with open(file_path, &apos;r&apos;, encoding=&apos;utf-8&apos;) as f:
+            content = f.read()
+            if len(content.strip()) == 0:
+                return &quot;Empty file&quot;
+            if len(content) &gt; 1000000:  # Skip files larger than ~1MB
+                return &quot;File too large to include&quot;
+            return content
+    except UnicodeDecodeError:
+        return &quot;Binary file - content not included&quot;
+    except Exception as e:
+        return f&quot;Error reading file: {str(e)}&quot;
+
+def escape_xml_chars(text):
+    &quot;&quot;&quot;Escape special XML characters.&quot;&quot;&quot;
+    return text.replace(&apos;&amp;&apos;, &apos;&amp;amp;&apos;).replace(&apos;&lt;&apos;, &apos;&amp;lt;&apos;).replace(&apos;&gt;&apos;, &apos;&amp;gt;&apos;).replace(&apos;&quot;&apos;, &apos;&amp;quot;&apos;).replace(&quot;&apos;&quot;, &apos;&amp;apos;&apos;)
+
+def generate_backend_xml(root_dir=&apos;.&apos;, output_file=&apos;backend_structure.xml&apos;):
+    &quot;&quot;&quot;Generate XML structure from backend project files.&quot;&quot;&quot;
+    files_to_process = []
+    
+    # Walk through project directory
+    for root, _, files in os.walk(root_dir):
+        for file in files:
+            file_path = os.path.join(root, file)
+            if should_include_backend_file(file_path):
+                files_to_process.append(file_path)
+    
+    # Sort files for consistent output
+    files_to_process.sort()
+    
+    # Start XML output
+    xml_output = &quot;&lt;documents&gt;\n&quot;
+    
+    # Process each file
+    for index, file_path in enumerate(files_to_process, 1):
+        clean_path = file_path[2:] if file_path.startswith(&apos;./&apos;) else file_path
+        content = escape_xml_chars(read_file(file_path))
+        
+        xml_output += f&apos;  &lt;document index=&quot;{index}&quot;&gt;\n&apos;
+        xml_output += f&apos;    &lt;source&gt;{clean_path}&lt;/source&gt;\n&apos;
+        xml_output += f&apos;    &lt;document_content&gt;{content}&lt;/document_content&gt;\n&apos;
+        xml_output += &apos;  &lt;/document&gt;\n&apos;
+    
+    # Close XML structure
+    xml_output += &quot;&lt;/documents&gt;&quot;
+    
+    # Write to output file
+    with open(output_file, &apos;w&apos;, encoding=&apos;utf-8&apos;) as f:
+        f.write(xml_output)
+    
+    print(f&quot;Processed {len(files_to_process)} backend files.&quot;)
+    print(f&quot;Generated {output_file} successfully.&quot;)
+    print(&quot;\nIncluded backend files:&quot;)
+    for file in files_to_process:
+        print(f&quot;- {file}&quot;)
+
+if __name__ == &quot;__main__&quot;:
+    # Use parent directory as root
+    parent_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), &apos;..&apos;)
+    generate_backend_xml(root_dir=parent_dir)</document_content>
+  </document>
+  <document index="3">
+    <source>/Users/brett/Documents/Code/bluehoss/earnit/earnit/claude-helper/../claude-helper/generate_claude_files.sh</source>
+    <document_content>#!/bin/bash
+
+# Generate frontend files
+python3.13 generate_frontend_xml.py
+
+# Generate backend files
+python3.13 generate_backend_xml.py</document_content>
+  </document>
+  <document index="4">
+    <source>/Users/brett/Documents/Code/bluehoss/earnit/earnit/claude-helper/../claude-helper/generate_frontend_xml.py</source>
+    <document_content>import os
+import fnmatch
+
+# Frontend-specific directories to ignore
+FRONTEND_IGNORED_DIRS = {
+    &apos;node_modules&apos;,
+    &apos;dist&apos;,
+    &apos;build&apos;,
+    &apos;.next&apos;,
+    &apos;coverage&apos;,
+    &apos;.svelte-kit&apos;,
+    &apos;public/assets&apos;,
+    &apos;storybook-static&apos;,
+    &apos;.git&apos;,
+    &apos;tmp&apos;,
+    &apos;temp&apos;,
+    &apos;assets&apos;,
+    &apos;static&apos;,
+    &apos;public&apos;,
+    &apos;images&apos;,
+    &apos;fonts&apos;,
+    &apos;icons&apos;,
+    &apos;locales&apos;,
+    &apos;__tests__&apos;,
+    &apos;test&apos;,
+    &apos;tests&apos;,
+    &apos;e2e&apos;,
+    &apos;cypress&apos;,
+    &apos;playwright&apos;,
+}
+
+# Frontend file patterns to ignore
+FRONTEND_IGNORED_PATTERNS = {
+    &apos;*.min.js&apos;,
+    &apos;*.min.css&apos;,
+    &apos;*.map&apos;,
+    &apos;*.chunk.js&apos;,
+    &apos;*.bundle.js&apos;,
+    &apos;*.test.js&apos;,
+    &apos;*.test.ts&apos;,
+    &apos;*.spec.js&apos;,
+    &apos;*.spec.ts&apos;,
+    &apos;*.d.ts&apos;,
+    &apos;*.config.js&apos;,
+    &apos;*.setup.js&apos;,
+    &apos;setupTests.*&apos;,
+    &apos;serviceWorker.*&apos;,
+    &apos;*.stories.*&apos;,
+    &apos;*.test.jsx&apos;,
+    &apos;*.test.tsx&apos;,
+    &apos;*.spec.jsx&apos;,
+    &apos;*.spec.tsx&apos;,
+    &apos;types.ts&apos;,
+    &apos;constants.ts&apos;,
+    &apos;constants.js&apos;,
+    &apos;*.lock&apos;,
+    &apos;package-lock.json&apos;,
+    &apos;yarn.lock&apos;,
+    &apos;.DS_Store&apos;,
+    &apos;*.svg&apos;,
+    &apos;*.png&apos;,
+    &apos;*.jpg&apos;,
+    &apos;*.jpeg&apos;,
+    &apos;*.gif&apos;,
+    &apos;*.ico&apos;,
+    &apos;*.woff&apos;,
+    &apos;*.woff2&apos;,
+    &apos;*.ttf&apos;,
+    &apos;*.eot&apos;,
+}
+
+# Frontend file extensions to include
+FRONTEND_EXTENSIONS = {
+    # Core UI Files
+    &apos;.jsx&apos;, &apos;.tsx&apos;,  # React files
+    &apos;.vue&apos;,          # Vue files
+    &apos;.svelte&apos;,       # Svelte files
+    
+    # Essential Styling
+    &apos;.css&apos;, &apos;.scss&apos;, &apos;.sass&apos;,
+    
+    # Core Templates
+    &apos;.html&apos;,
+    
+    # Essential Config
+    &apos;vite.config.js&apos;,
+    &apos;vite.config.ts&apos;,
+    &apos;svelte.config.js&apos;,
+    &apos;svelte.config.ts&apos;,
+}
+
+def is_essential_config(filepath):
+    &quot;&quot;&quot;Check if file is an essential configuration file we want to keep.&quot;&quot;&quot;
+    essential_configs = {
+        &apos;vite.config.js&apos;,
+        &apos;vite.config.ts&apos;,
+        &apos;svelte.config.js&apos;,
+        &apos;svelte.config.ts&apos;,
+        &apos;next.config.js&apos;,
+        &apos;next.config.ts&apos;,
+        &apos;nuxt.config.js&apos;,
+        &apos;nuxt.config.ts&apos;,
+        &apos;webpack.config.js&apos;,
+        &apos;webpack.config.ts&apos;,
+    }
+    return os.path.basename(filepath) in essential_configs
+
+def should_include_frontend_file(file_path):
+    &quot;&quot;&quot;Determine if a frontend file should be included.&quot;&quot;&quot;
+    dir_path, filename = os.path.split(file_path)
+    
+    # Check if in ignored directory
+    dir_parts = dir_path.split(os.sep)
+    if any(part in FRONTEND_IGNORED_DIRS for part in dir_parts):
+        return False
+    
+    # Check for ignored patterns
+    if any(fnmatch.fnmatch(filename, pattern) for pattern in FRONTEND_IGNORED_PATTERNS):
+        return False
+    
+    # Check if it&apos;s an essential config file
+    if is_essential_config(file_path):
+        return True
+    
+    # Get file extension
+    _, ext = os.path.splitext(filename)
+    return ext.lower() in FRONTEND_EXTENSIONS
+
+def read_file(file_path):
+    &quot;&quot;&quot;Read file content with error handling.&quot;&quot;&quot;
+    try:
+        with open(file_path, &apos;r&apos;, encoding=&apos;utf-8&apos;) as f:
+            content = f.read()
+            if len(content.strip()) == 0:
+                return &quot;Empty file&quot;
+            if len(content) &gt; 500000:  # Reduced to ~500KB
+                return &quot;File too large to include&quot;
+            return content
+    except UnicodeDecodeError:
+        return &quot;Binary file - content not included&quot;
+    except Exception as e:
+        return f&quot;Error reading file: {str(e)}&quot;
+
+def escape_xml_chars(text):
+    &quot;&quot;&quot;Escape special XML characters.&quot;&quot;&quot;
+    return text.replace(&apos;&amp;&apos;, &apos;&amp;amp;&apos;).replace(&apos;&lt;&apos;, &apos;&amp;lt;&apos;).replace(&apos;&gt;&apos;, &apos;&amp;gt;&apos;).replace(&apos;&quot;&apos;, &apos;&amp;quot;&apos;).replace(&quot;&apos;&quot;, &apos;&amp;apos;&apos;)
+
+def generate_frontend_xml(root_dir=&apos;.&apos;, output_file=&apos;frontend_structure.xml&apos;):
+    &quot;&quot;&quot;Generate XML structure from frontend project files.&quot;&quot;&quot;
+    files_to_process = []
+    total_size = 0
+    max_total_size = 5000000  # ~5MB total limit
+    
+    # Walk through project directory
+    for root, _, files in os.walk(root_dir):
+        for file in files:
+            file_path = os.path.join(root, file)
+            if should_include_frontend_file(file_path):
+                # Check file size
+                try:
+                    file_size = os.path.getsize(file_path)
+                    if total_size + file_size &lt;= max_total_size:
+                        files_to_process.append(file_path)
+                        total_size += file_size
+                    else:
+                        print(f&quot;Skipping {file_path} - would exceed total size limit&quot;)
+                except:
+                    continue
+    
+    # Sort files for consistent output
+    files_to_process.sort()
+    
+    # Start XML output
+    xml_output = &quot;&lt;documents&gt;\n&quot;
+    
+    # Process each file
+    for index, file_path in enumerate(files_to_process, 1):
+        clean_path = os.path.relpath(file_path, root_dir)
+        content = escape_xml_chars(read_file(file_path))
+        
+        xml_output += f&apos;  &lt;document index=&quot;{index}&quot;&gt;\n&apos;
+        xml_output += f&apos;    &lt;source&gt;{clean_path}&lt;/source&gt;\n&apos;
+        xml_output += f&apos;    &lt;document_content&gt;{content}&lt;/document_content&gt;\n&apos;
+        xml_output += &apos;  &lt;/document&gt;\n&apos;
+    
+    # Close XML structure
+    xml_output += &quot;&lt;/documents&gt;&quot;
+    
+    # Write to output file
+    with open(output_file, &apos;w&apos;, encoding=&apos;utf-8&apos;) as f:
+        f.write(xml_output)
+    
+    print(f&quot;Processed {len(files_to_process)} frontend files.&quot;)
+    print(f&quot;Total size: {total_size/1024/1024:.2f}MB&quot;)
+    print(f&quot;Generated {output_file} successfully.&quot;)
+    print(&quot;\nIncluded frontend files:&quot;)
+    for file in files_to_process:
+        print(f&quot;- {file}&quot;)
+
+if __name__ == &quot;__main__&quot;:
+    # Use parent directory as root
+    parent_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), &apos;..&apos;)
+    generate_frontend_xml(root_dir=parent_dir)</document_content>
+  </document>
+  <document index="5">
+    <source>/Users/brett/Documents/Code/bluehoss/earnit/earnit/claude-helper/../src/BRETT_NOTES.md</source>
+    <document_content># Environment Variables
+
+Best Practices:
+
+Use \$env/static/public and \$env/static/private for most cases.
+
+These are type-safe and prevent accidental exposure of private variables.
+
+Use import.meta.env.VITE\_\* in components when you need to access public variables directly.
+
+Avoid using process.env in SvelteKit applications. It&apos;s not available in all environments and doesn&apos;t provide type safety.
+
+For truly dynamic variables that might change at runtime, use $env/dynamic/private or $env/dynamic/public.
+
+Always prefix public variables with VITE\_ in your .env files.
+
+Don&apos;t prefix private variables; just use descriptive names like DATABASE_URL.
+
+Use TypeScript? Create a src/app.d.ts file to declare your environment variables for better type checking:
+
+## Can I use import.meta.env. for private variables?
+
+No, you should not use import.meta.env for private variables in SvelteKit. Here&apos;s why:
+
+Security: import.meta.env is primarily intended for use with public variables (those prefixed with VITE\_) and is accessible in both server-side and client-side code. Using it for private variables could potentially expose sensitive information to the client.
+
+Vite behavior: Vite, which SvelteKit uses, only includes environment variables prefixed with VITE\_ in import.meta.env. Other variables won&apos;t be available through this method.
+
+SvelteKit&apos;s design: SvelteKit intentionally separates public and private environment variables to prevent accidental exposure of sensitive data.
+
+Instead of using import.meta.env for private variables, you should use the following methods:
+
+### For static private variables:
+
+In server-side files only (e.g., +page.server.js, hooks.server.js)
+
+```
+import { DATABASE_URL, SECRET_KEY } from &apos;$env/static/private&apos;;
+
+console.log(DATABASE_URL);
+console.log(SECRET_KEY);
+```
+
+### For dynamic private variables:
+
+In server-side files only
+
+```
+import { env } from &apos;$env/dynamic/private&apos;;
+
+console.log(env.DATABASE_URL);
+console.log(env.SECRET_KEY);
+```
+
+These methods ensure that:
+
+- Private variables are only accessible in server-side code.
+- You get type checking and autocomplete for your environment variables.
+- There&apos;s no risk of accidentally exposing sensitive information to the client.
+
+### For public environment variables
+
+// In .js, .ts, or .svelte files
+
+```
+import { PUBLIC_API_URL } from &apos;$env/static/public&apos;;
+console.log(PUBLIC_API_URL);
+
+// Or
+console.log(import.meta.env.VITE_PUBLIC_API_URL);
+```
+
+# The magic of Zod. How to extract
+
+To create a TypeScript interface or type that represents the object generated by your Zod schema, you can use Zod&apos;s built-in type inference capabilities along with TypeScript&apos;s utility types. Here&apos;s how you can do it:
+
+```typescript
+import { z } from &apos;zod&apos;;
+
+// Your existing Zod schema
+export const userSchema = z.object({
+	firstName: z
+		.string({ required_error: &apos;First Name is required&apos; })
+		.min(1, { message: &apos;First Name is required&apos; })
+		.trim(),
+	lastName: z
+		.string({ required_error: &apos;Last Name is required&apos; })
+		.min(1, { message: &apos;Last Name is required&apos; })
+		.trim(),
+	email: z
+		.string({ required_error: &apos;Email is required&apos; })
+		.email({ message: &apos;Please enter a valid email address&apos; }),
+	password: z
+		.string({ required_error: &apos;Password is required&apos; })
+		.min(6, { message: &apos;Password must be at least 6 characters&apos; })
+		.trim(),
+	confirmPassword: z
+		.string({ required_error: &apos;Password is required&apos; })
+		.min(6, { message: &apos;Password must be at least 6 characters&apos; })
+		.trim(),
+	role: z
+		.enum([&apos;USER&apos;, &apos;PREMIUM&apos;, &apos;ADMIN&apos;], { required_error: &apos;You must have a role&apos; })
+		.default(&apos;USER&apos;),
+	verified: z.boolean().default(false),
+	isCreator: z.boolean().default(false),
+	isFollower: z.boolean().default(false),
+	terms: z
+		.literal&lt;boolean&gt;(true, {
+			errorMap: () =&gt; ({ message: &apos;You must accept the terms &amp; privacy policy&apos; })
+		})
+		.default(false as true),
+	token: z.string().optional(),
+	receiveEmail: z.boolean().default(true),
+	createdAt: z.date().optional(),
+	updatedAt: z.date().optional(),
+	roleError: z.string().optional()
+});
+
+// Infer the TypeScript type from the Zod schema
+export type UserSchema = z.infer&lt;typeof userSchema&gt;;
+
+// If you need a type without certain fields (e.g., for creating a new user)
+export type NewUserInput = Omit&lt;UserSchema, &apos;id&apos; | &apos;createdAt&apos; | &apos;updatedAt&apos; | &apos;roleError&apos;&gt;;
+
+// If you need a type for updating a user (all fields optional)
+export type UpdateUserInput = Partial&lt;NewUserInput&gt;;
+```
+
+Now, let me explain the key parts of this code:
+
+1. We define the `userSchema` using Zod as you&apos;ve already done.
+
+2. We use `z.infer&lt;typeof userSchema&gt;` to create a TypeScript type that matches the schema. This `UserSchema` type will have all the fields defined in your Zod schema, with the correct types.
+
+3. We create a `NewUserInput` type using TypeScript&apos;s `Omit` utility type. This removes fields that shouldn&apos;t be provided when creating a new user (like `id`, `createdAt`, `updatedAt`, and `roleError`).
+
+4. We create an `UpdateUserInput` type using `Partial&lt;NewUserInput&gt;`. This makes all fields optional, which is typically what you want for update operations.
+
+You can use these types in your application like this:
+
+```typescript
+import type { UserSchema, NewUserInput, UpdateUserInput } from &apos;./path-to-your-schema-file&apos;;
+
+// When creating a new user
+function createUser(userData: NewUserInput) {
+	// Use Drizzle to insert the new user
+	// ...
+}
+
+// When updating a user
+function updateUser(userId: number, userData: UpdateUserInput) {
+	// Use Drizzle to update the user
+	// ...
+}
+
+// When working with a full user object
+function processUser(user: UserSchema) {
+	// Do something with the user
+	// ...
+}
+```
+
+This approach gives you type safety and autocompletion in your TypeScript code, while still using Zod for runtime validation. The `NewUserInput` and `UpdateUserInput` types are particularly useful when working with your database operations, as they match the shape of the data you&apos;ll typically be working with in those contexts.
+
+Remember to adjust the types as needed if your schema changes or if you have specific requirements for certain operations that differ from these general-purpose types.
+</document_content>
+  </document>
+</documents>
