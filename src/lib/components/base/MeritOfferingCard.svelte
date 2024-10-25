@@ -14,7 +14,7 @@
 
 	var canEdit = false;
 
-	$: if (user && user.user_type === 'creator') {
+	$: if (user && Number(user.id) === product.creator_user_id) {
 		canEdit = true;
 	}
 </script>
