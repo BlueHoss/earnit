@@ -27,7 +27,7 @@ export const actions: Actions = {
 		try {
 			await UserService.updateUser(locals.user.id, form.data);
 
-			throw redirect(303, '/follower/profile');
+			throw redirect(303, '/earn');
 		} catch (error) {
 			if ((error as Error & { status: number }).status === 303) {
 				throw error; // Re-throw the redirect

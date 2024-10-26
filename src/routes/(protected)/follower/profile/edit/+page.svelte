@@ -2,17 +2,10 @@
 <script>
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Label from '$lib/components/ui/label/label.svelte';
-	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import * as Card from '$lib/components/ui/card/index.ts';
-	import Marketplace from 'lucide-svelte/icons/store';
 	import NameIcon from 'lucide-svelte/icons/circle-user';
 	import TitleIcon from 'lucide-svelte/icons/award';
-	import BioIcon from 'lucide-svelte/icons/book-user';
-	import JobDescIcon from 'lucide-svelte/icons/file-cog';
-	import FileText from 'lucide-svelte/icons/file-text';
-	import Image from 'lucide-svelte/icons/image';
-	import Currency from 'lucide-svelte/icons/currency';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import Profile from 'lucide-svelte/icons/user';
 	import { updateBaseUserSchema } from '$lib/schema/login.schema';
@@ -120,5 +113,5 @@
 	</form>
 </PageWrapper>
 
-<!-- <SuperDebug data={$formData} />
-<SuperDebug data={$errors} /> -->
+<SuperDebug data={$formData} />
+<SuperDebug data={$errors} />

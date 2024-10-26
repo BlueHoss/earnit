@@ -145,8 +145,8 @@ async function getUserByUserId(userId: number): Promise<BaseUser | null> {
 			bio: login.bio,
 			terms: login.terms,
 			receive_email: login.receive_email,
-			date_created: login.date_created,
-			date_updated: login.date_updated,
+			date_created: new Date(login.date_created), //I know weird. make it a string and it fails on follower update page without casting to date
+			date_updated: new Date(login.date_updated),
 			store_name: login.store_name,
 			reward_name: login.reward_name,
 			category: login.category

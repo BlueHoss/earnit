@@ -6,22 +6,25 @@
 	import AvatarImage from '$lib/components/ui/avatar/avatar-image.svelte';
 	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
+	import PageHeaderFollower from '$lib/components/base/FollowerPageHeader.svelte';
+
+	export let data;
 </script>
 
 <PageWrapper>
+	<!-- <div>
+		{JSON.stringify(data)}
+	</div> -->
 	<div class="grid gap-4 p-6 sm:grid-cols-1">
 		<!-- Profile Card -->
 		<Card.Root class="col-span-1">
 			<Card.Content class="flex h-32 items-center justify-between p-4">
 				<!-- Left Section: Image and Text -->
 				<div class="flex items-center space-x-4">
-					<Avatar class="h-24 w-24">
-						<AvatarImage src="/img/joe.webp" alt="Joe Burns' Profile Picture" />
-						<AvatarFallback>JB</AvatarFallback>
-					</Avatar>
+					<PageHeaderFollower {data} Title="Profile" />
 					<div class="flex flex-col justify-center">
-						<h2 class="text-xl font-bold">Joe Burns</h2>
-						<p class="text-sm">The man!</p>
+						<h2 class="text-xl font-bold">{data.user.first_name}</h2>
+						<p class="text-sm">{data.user.handle}</p>
 					</div>
 				</div>
 
@@ -34,20 +37,6 @@
 						<Button>Dashboard</Button>
 					</a>
 				</div>
-			</Card.Content>
-		</Card.Root>
-
-		<!-- Bio Card -->
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Bio</Card.Title>
-			</Card.Header>
-			<Card.Content>
-				<p>
-					Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam laborum voluptatibus
-					quaerat officiis neque ipsum soluta omnis numquam dolores. Dicta totam atque nostrum
-					labore nemo a minima fugit. Quasi, sapiente.
-				</p>
 			</Card.Content>
 		</Card.Root>
 
