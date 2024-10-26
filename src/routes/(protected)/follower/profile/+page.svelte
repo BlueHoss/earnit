@@ -2,9 +2,6 @@
 <script>
 	import * as Card from '$lib/components/ui/card/index.ts';
 	import { Button } from '$lib/components/ui/button/index.ts';
-	import Avatar from '$lib/components/ui/avatar/avatar.svelte';
-	import AvatarImage from '$lib/components/ui/avatar/avatar-image.svelte';
-	import AvatarFallback from '$lib/components/ui/avatar/avatar-fallback.svelte';
 	import PageWrapper from '$lib/components/base/PageWrapper.svelte';
 	import PageHeaderFollower from '$lib/components/base/FollowerPageHeader.svelte';
 

@@ -112,6 +112,6 @@
 		</div>
 	</form>
 </PageWrapper>
-
+<!-- 
 <SuperDebug data={$formData} />
-<SuperDebug data={$errors} />
+<SuperDebug data={$errors} /> -->
